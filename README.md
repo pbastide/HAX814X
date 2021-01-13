@@ -10,9 +10,9 @@ Dépôt `git` en support du cours [HMMA201](https://moodle.umontpellier.fr/cours
 
 ## Ressources
 
-* Le [polycopié](https://www.lpsm.paris/pageperso/guyader/polysM.html) de Arnaud Guyader.
+* Le [polycopié](https://www.lpsm.paris/pageperso/guyader/files/teaching/Regression.pdf) de Arnaud Guyader.
 
-* [An Introduction to Statistical Learning](http://faculty.marshall.usc.edu/gareth-james/ISL/), G. James, D. Witten, T. Hastie and R. Tibshirani
+* [An Introduction to Statistical Learning](https://statlearning.com/), G. James, D. Witten, T. Hastie and R. Tibshirani
 
 ## Contributions
 
