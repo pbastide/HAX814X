@@ -1,0 +1,26 @@
+# R files
+*.Rhistory
+*.RData
+*.Rout
+*.rdb
+*.rdx
+*__*
+*.Rproj.user*
+# System specific files
+*.DS_Store
+*~
+*.swp
+*.swo
+# Images and documents
+*.pdf
+*.dvi
+*.jpg
+*.jpeg
+*.png
+*.svg
+*.eps
+*.pdf_tex
+*.zip
+*.gz
+*.ai
+*.html

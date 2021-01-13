@@ -1,0 +1,1533 @@
+---
+title: 'Régression simple - I'
+author: "Paul Bastide - Benjamin Charlier"
+date: "20/01/2021"
+output:
+  ioslides_presentation:
+    fig_width: 7
+    fig_height: 4
+  self_contained: true
+---
+
+<!-- ************************************************************************ -->
+# Informations Pratiques
+<!-- ************************************************************************ -->
+
+## Enseignants
+
+- Paul Bastide
+    - paul.bastide@umontpellier.fr
+    - Statistiques appliquées, Evolution
+- Benjamin Charlier
+    - benjamin.charlier@umontpellier.fr
+    - Analyse de formes, géométrie 3D
+    
+## Module
+
+* Régression linéaire simple
+  * Moindres carrés ordinaires
+  * Cadre gaussien
+* Régression linéaire multiple
+  * Moindres carrés ordinaires
+  * Cadre gaussien
+* Validation et sélection de modèle
+  * Analyse des résidus
+  * Selection de variables
+* Variables qualitatives
+  * ANOVA
+
+## Module
+
+* Séances
+  * CM : 21h
+  * TD : 9h
+  * TP : 12h
+  
+* Evaluation
+  * 1/2 contrôle continu
+  * 1/2 Examen final
+  
+* CC = 1/2 TP + 1/2 DM
+
+## Ressources
+
+* Polycopié de Arnaud Guyader  
+https://www.lpsm.paris/pageperso/guyader/polysM.html
+
+* An Introduction to Statistical Learning,  
+G. James, D. Witten, T. Hastie and R. Tibshirani  
+http://faculty.marshall.usc.edu/gareth-james/ISL/
+
+* Moodle  
+https://moodle.umontpellier.fr/course/view.php?id=1509
+
+## GitHub  HMMA201
+
+* https://github.com/pbastide/HMMA201
+
+* Les diapos sont dans `slides`
+  * en anglais
+
+* Fiches synthétiques dans `cheatsheets`
+  * à vous de les écrire
+  * en français ou anglais
+
+## Points bonus
+
+* Typos et erreurs dans les diapos et fiches
+  * k-ème PR accepté = $\frac{1}{2^{k}}$ points en plus sur la note du CC.
+  * Vaut aussi pour les fiches de vos collègues.
+  
+* Fiches synthétiques
+  * k-ème fiche acceptée (PR) = $\frac{2}{2^{k-1}}$ points en plus sur la note du CC.
+
+
+<!-- ************************************************************************ -->
+# Computational tools 
+<!-- ************************************************************************ -->
+
+## `R Markdown`
+
+* Integrated in `RStudio` : https://rmarkdown.rstudio.com/
+* `Markdown`
+  * Mark up language
+  * Easy to learn
+  * Integrated with $\LaTeX$
+  * Pdf, html, documents, slides, ...
+* `R Markdown`
+  * Reproducible code
+  * Include some `R` chunk
+  
+## `R Markdown`
+
+The Maunga Whau (Mt Eden) volcano, Auckland, New Zealand
+
+```{r demo}
+filled.contour(volcano, color.palette = terrain.colors, asp = 1)
+```
+
+<!-- ************************************************************************ -->
+# Introduction
+<!-- ************************************************************************ -->
+
+## Advertising
+
+```{r ad1, message = FALSE}
+library(here)
+ad <- read.csv(here("data", "Advertising.csv"), row.names = "X")
+head(ad)
+```
+
+* `TV`, `radio`, `newspaper`: advertising budgets (thousands of $)
+* `sales`: number of sales (thousands of units)
+
+## Advertising
+
+```{r ad2}
+attach(ad)
+par(mfrow = c(1, 3))
+plot(TV, sales); plot(radio, sales); plot(newspaper, sales)
+```
+
+## Advertising
+
+> - Is there a relationship between advertising budget and sale ?
+> - How strong is the relationship ?
+> - Which media contribute to sales ?
+> - How accurately can we estimate the effect of each medium ?
+> - How accurately can we predict future sales ?
+> - Is the relationship linear ?
+> - Is there synergy among the media ?
+
+<!-- ************************************************************************ -->
+# Simple Linear Regression
+<!-- ************************************************************************ -->
+
+## Advertising
+
+```{r ad3}
+plot(TV, sales)
+```
+
+## Setting
+
+* $1 \leq i \leq n$ repetitions of the experiment (markets, ind, ...)
+* $y_i$: quantitative response for $i$ (`sales`)
+* $x_i$: quantitative predicting variable for $i$ (`TV`)
+
+**Question**: Can we write ?
+$$ y_i \approx \beta_0 + \beta_1 x_i $$
+
+* Approximately a linear relationship between $y$ and $x$ ?
+* What does $\approx$ means ?
+* How do we find the "best" $\beta_0$ and $\beta_1$ ?
+
+## Which line ?
+
+```{r ad4}
+plot(TV, sales)
+abline(a = 15, b = 0, col = "blue")
+```
+
+## Which line ?
+
+```{r ad5}
+plot(TV, sales)
+abline(a = 5, b = 0.07, col = "blue")
+```
+
+## Which line ?
+
+```{r ad6}
+plot(TV, sales)
+abline(a = 7, b = 0.05, col = "blue")
+```
+
+## Model
+
+$$y_i = \beta_0 + \beta_1 x_i + \epsilon_i, \quad \forall 1 \leq i \leq n$$
+
+* $y_i$: quantitative response for $i$ (`sales`)
+* $x_i$: quantitative predicting variable for $i$ (`TV`)
+* $\epsilon_i$: "error" for $i$
+  * **random variable**
+  * (H1) $\mathbb{E}[\epsilon_i] = 0$ for all $i$ [(centered)]{style="float:right"}
+  * (H2) $\mathbb{Var}[\epsilon_i] = \sigma^2$ for all $i$ [(identical variance)]{style="float:right"}
+  * (H3) $\mathbb{Cov}[\epsilon_i; \epsilon_j] = 0$ for all $i \neq j$ [(independent)]{style="float:right"}
+
+## Model - Vectorial notation
+
+$$
+\begin{pmatrix} y_1 \\ \vdots \\ y_n \end{pmatrix} 
+= \beta_0 \begin{pmatrix} 1 \\ \vdots \\ 1 \end{pmatrix} 
++ \beta_1 \begin{pmatrix} x_1 \\ \vdots \\ x_n \end{pmatrix} 
++ \begin{pmatrix} \epsilon_1 \\ \vdots \\ \epsilon_n \end{pmatrix} 
+$$
+
+* $\mathbf{y} = (y_1, \dotsc, y_n)^T$ **random** vector of responses
+* $\mathbb{1} = (1, \dotsc, 1)^T$ vector of ones
+* $\mathbf{x} = (x_1, \dotsc, x_n)^T$ **non random** vector of predictors
+* $\boldsymbol{\epsilon} = (\epsilon_1, \dotsc, \epsilon_n)^T$ **random** vector of errors
+* $\beta_0$, $\beta_1$ **non random, unknown** coefficients
+
+$$\mathbf{y} = \beta_0 \mathbb{1} + \beta_1 \mathbf{x} + \boldsymbol{\epsilon}$$
+
+<!-- ************************************************************************ -->
+# Ordinary Least Squares (OLS)
+<!-- ************************************************************************ -->
+
+## OLS - Definition
+
+The OLS estimators $\hat{\beta}_0$ and $\hat{\beta}_1$ are given by:
+
+$$ (\hat{\beta}_0, \hat{\beta}_0) 
+= \underset{(\beta_0, \beta_1) \in \mathbb{R}^2}{\operatorname{argmin}} 
+\left\{
+\sum_{i = 1}^n (y_i - \beta_0 - \beta_1 x_i)^2
+\right\}$$
+$~$
+
+**Goal**: Minimize the squared errors between: 
+
+  * the prediction of the model $\beta_0 + \beta_1 x_i$ and
+  * the actual observed value $y_i$.
+
+## Advertising: bad line
+
+```{r ad7, echo=FALSE}
+plot(TV, sales, pch = 16, cex = 0.7, col = "red")
+beta_0 <- mean(sales); beta_1 <- 0
+bad_pred <- beta_0 + beta_1 * TV
+abline(a = beta_0, b = beta_1, col = "blue", lwd = 2)
+segments(x0 = TV, y0 = sales, x1 = TV, y1 = bad_pred)
+```
+$$RSS = \sum_{i = 1}^n (y_i - \beta_0 - \beta_1 x_i)^2 = `r sum((sales - bad_pred)^2)`$$
+
+## Advertising: another bad line
+
+```{r ad8, echo=FALSE}
+plot(TV, sales, pch = 16, cex = 0.7, col = "red")
+beta_0 <- 0; beta_1 <- 0.1
+bad_pred <- beta_0 + beta_1 * TV
+abline(a = beta_0, b = beta_1, col = "blue", lwd = 2)
+segments(x0 = TV, y0 = sales, x1 = TV, y1 = bad_pred)
+```
+$$RSS = \sum_{i = 1}^n (y_i - \beta_0 - \beta_1 x_i)^2 = `r sum((sales - bad_pred)^2)`$$
+
+## Advertising: OLS line
+
+```{r ad9, echo=FALSE}
+ad.fit <- lm(sales ~ TV)
+plot(TV, sales, pch = 16, cex = 0.7, col = "red")
+abline(a = ad.fit$coefficients[1], b = ad.fit$coefficients[2], col = "blue", lwd = 2)
+segments(x0 = TV, y0 = sales, x1 = TV, y1 = predict(ad.fit))
+```
+$$RSS = \sum_{i = 1}^n (y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i)^2 = `r sum((sales - predict(ad.fit))^2)`$$
+
+## OLS: Computation - 1/5
+
+**Goal**: Minimize $f(\beta_0, \beta_1) = \sum_{i = 1}^n (y_i - \beta_0 - \beta_1 x_i)^2$.
+
+$$
+\begin{aligned}
+\frac{\partial f(\hat{\beta}_0, \hat{\beta}_1)}{\partial \beta_0} &= \cdots &= 0 \\
+\frac{\partial f(\hat{\beta}_0, \hat{\beta}_1)}{\partial \beta_1} &= \cdots &= 0 \\
+\end{aligned}
+$$
+
+## OLS: Computation - 2/5
+
+**Goal**: Minimize $f(\beta_0, \beta_1) = \sum_{i = 1}^n (y_i - \beta_0 - \beta_1 x_i)^2$.
+
+$$
+\begin{aligned}
+\frac{\partial f(\hat{\beta}_0, \hat{\beta}_1)}{\partial \beta_0} 
+&= -2 \sum_{i = 1}^n (y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i)  &= 0 \\
+\frac{\partial f(\hat{\beta}_0, \hat{\beta}_1)}{\partial \beta_1} 
+&= -2 \sum_{i = 1}^n x_i(y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i) &= 0 \\
+\end{aligned}
+$$
+
+## OLS: Computation - 3/5
+
+First equation gives:
+
+$$
+\begin{aligned}
+0 &= -2 \sum_{i = 1}^n (y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i) \\
+n \hat{\beta}_0 &= \sum_{i = 1}^n y_i - \hat{\beta}_1 \sum_{i = 1}^n x_i \\
+\hat{\beta}_0 &= \bar{y} - \hat{\beta}_1 \bar{x} \\
+\end{aligned}
+$$
+
+## OLS: Computation - 4/5
+
+First equation gives:
+
+$$
+\begin{aligned}
+\hat{\beta}_0 &= \bar{y} - \hat{\beta}_1 \bar{x} \\
+\end{aligned}
+$$
+
+Second equation gives:
+
+$$
+\begin{aligned}
+-2 \sum_{i = 1}^n x_i(y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i) &= 0 \\
+\hat{\beta}_0 \sum_{i = 1}^n x_i + \hat{\beta}_1 \sum_{i = 1}^n x_i^2 &= \sum_{i = 1}^n x_iy_i \\
+\hat{\beta}_1 \left(\sum_{i = 1}^n x_i^2 - \bar{x} \sum_{i = 1}^n x_i \right) &= - \bar{y}\sum_{i = 1}^n x_i + \sum_{i = 1}^n x_iy_i \\
+\end{aligned}
+$$
+
+## OLS: Computation - 5/5
+
+First equation gives:
+
+$$
+\begin{aligned}
+\hat{\beta}_0 &= \bar{y} - \hat{\beta}_1 \bar{x} \\
+\end{aligned}
+$$
+
+Second equation gives:
+
+$$
+\begin{aligned}
+\hat{\beta}_1 &= \frac{ \sum_{i = 1}^n x_iy_i - \sum_{i = 1}^n x_i\bar{y}}{\sum_{i = 1}^n x_i^2 - \sum_{i = 1}^n x_i\bar{x}} = \frac{ \sum_{i = 1}^n x_i(y_i - \bar{y})}{\sum_{i = 1}^n x_i(x_i - \bar{x})} \\
+\hat{\beta}_1 &=  \frac{ \sum_{i = 1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i = 1}^n (x_i -\bar{x})(x_i - \bar{x})} \\
+\end{aligned}
+$$
+
+because
+$$
+\sum_{i = 1}^n (y_i - \bar{y}) = 0 = \sum_{i = 1}^n (x_i - \bar{x})
+$$
+
+## OLS: Expressions
+
+$$ 
+(\hat{\beta}_0, \hat{\beta}_0) 
+= \underset{(\beta_0, \beta_1) \in \mathbb{R}^2}{\operatorname{argmin}} 
+\left\{
+\sum_{i = 1}^n (y_i - \beta_0 - \beta_1 x_i)^2
+\right\}
+$$
+
+Closed form expressions:
+$$
+\hat{\beta}_1 = \frac{\sum_{i = 1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i = 1}^n (x_i - \bar{x})^2}
+\qquad
+\hat{\beta}_0 = \bar{y} - \hat{\beta}_1\bar{x}
+$$
+
+## Advertising: OLS line
+
+```{r ad10, echo=FALSE, fig.height=4, fig.width=6}
+ad.fit <- lm(sales ~ TV)
+par(mar = c(5, 4, 0, 2) + 0.1)
+plot(TV, sales, pch = 16, cex = 0.7, col = "red")
+abline(a = ad.fit$coefficients[1], b = ad.fit$coefficients[2], col = "blue", lwd = 2)
+segments(x0 = TV, y0 = sales, x1 = TV, y1 = predict(ad.fit))
+```
+
+* $\hat{\beta}_0 = 7.03$, $\hat{\beta}_1 = 0.0475$
+* An additional $1000$ k\$ spent on TV is associated with selling approximately $47.5$ more units of the product.
+
+## Advertising: OLS line
+
+```{r ad11, echo=FALSE, fig.height=4, fig.width=6}
+ad.fit <- lm(sales ~ TV)
+par(mar = c(5, 4, 0, 2) + 0.1)
+plot(TV, sales, pch = 16, cex = 0.7)
+abline(a = ad.fit$coefficients[1], b = ad.fit$coefficients[2], col = "blue", lwd = 2)
+points(mean(TV), mean(sales), col = "red", pch = 19)
+abline(v = mean(TV), lty = 2)
+abline(h = mean(sales), lty = 2)
+```
+
+* Red dot is $(\bar{x}, \bar{y})$ the gravity point
+
+## OLS: Remarks
+
+$$
+\hat{\beta}_1 = \frac{\sum_{i = 1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i = 1}^n (x_i - \bar{x})^2}
+\qquad
+\hat{\beta}_0 = \bar{y} - \hat{\beta}_1\bar{x}
+$$
+
+>* $\hat{\beta}_0 + \hat{\beta}_1 \bar{x} = \bar{y}$  
+The OLS regression line goes through the gravity point $(\bar{x}, \bar{y})$
+
+>* $\hat{\beta}_0$ and $\hat{\beta}_1$ are **linear** in the data $\mathbf{y} = (y_1, \cdots, y_n)^T$.
+
+>* $\hat{\beta}_1 = \frac{s_{\mathbf{y},\mathbf{x}}^2}{s_{\mathbf{x}}^2}$  
+With $s_{\mathbf{x}}^2 = \frac{1}{n}\sum_{i = 1}^n (x_i - \bar{x})^2 =  \frac{1}{n}\sum_{i = 1}^n x_i^2 - \bar{x}^2$  
+and $s_{\mathbf{y},\mathbf{x}}^2 = \sum_{i = 1}^n (x_i - \bar{x})(y_i - \bar{y})$  
+the empirical variance and covariance of $\mathbf{x}$ and $\mathbf{y}$.
+
+<!-- ************************************************************************ -->
+# OLS estimators are unbiaised
+<!-- ************************************************************************ -->
+
+## Simulated dataset
+
+Simulate according to the model :
+$$\mathbf{y} = 2 \cdot \mathbb{1} + 3 \cdot \mathbf{x} + \boldsymbol{\epsilon}$$
+
+
+```{r sim1, fig.height=4, fig.width=4}
+## Set the seed (Quia Sapientia)
+set.seed(12890926)
+## Number of samples
+n <- 100
+## vector of x
+x_test <- runif(n, -2, 2)
+## coefficients
+beta_0 <- 2; beta_1 <- 3
+## epsilon
+error_test <- rnorm(n, mean = 0, sd = 10)
+## y = 2 + 3 * x + epsilon
+y_test <- beta_0 + beta_1 * x_test + error_test
+```
+
+## Simulated dataset
+
+```{r sim2, echo=FALSE}
+ols_coef <- coef(lm(y_test ~ x_test))
+beta_hat_0 <- ols_coef[1]
+beta_hat_1 <- ols_coef[2]
+```
+
+```{r sim3, fig.height=3.7, fig.width=3.7, fig.align='center'}
+## Dataset
+plot(x_test, y_test, pch = 16, cex = 0.7)
+## Regression line
+abline(a = beta_hat_0, b = beta_hat_1, col = "blue", lwd = 2)
+## Ideal line
+abline(a = beta_0, b = beta_1, col = "red", lwd = 2)
+```
+
+## Simulated dataset : replicates
+
+```{r sim4, echo=FALSE}
+## Number of replicates
+r <- 1000
+## Error replicates (matrix n x r)
+error_test_all <- matrix(rnorm(n * r, mean = 0, sd = 10), nrow = n)
+## Simulations replicates
+y_test_all <- beta_0 + beta_1 * x_test + error_test_all
+```
+
+```{r sim5, echo=FALSE, fig.height=5.6, fig.width=7.4}
+ols_coef <- coef(lm(y_test ~ x_test))
+beta_hat_0 <- ols_coef[1]
+beta_hat_1 <- ols_coef[2]
+
+par(mfrow = c(2, 2), mar = c(5, 4, 0, 2))
+### First plot
+## Dataset
+plot(x_test, y_test, pch = 16, cex = 0.7, ylab = "y_test")
+## Regression line
+abline(a = beta_hat_0, b = beta_hat_1, col = "blue", lwd = 2)
+## Ideal line
+abline(a = beta_0, b = beta_1, col = "red", lwd = 2)
+
+### Second plot
+i <- 2
+## Dataset
+plot(x_test, y_test_all[, i], pch = 16, cex = 0.7, ylab = "y_test_2")
+## Regression lines
+abline(a = coef(lm(y_test_all[, i] ~ x_test))[1], b = coef(lm(y_test_all[, i] ~ x_test))[2], col = "blue", lwd = 2)
+## Ideal line
+abline(a = beta_0, b = beta_1, col = "red", lwd = 2)
+
+### Second plot
+i <- 5
+## Dataset
+plot(x_test, y_test_all[, i], pch = 16, cex = 0.7, ylab = "y_test_3")
+## Regression lines
+abline(a = coef(lm(y_test_all[, i] ~ x_test))[1], b = coef(lm(y_test_all[, i] ~ x_test))[2], col = "blue", lwd = 2)
+## Ideal line
+abline(a = beta_0, b = beta_1, col = "red", lwd = 2)
+
+### Second plot
+i <- 10
+## Dataset
+plot(x_test, y_test_all[, i], pch = 16, cex = 0.7, ylab = "y_test_4")
+## Regression lines
+abline(a = coef(lm(y_test_all[, i] ~ x_test))[1], b = coef(lm(y_test_all[, i] ~ x_test))[2], col = "blue", lwd = 2)
+## Ideal line
+abline(a = beta_0, b = beta_1, col = "red", lwd = 2)
+```
+
+
+## Simulated dataset : replicates
+
+```{r sim6, echo=FALSE, fig.height=5.6, fig.width=7.4}
+ols_coef <- coef(lm(y_test ~ x_test))
+beta_hat_0 <- ols_coef[1]
+beta_hat_1 <- ols_coef[2]
+
+par(mfrow = c(2, 2), mar = c(5, 4, 0, 2))
+### First plot
+## Dataset
+plot(x_test, y_test, pch = 16, cex = 0.7, ylab = "y_test")
+## Regression line
+abline(a = beta_hat_0, b = beta_hat_1, col = "blue", lwd = 2)
+## Ideal line
+abline(a = beta_0, b = beta_1, col = "red", lwd = 2)
+
+### Second plot
+i <- 2
+## Dataset
+plot(x_test, y_test_all[, i], pch = 16, cex = 0.7, ylab = "y_test_2")
+## Regression lines
+abline(a = coef(lm(y_test_all[, i] ~ x_test))[1], b = coef(lm(y_test_all[, i] ~ x_test))[2], col = "blue", lwd = 2)
+## Ideal line
+abline(a = beta_0, b = beta_1, col = "red", lwd = 2)
+
+### Second plot
+i <- 5
+## Dataset
+plot(x_test, y_test_all[, i], pch = 16, cex = 0.7, ylab = "y_test_3")
+## Regression lines
+abline(a = coef(lm(y_test_all[, i] ~ x_test))[1], b = coef(lm(y_test_all[, i] ~ x_test))[2], col = "blue", lwd = 2)
+## Ideal line
+abline(a = beta_0, b = beta_1, col = "red", lwd = 2)
+
+### Second plot
+## Dataset
+plot(x_test, y_test, pch = 16, cex = 0)
+## all other regression lines
+sum_beta_0_hat <- 0
+sum_beta_1_hat <- 0
+for (i in 1:r) {
+  sum_beta_0_hat <- sum_beta_0_hat + coef(lm(y_test_all[, i] ~ x_test))[1]
+  sum_beta_1_hat <- sum_beta_1_hat + coef(lm(y_test_all[, i] ~ x_test))[2]
+  abline(a = coef(lm(y_test_all[, i] ~ x_test))[1], b = coef(lm(y_test_all[, i] ~ x_test))[2], col = "blue", lwd = 0.5)
+}
+## Ideal line
+abline(a = beta_0, b = beta_1, col = "red", lwd = 2)
+```
+
+## Simulated dataset : empirical mean
+
+<div style="float: left; width: 50%;">
+* $\beta_0 = `r beta_0`$
+* $\hat{\beta}_0^1 = `r coef(lm(y_test_all[, 1] ~ x_test))[1]`$
+* $\hat{\beta}_0^2 = `r coef(lm(y_test_all[, 2] ~ x_test))[1]`$
+* $\hat{\beta}_0^3 = `r coef(lm(y_test_all[, 3] ~ x_test))[1]`$
+* ...
+* $\frac{1}{r} \sum_{s = 1}^r \hat{\beta}_0^s = `r sum_beta_0_hat / (r)`$
+</div>
+
+<div style="float: right; width: 50%;">
+* $\beta_1 = `r beta_1`$
+* $\hat{\beta}_1^1 = `r coef(lm(y_test_all[, 1] ~ x_test))[2]`$
+* $\hat{\beta}_1^2 = `r coef(lm(y_test_all[, 2] ~ x_test))[2]`$
+* $\hat{\beta}_1^3 = `r coef(lm(y_test_all[, 3] ~ x_test))[2]`$
+* ...
+* $\frac{1}{r} \sum_{s = 1}^r \hat{\beta}_1^s = `r sum_beta_1_hat / r`$
+</div>
+
+<div style="float: left; width: 100%;">
+$~$
+
+>* The OLS estimators are **unbiased**
+$$
+\mathbb{E}[\hat{\beta}_0] = \beta_0 \qquad \mathbb{E}[\hat{\beta}_0] = \beta_1
+$$
+</div>
+
+## The OLS estimators are unbiaised
+
+$$
+\mathbb{E}[\hat{\beta}_0] = \beta_0 \qquad \mathbb{E}[\hat{\beta}_0] = \beta_1
+$$
+
+Valid as long as residuals:
+
+* are **centered** $\to$ (H1): $\mathbb{E}[\epsilon_i] = 0$ 
+
+## OLS is unbiaised - Proof 1/4
+
+$$
+\mathbb{E}[\hat{\beta}_1] 
+= \mathbb{E}\left[\frac{\sum_{i = 1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i = 1}^n (x_i - \bar{x})^2}\right]
+= \cdots \\
+$$
+
+## OLS is unbiaised - Proof 2/4
+
+$$
+\mathbb{E}[\hat{\beta}_1] 
+= \mathbb{E}\left[\frac{\sum_{i = 1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i = 1}^n (x_i - \bar{x})^2}\right]
+= \frac{\sum_{i = 1}^n (x_i - \bar{x})\mathbb{E}[(y_i - \bar{y})]}{\sum_{i = 1}^n (x_i - \bar{x})^2} \\
+$$
+
+According to our model:
+$$y_i = \beta_0 + \beta_1 x_i + \epsilon_i \quad \& \quad \mathbb{E}[\epsilon_i] = 0$$
+
+so:
+$$
+\mathbb{E}[y_i] = \beta_0 + \beta_1 x_i
+\\
+\mathbb{E}[y_i - \bar{y}] = \beta_0 + \beta_1 x_i - (\beta_0 + \beta_1 \bar{x}) = \beta_1(x_i - \bar{x})
+$$
+
+and:
+$$
+\mathbb{E}[\hat{\beta}_1] 
+= \frac{\sum_{i = 1}^n (x_i - \bar{x})\beta_1(x_i - \bar{x})}{\sum_{i = 1}^n (x_i - \bar{x})^2}
+= \beta_1
+$$
+
+## OLS is unbiaised - Proof 3/4
+
+$$
+\begin{aligned}
+\mathbb{E}[\hat{\beta}_0] 
+&= \mathbb{E}\left[\bar{y} - \hat{\beta}_1\bar{x}\right]\\
+&= \cdots
+\end{aligned}
+$$
+
+## OLS is unbiaised - Proof 4/4
+
+$$
+\begin{aligned}
+\mathbb{E}[\hat{\beta}_0] 
+&= \mathbb{E}\left[\bar{y} - \hat{\beta}_1\bar{x}\right]\\
+&= \mathbb{E}[\bar{y}] - \mathbb{E}[\hat{\beta}_1]\bar{x}\\
+&= \beta_0 + \beta_1 \bar{x} - \beta_1 \bar{x}\\
+&= \beta_0
+\end{aligned}
+$$
+
+## OLS Estimators: Remark
+
+$$
+\begin{aligned}
+\hat{\beta}_1
+&= \frac{1}{n s_{\mathbf{x}}^2}\sum_{i = 1}^n (x_i - \bar{x})(y_i - \bar{y})\\
+&= \frac{1}{n s_{\mathbf{x}}^2}\sum_{i = 1}^n (x_i - \bar{x})(\beta_0 + \beta_1x_i + \epsilon_i - [\beta_0 + \beta_1\bar{x}])\\
+&= \beta_1 + \frac{1}{n s_{\mathbf{x}}^2} \sum_{i = 1}^n (x_i - \bar{x})\epsilon_i
+\end{aligned}
+$$
+
+This expression is theoretical, but it makes it easy to prove 
+$$\mathbb{E}[\hat{\beta}_1] = \beta_1.$$
+
+<!-- ************************************************************************ -->
+# Variance of the OLS estimators
+<!-- ************************************************************************ -->
+
+## OLS Estimators: Variances
+
+$$
+\mathbb{Var}[\hat{\beta}_0] 
+= \frac{\sigma^2}{n} \left( 1 + \frac{\bar{x}^2}{s_{\mathbf{x}}^2} \right)
+$$
+
+$$
+\mathbb{Var}[\hat{\beta}_1] 
+= \frac{\sigma^2}{n}\frac{1}{s_{\mathbf{x}}^2}
+$$
+
+Valid as long as residuals:
+
+* are **centered** $\to$ (H1): $\mathbb{E}[\epsilon_i] = 0$ 
+* have **identical variance** $\to$ (H2): $\mathbb{Var}[\epsilon_i] = \sigma^2$
+* are **independent** $\to$ (H3): $\mathbb{Cov}[\epsilon_i; \epsilon_j] = 0$
+
+## OLS Estimators: Variances - Proof 1/6
+
+$$
+\begin{aligned}
+\mathbb{Var}[\hat{\beta}_1] 
+&= \mathbb{Var}\left[\beta_1 + \frac{1}{n s_{\mathbf{x}}^2} \sum_{i = 1}^n (x_i - \bar{x})\epsilon_i\right] \\
+&= \cdots
+\end{aligned}
+$$
+
+## OLS Estimators: Variances - Proof 2/6
+
+$$
+\begin{aligned}
+\mathbb{Var}[\hat{\beta}_1] 
+&= \mathbb{Var}\left[\beta_1 + \frac{1}{n s_{\mathbf{x}}^2} \sum_{i = 1}^n (x_i - \bar{x})\epsilon_i\right] \\
+&= \frac{1}{(n s_{\mathbf{x}}^2)^2} \sum_{i = 1}^n (x_i - \bar{x})^2\mathbb{Var}[\epsilon_i] & [H3]\\
+&= \frac{n s_{\mathbf{x}}^2}{(n s_{\mathbf{x}}^2)^2} \sigma^2 & [H2] \\
+&= \frac{\sigma^2}{n s_{\mathbf{x}}^2}
+\end{aligned}
+$$
+
+## OLS Estimators: Variances - Proof 3/6
+
+$$
+\begin{aligned}
+\mathbb{Var}[\hat{\beta}_0] 
+&= \mathbb{Var}[\bar{y} - \hat{\beta}_1\bar{x}] = \cdots
+\end{aligned}
+$$
+
+**Attention** $\bar{y}$ and $\hat{\beta}_1$ might be correlated (they have the same $\epsilon_i$)
+
+$$
+\begin{aligned}
+\mathbb{Cov}[\bar{y}; \hat{\beta}_1] 
+&= \cdots
+\end{aligned}
+$$
+
+## OLS Estimators: Variances - Proof 4/6
+
+$$
+\begin{aligned}
+\mathbb{Cov}[\bar{y}; \hat{\beta}_1] 
+&= \mathbb{Cov}\left[\beta_0 + \beta_1\bar{x} + \bar{\epsilon}; \beta_1 + \frac{1}{n s_{\mathbf{x}}^2} \sum_{i = 1}^n (x_i - \bar{x})\epsilon_i\right] \\
+&= \mathbb{Cov}\left[\frac{1}{n}\sum_{i = 1}^n\epsilon_i; \frac{1}{n s_{\mathbf{x}}^2} \sum_{i = 1}^n (x_i - \bar{x})\epsilon_i\right] \\
+&= \frac{1}{n^2 s_{\mathbf{x}}^2} \sum_{i = 1}^n \sum_{j = 1}^n \mathbb{Cov}\left[\epsilon_i; (x_j - \bar{x})\epsilon_j\right] \\
+&= \frac{1}{n^2 s_{\mathbf{x}}^2} \sum_{i = 1}^n \mathbb{Cov}\left[\epsilon_i; (x_i - \bar{x})\epsilon_i\right] \\
+&= \frac{1}{n^2 s_{\mathbf{x}}^2} \sum_{i = 1}^n (x_i - \bar{x}) \sigma^2
+= 0
+\end{aligned}
+$$
+
+## OLS Estimators: Variances - Proof 5/6
+
+Since $\mathbb{Cov}[\bar{y}; \hat{\beta}_1] = 0$ :
+
+$$
+\begin{aligned}
+\mathbb{Var}[\hat{\beta}_0] 
+&= \mathbb{Var}[\bar{y} - \hat{\beta}_1\bar{x}]
+= \mathbb{Var}[\bar{y}] + \mathbb{Var}[\hat{\beta}_1\bar{x}]\\
+&= \cdots
+\end{aligned}
+$$
+
+## OLS Estimators: Variances - Proof 6/6
+
+Since $\mathbb{Cov}[\bar{y}; \hat{\beta}_1] = 0$ :
+
+$$
+\begin{aligned}
+\mathbb{Var}[\hat{\beta}_0] 
+&= \mathbb{Var}[\bar{y} - \hat{\beta}_1\bar{x}]
+= \mathbb{Var}[\bar{y}] + \mathbb{Var}[\hat{\beta}_1\bar{x}]\\
+&= \frac{1}{n^2}\mathbb{Var}\left[\sum_{i=1}^n\epsilon_i\right] + \bar{x}^2\mathbb{Var}[\hat{\beta}_1]\\
+&= \frac{1}{n}\sigma^2 + \frac{\bar{x}^2 \sigma^2}{n s_{\mathbf{x}}^2} \\
+&= \frac{\sigma^2}{n} \left(1 + \frac{\bar{x}^2}{s_{\mathbf{x}}^2}\right)
+\end{aligned}
+$$
+
+## OLS Estimators: Covariance
+
+$$
+\mathbb{Cov}[\hat{\beta}_0; \hat{\beta}_1] 
+= - \frac{\sigma^2}{n} \frac{\bar{x}}{s_{\mathbf{x}}^2}
+$$
+
+Valid as long as residuals:
+
+* are **centered** $\to$ (H1): $\mathbb{E}[\epsilon_i] = 0$ 
+* have **identical variance** $\to$ (H2): $\mathbb{Var}[\epsilon_i] = \sigma^2$
+* are **independent** $\to$ (H3): $\mathbb{Cov}[\epsilon_i; \epsilon_j] = 0$
+
+
+## OLS Estimators: Covariance - Proof 1/2
+
+$$
+\begin{aligned}
+\mathbb{Cov}[\hat{\beta}_0; \hat{\beta}_1] 
+& = \mathbb{Cov}[\bar{y} - \hat{\beta}_1\bar{x}; \hat{\beta}_1]  = \cdots
+\end{aligned}
+$$
+
+## OLS Estimators: Covariance - Proof 2/2
+
+$$
+\begin{aligned}
+\mathbb{Cov}[\hat{\beta}_0; \hat{\beta}_1] 
+&= \mathbb{Cov}[\bar{y} - \hat{\beta}_1\bar{x}; \hat{\beta}_1]\\
+&= \mathbb{Cov}[\bar{y}; \hat{\beta}_1] - \bar{x}\mathbb{Cov}[\hat{\beta}_1; \hat{\beta}_1]\\
+&= 0 - \bar{x}\frac{\sigma^2}{n s_{\mathbf{x}}^2}\\
+&= - \frac{\sigma^2 \bar{x}}{n s_{\mathbf{x}}^2}
+\end{aligned}
+$$
+
+## OLS Estimators: Variances - Remarks
+
+>* $\mathbb{Var}[\hat{\beta}_1] = \frac{\sigma^2}{n}\frac{1}{s_{\mathbf{x}}^2} = \frac{\sigma^2}{\sum(x_i - \bar{x})^2}$  
+$\to$ if the $x_i$ are more spread out, $\mathbb{Var}[\hat{\beta}_1]$ is smaller  
+$\to$ we have more *leverage* to estimate the slope
+
+>* $\hat{\beta}_0 = \bar{y} - \hat{\beta}_1\bar{x}$ and $\mathbb{Var}[\hat{\beta}_0] = \frac{\sigma^2}{n} \left( 1 + \frac{\bar{x}^2}{s_{\mathbf{x}}^2} \right)$  
+$\to$ if $\bar{x} = 0$, then $\hat{\beta}_0 = \bar{y}$ and $\mathbb{Var}[\hat{\beta}_0] = \frac{\sigma^2}{n}$  
+$\to$ we find the estimator of the population expectation of $y$.
+
+>* $\hat{\beta}_0 = \bar{y} - \hat{\beta}_1\bar{x}$  
+$\to$ assume $(\bar{x}, \bar{y})$ is fixed and $\bar{x} \geq 0$  
+$\to$ then when $\hat{\beta}_1$ increases, $\hat{\beta}_0$ decreases  
+$\to$ $\mathbb{Cov}[\hat{\beta}_0; \hat{\beta}_1] \leq 0$
+
+## OLS Estimators: Variances - Remarks
+
+$$
+\mathbb{Var}[\hat{\beta}_0] 
+= \frac{\sigma^2}{n} \left( 1 + \frac{\bar{x}^2}{s_{\mathbf{x}}^2} \right)
+\quad
+\mathbb{Var}[\hat{\beta}_1] 
+= \frac{\sigma^2}{n}\frac{1}{s_{\mathbf{x}}^2}
+$$
+
+$$
+\mathbb{Cov}[\hat{\beta}_0; \hat{\beta}_1] 
+= - \frac{\sigma^2}{n} \frac{\bar{x}}{s_{\mathbf{x}}^2}
+$$
+
+* If $s_{\mathbf{x}}^2$ is constant, then the variances decrease as $1/n$.
+
+<!-- ************************************************************************ -->
+# Gauss Markov Theorem
+<!-- ************************************************************************ -->
+
+## Gauss Markov Theorem
+
+The OLS estimator is the **BLUE**  
+(Best Linear Unbiased Estimator):  
+Among all unbiased estimators that are linear in $\mathbf{y}$, 
+the OLS estimators are the ones that have the smallest variance.
+
+## Gauss Markov Theorem - Proof 1/8
+
+$$
+\hat{\beta}_1 = \sum_{i = 1}^n p_i y_i 
+\quad \text{ with } \quad
+p_i = \frac{x_i - \bar{x}}{n s_{\mathbf{x}}^2}
+$$
+
+>* Let $\tilde{\beta}_1$ be another linear unbiased estimator.
+
+>* $\tilde{\beta}_1$ is linear: $\tilde{\beta}_1 = \sum_{i = 1}^n q_i y_i$
+
+>* Let's show that $\sum_{i=1}^n q_i = 0$ and $\sum_{i=1}^n q_ix_i = 1$
+
+## Gauss Markov Theorem - Proof 2/8
+
+* Let's show that $\sum_{i=1}^n q_i = 0$ and $\sum_{i=1}^n q_ix_i = 1$
+
+$$
+\begin{aligned}
+\mathbb{E}[\tilde{\beta}_1] 
+&= \mathbb{E}\left[\sum_{i = 1}^n q_i y_i\right] = \cdots = \beta_1 & \text{(unbiaised)}
+\end{aligned}
+$$
+
+## Gauss Markov Theorem - Proof 3/8
+
+$$
+\begin{aligned}
+\mathbb{E}[\tilde{\beta}_1] 
+&= \sum_{i = 1}^n \mathbb{E}[q_i y_i] \\
+&= \sum_{i = 1}^n \mathbb{E}[q_i (\beta_0 + \beta_1 x_i + \epsilon_i)] \\
+\beta_1 &= \beta_0 \sum_{i = 1}^n q_i + \beta_1 \sum_{i = 1}^n q_ix_i  & \text{(unbiaised)}
+\end{aligned}
+$$
+
+>* This is true for any $\beta_0$, $\beta_1$  
+$\to$ $\sum_{i=1}^n q_i = 0$ and $\sum_{i=1}^n q_ix_i = 1$
+
+## Gauss Markov Theorem - Proof 4/8
+
+$$
+\hat{\beta}_1 = \sum_{i = 1}^n p_i y_i 
+\quad \text{ with } \quad
+p_i = \frac{x_i - \bar{x}}{n s_{\mathbf{x}}^2}
+$$
+
+* Let $\tilde{\beta}_1$ be another linear unbiased estimator.
+
+* $\tilde{\beta}_1$ is linear: $\tilde{\beta}_1 = \sum_{i = 1}^n q_i y_i$
+
+* We have $\sum_{i=1}^n q_i = 0$ and $\sum_{i=1}^n q_ix_i = 1$
+
+>* Let's show that $\mathbb{Var}[\tilde{\beta}_1] > \mathbb{Var}[\hat{\beta}_1]$
+
+## Gauss Markov Theorem - Proof 5/8
+
+* Let's show that $\mathbb{Var}[\tilde{\beta}_1] > \mathbb{Var}[\hat{\beta}_1]$
+$$
+\begin{aligned}
+\mathbb{Var}[\tilde{\beta}_1] 
+&= \mathbb{Var}[\tilde{\beta}_1 - \hat{\beta}_1 + \hat{\beta}_1]\\
+&= \cdots
+\end{aligned}
+$$
+
+## Gauss Markov Theorem - Proof 6/8
+
+* Let's show that $\mathbb{Var}[\tilde{\beta}_1] > \mathbb{Var}[\hat{\beta}_1]$
+$$
+\begin{aligned}
+\mathbb{Var}[\tilde{\beta}_1] 
+&= \mathbb{Var}[\tilde{\beta}_1 - \hat{\beta}_1 + \hat{\beta}_1]\\
+&= \mathbb{Var}[\tilde{\beta}_1 - \hat{\beta}_1] + \mathbb{Var}[\hat{\beta}_1] + 2\mathbb{Cov}[\tilde{\beta}_1 - \hat{\beta}_1; \hat{\beta}_1]
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\mathbb{Cov}[\tilde{\beta}_1 - \hat{\beta}_1; \hat{\beta}_1]
+&= \mathbb{Cov}[\tilde{\beta}_1; \hat{\beta}_1] - \mathbb{Var}[\hat{\beta}_1] \\
+&= \cdots
+\end{aligned}
+$$
+
+## Gauss Markov Theorem - Proof 7/8
+
+* Let's show that $\mathbb{Var}[\tilde{\beta}_1] > \mathbb{Var}[\hat{\beta}_1]$
+$$
+\begin{aligned}
+\mathbb{Var}[\tilde{\beta}_1] 
+&= \mathbb{Var}[\tilde{\beta}_1 - \hat{\beta}_1 + \hat{\beta}_1]\\
+&= \mathbb{Var}[\tilde{\beta}_1 - \hat{\beta}_1] + \mathbb{Var}[\hat{\beta}_1] + 2\mathbb{Cov}[\tilde{\beta}_1 - \hat{\beta}_1; \hat{\beta}_1]
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\mathbb{Cov}[\tilde{\beta}_1 - \hat{\beta}_1; \hat{\beta}_1]
+&= \mathbb{Cov}[\tilde{\beta}_1; \hat{\beta}_1] - \mathbb{Var}[\hat{\beta}_1] \\
+&= \sum_{i=1}^n p_i q_i \sigma^2 - \frac{\sigma^2}{n s_{\mathbf{x}}^2} \\
+&=\frac{\sigma^2}{n s_{\mathbf{x}}^2}\left(\sum_{i=1}^nq_ix_i - \sum_{i=1}^nq_i\bar{x} - 1\right) \\
+&= 0
+\end{aligned}
+$$
+
+## Gauss Markov Theorem - Proof 8/8
+
+* Let's show that $\mathbb{Var}[\tilde{\beta}_1] \geq \mathbb{Var}[\hat{\beta}_1]$
+$$
+\begin{aligned}
+\mathbb{Var}[\tilde{\beta}_1] 
+&= \mathbb{Var}[\tilde{\beta}_1 - \hat{\beta}_1 + \hat{\beta}_1]\\
+&= \mathbb{Var}[\tilde{\beta}_1 - \hat{\beta}_1] + \mathbb{Var}[\hat{\beta}_1] + 2\mathbb{Cov}[\tilde{\beta}_1 - \hat{\beta}_1; \hat{\beta}_1] \\
+&= \mathbb{Var}[\tilde{\beta}_1 - \hat{\beta}_1] + \mathbb{Var}[\hat{\beta}_1]
+\end{aligned}
+$$
+
+>* But $\mathbb{Var}[\tilde{\beta}_1 - \hat{\beta}_1] \geq 0$ (variance)
+$\to$ $\mathbb{Var}[\tilde{\beta}_1] \geq \mathbb{Var}[\hat{\beta}_1]$
+
+>* Same for $\hat{\beta}_0$.
+
+<!-- ************************************************************************ -->
+# Variance estimation
+<!-- ************************************************************************ -->
+
+## Residuals
+
+```{r ad12, echo=FALSE, fig.height=3.5, fig.width=6}
+ad.fit <- lm(sales ~ TV)
+i <- 34
+par(mar = c(5, 4, 0, 2) + 0.1)
+plot(TV, sales, pch = 16, cex = 0.5, col = "black", axes = FALSE)
+box()
+points(TV[i], sales[i], pch = 16, cex = 0.7, col = "black")
+abline(a = ad.fit$coefficients[1], b = ad.fit$coefficients[2], col = "blue", lwd = 2)
+segments(x0 = TV[i], y0 = sales[i],
+         x1 = TV[i], y1 = predict(ad.fit)[i],
+         col = "red", lwd = 2)
+text(x = TV[i], y = (2 * sales[i] + predict(ad.fit)[i]) / 3,
+     col = "red", pos = 4,
+     labels = expression(hat(epsilon)[i]))
+segments(x0 = TV[i], y0 = 0, x1 = TV[i], y1 = sales[i], lty = 2)
+axis(side = 1, at = TV[i], labels = expression(x[i]))
+segments(x0 = TV[i], y0 = predict(ad.fit)[i], x1 = -10, y1 = predict(ad.fit)[i], lty = 2)
+segments(x0 = TV[i], y0 = sales[i], x1 = -10, y1 = sales[i], lty = 2)
+axis(side = 2,
+     at = c(sales[i], predict(ad.fit)[i]),
+     labels = c(expression(y[i]), expression(hat(y)[i])))
+```
+
+* $\hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1x_i$
+
+* $\hat{\epsilon}_i = y_i - \hat{y}_i$
+
+## Residuals
+
+* By construction, the sum of residuals is null.
+
+$$
+\begin{aligned}
+\sum_{i = 1}^n \hat{\epsilon}_i 
+&= \sum_{i = 1}^n  y_i - \hat{y}_i \\
+&= \cdots \\
+&= 0
+\end{aligned}
+$$
+
+## Residuals
+
+* By construction, the sum of residuals is null.
+
+$$
+\begin{aligned}
+\sum_{i = 1}^n \hat{\epsilon}_i 
+&= \sum_{i = 1}^n  y_i - \hat{y}_i\\
+&= \sum_{i = 1}^n y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i 
+& [\hat{\beta}_0 = \bar{y} - \hat{\beta}_1\bar{x}]\\
+&= \sum_{i = 1}^n (y_i - \bar{y}) + \hat{\beta}_1(x_i - \bar{x}) \\
+&= 0
+\end{aligned}
+$$
+
+## Unbiased Variance Estimator
+
+$$
+\hat{\sigma}^2 = \frac{1}{n-2} \sum_{i = 1}^n \hat{\epsilon}_i^2 = \frac{1}{n-2} \cdot RSS
+$$
+
+is an unbiased estimator of the variance $\sigma^2$.
+
+>* **Note**: `2` parameters
+$(\beta_0, \beta_1) \to n-$
+`2`
+
+>* RSS is the Residual Sum of Squares
+
+## Advertising
+
+```{r ad15, echo=FALSE}
+ad.fit <- lm(sales ~ TV)
+plot(TV, sales, pch = 16, cex = 0.7, col = "red")
+abline(a = ad.fit$coefficients[1], b = ad.fit$coefficients[2], col = "blue", lwd = 2)
+segments(x0 = TV, y0 = sales, x1 = TV, y1 = predict(ad.fit))
+```
+$$\hat{\sigma}^2 = \frac{1}{n-2} \cdot RSS = \frac{1}{n-2} \sum_{i = 1}^n (y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i)^2 = `r round(sum((sales - predict(ad.fit))^2) / (n-2), 2)`$$
+
+## Unbiased Var Estimator - Proof 1/4
+
+$$
+\begin{aligned}
+\mathbb{E}\left[\sum_{i=1}^n\hat{\epsilon}_i^2\right]
+&= \sum_{i=1}^n\mathbb{E}\left[\hat{\epsilon}_i^2\right]
+= \sum_{i=1}^n\mathbb{Var}\left[\hat{\epsilon}_i\right]
+\end{aligned}
+$$
+
+$~$
+
+$$
+\begin{aligned}
+\mathbb{Var}[\hat{\epsilon}_i]
+&= \mathbb{Var}[y_i - \hat{y}_i] \\
+&= \mathbb{Var}[\beta_0 + \beta_1 x_i + \epsilon_i - \hat{\beta}_0 - \hat{\beta}_1 x_i]\\
+&= \cdots
+\end{aligned}
+$$
+
+## Unbiased Var Estimator - Proof 2/4
+
+$$
+\begin{aligned}
+\mathbb{Var}[\hat{\epsilon}_i]
+&= \mathbb{Var}[y_i - \hat{y}_i] \\
+&= \mathbb{Var}[\beta_0 + \beta_1 x_i + \epsilon_i - \hat{\beta}_0 - \hat{\beta}_1 x_i]\\
+&= \mathbb{Var}[\epsilon_i - \hat{\beta}_0 - \hat{\beta}_1 x_i]\\
+&= \mathbb{Var}[\epsilon_i] +  \mathbb{Var}[\hat{\beta}_0 + \hat{\beta}_1 x_i] - 2\mathbb{Cov}[\epsilon_i; \hat{\beta}_0 + \hat{\beta}_1 x_i]
+\end{aligned}
+$$
+
+## Unbiased Var Estimator - Proof 3/4
+
+$$
+\begin{aligned}
+\mathbb{Var}[\hat{\epsilon}_i]
+&= \mathbb{Var}[\epsilon_i] +  \mathbb{Var}[\hat{\beta}_0 + \hat{\beta}_1 x_i] - 2\mathbb{Cov}[\epsilon_i; \hat{\beta}_0 + \hat{\beta}_1 x_i]
+\end{aligned}
+$$
+$~$
+
+$$
+\begin{aligned}
+\mathbb{Var}[\hat{\beta}_0 + \hat{\beta}_1 x_i] 
+&= \mathbb{Var}[\bar{y} + \hat{\beta}_1 (x_i - \bar{x})]
+\qquad~~ \{\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}\}\\
+&= \mathbb{Var}[\bar{y}] + \mathbb{Var}[\hat{\beta}_1 (x_i - \bar{x})]
+~~ \{\mathbb{Cov}[\bar{y},\hat{\beta}_1] = 0\}\\
+&= \frac{\sigma^2}{n} + (x_i - \bar{x})^2\frac{\sigma^2}{n}\frac{1}{s_{\mathbf{x}}^2}
+\end{aligned}
+$$
+
+$~$
+
+$$
+\begin{aligned}
+\mathbb{Cov}[\hat{\beta}_0 + \hat{\beta}_1 x_i; \epsilon_i] 
+&= \mathbb{Cov}[\bar{y}; \epsilon_i] + \mathbb{Cov}[\hat{\beta}_1 (x_i - \bar{x}); \epsilon_i]\\
+&= \frac{\sigma^2}{n} + (x_i - \bar{x})\frac{1}{ns_{\mathbf{x}}^2}(x_i - \bar{x})\sigma^2
+\end{aligned}
+$$
+
+## Unbiased Var Estimator - Proof 4/4
+
+$$
+\begin{aligned}
+\mathbb{Var}[\hat{\epsilon}_i]
+&= \mathbb{Var}[\epsilon_i] +  \mathbb{Var}[\hat{\beta}_0 + \hat{\beta}_1 x_i] - 2\mathbb{Cov}[\epsilon_i; \hat{\beta}_0 + \hat{\beta}_1 x_i]\\
+&= \sigma^2 - \frac{\sigma^2}{n} - \frac{\sigma^2 (x_i - \bar{x})^2}{ns_{\mathbf{x}}^2}
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\mathbb{E}\left[\sum_{i=1}^n\hat{\epsilon}_i^2\right]
+&= \sum_{i=1}^n\mathbb{Var}\left[\hat{\epsilon}_i\right]
+= \sum_{i=1}^n \left(\sigma^2 - \frac{\sigma^2}{n} - \frac{\sigma^2 (x_i - \bar{x})^2}{ns_{\mathbf{x}}^2}\right)\\
+&= n\sigma^2 - \sigma^2 - \sigma^2 = (n-2)\sigma^2
+\end{aligned}
+$$
+
+$~$ 
+
+$$
+\mathbb{E}\left[\hat{\sigma}^2\right]
+= \mathbb{E}\left[\frac{1}{n-2}\sum_{i=1}^n\hat{\epsilon}_i^2\right]
+= \sigma^2
+$$
+
+<!-- ************************************************************************ -->
+# Prediction
+<!-- ************************************************************************ -->
+
+## Predict a new point
+
+```{r ad13, echo=FALSE, fig.height=4, fig.width=7}
+ad.fit <- lm(sales ~ TV)
+xn1 <- 225
+yn1 <- predict(ad.fit, newdata = data.frame(TV = xn1))
+par(mar = c(5, 4, 0, 2) + 0.1)
+plot(TV, sales, pch = 16, cex = 0.5, col = "black")
+abline(a = ad.fit$coefficients[1], b = ad.fit$coefficients[2], col = "blue", lwd = 2)
+segments(x0 = xn1, y0 = yn1,
+         x1 = -10, y1 = yn1, lty = 2, col = "red")
+axis(side = 2,
+     at = yn1,
+     labels = expression(hat(y)[n+1]),
+     padj = -1,
+     col.axis = "red", col = "red")
+segments(x0 = xn1, y0 = yn1,
+         x1 = xn1, y1 = 0, lty = 2, col = "red")
+axis(side = 1,
+     at = xn1,
+     labels = expression(x[n+1]),
+     padj = 1,
+     col.axis = "red", col = "red")
+```
+
+* **Question**: I spend $x_{n+1}$ dollars on TV in a new market.  
+How many units will I sell ?
+
+## Predict a new point
+
+>* We fitted $\hat{\beta}_0$ and $\hat{\beta}_1$ on $((y_1, x_1), \dotsc, (y_n, x_n))$
+
+>* A new point $x_{n+1}$ comes along. How can we guess $y_{n+1}$ ?
+
+>* We use the same model:
+$$
+y_{n+1} = \beta_0 + \beta_1 x_{n+1} + \epsilon_{n+1}
+$$
+with
+$\mathbb{E}[\epsilon_{n+1}] = 0$,
+$\mathbb{Var}[\epsilon_{n+1}] = \sigma^2$
+and 
+$\mathbb{Cov}[\epsilon_{n+1}; \epsilon_i] = 0$.
+
+>* We predict $y_{n+1}$ with:
+$$
+\hat{y}_{n+1} = \hat{\beta}_0 + \hat{\beta}_1 x_{n+1}
+$$
+
+>* **Question**: What is the error 
+$\hat{\epsilon}_{n+1} = y_{n+1} - \hat{y}_{n+1}$ ?
+
+## Prediction Error
+
+The prediction error $\hat{\epsilon}_{n+1} = y_{n+1} - \hat{y}_{n+1}$
+is such that:
+$$
+\begin{aligned}
+\mathbb{E}[\hat{\epsilon}_{n+1}] &= 0\\
+\mathbb{Var}[\hat{\epsilon}_{n+1}] &= \sigma^2 \left(1 + \frac{1}{n} + \frac{1}{ns_{\mathbf{x}}^2} (x_{n+1} - \bar{x})^2\right)\\
+\end{aligned}
+$$
+
+## Prediction Error - Proof 1/2
+
+$$
+\begin{aligned}
+\mathbb{E}[\hat{\epsilon}_{n+1}] 
+&= \mathbb{E}[y_{n+1} - \hat{\beta}_0 - \hat{\beta}_1 x_{n+1}]\\
+&= \mathbb{E}[y_{n+1}] - \mathbb{E}[\hat{\beta}_0] - \mathbb{E}[\hat{\beta}_1] x_{n+1}\\
+&= \beta_0 + \beta_1 x_{n+1} - \beta_0 - \beta_1 x_{n+1} = 0\\
+\end{aligned}
+$$
+
+## Prediction Error - Proof 2/2
+
+Because $\hat{y}_{n+1}$ *does not depend* on $\epsilon_{n+1}$:
+
+$$
+\begin{aligned}
+\mathbb{Var}[\hat{\epsilon}_{n+1}] 
+&= \mathbb{Var}[y_{n+1} - \hat{y}_{n+1}]\\
+&= \mathbb{Var}[y_{n+1}] + \mathbb{Var}[\hat{y}_{n+1}]\\
+\end{aligned}
+$$
+
+Hence:
+$$
+\begin{aligned}
+\mathbb{Var}[\hat{\epsilon}_{n+1}] 
+&= \sigma^2 + \mathbb{Var}[\hat{\beta}_0 + \hat{\beta}_1 x_{n+1}]\\
+&= \sigma^2 + \frac{\sigma^2}{n} + \frac{\sigma^2}{ns_{\mathbf{x}}^2} (x_{n+1} - \bar{x})^2\\
+\end{aligned}
+$$
+
+## Prediction Error - Remark
+
+```{r ad14, echo=FALSE, fig.height=4, fig.width=7}
+ad.fit <- lm(sales ~ TV)
+par(mar = c(5, 4, 0, 2) + 0.1)
+plot(TV, sales, pch = 16, cex = 0.5, col = "black")
+abline(a = ad.fit$coefficients[1], b = ad.fit$coefficients[2], col = "blue", lwd = 2)
+
+# Easy point
+xn1 <- 150
+yn1 <- predict(ad.fit, newdata = data.frame(TV = xn1))
+segments(x0 = xn1, y0 = yn1,
+         x1 = -10, y1 = yn1, lty = 2, col = "red")
+axis(side = 2,
+     at = yn1,
+     labels = expression(hat(y)[n+1]),
+     padj = -1,
+     col.axis = "red", col = "red")
+segments(x0 = xn1, y0 = yn1,
+         x1 = xn1, y1 = 0, lty = 2, col = "red")
+axis(side = 1,
+     at = xn1,
+     labels = expression(x[n+1]),
+     padj = 1.5,
+     col.axis = "red", col = "red")
+
+# Hard point
+xn1 <- 275
+yn1 <- predict(ad.fit, newdata = data.frame(TV = xn1))
+segments(x0 = xn1, y0 = yn1,
+         x1 = -10, y1 = yn1, lty = 2, col = "red")
+axis(side = 2,
+     at = yn1,
+     labels = expression(hat(y)[n+1]),
+     padj = -1,
+     col.axis = "red", col = "red")
+segments(x0 = xn1, y0 = yn1,
+         x1 = xn1, y1 = 0, lty = 2, col = "red")
+axis(side = 1,
+     at = xn1,
+     labels = expression(x[n+1]),
+     padj = 1,
+     col.axis = "red", col = "red")
+```
+
+* The further away $x_{n+1}$ is from $\bar{x}$, the more uncertain the prediction is.
+
+<!-- ************************************************************************ -->
+# Geometrical Interpretation
+<!-- ************************************************************************ -->
+
+## Projection
+
+* Recall the vectorial notation:
+
+$$
+\begin{aligned}
+\begin{pmatrix} y_1 \\ \vdots \\ y_n \end{pmatrix} 
+&= \beta_0 \begin{pmatrix} 1 \\ \vdots \\ 1 \end{pmatrix} 
+&&+ \beta_1 \begin{pmatrix} x_1 \\ \vdots \\ x_n \end{pmatrix} 
+&&+ \begin{pmatrix} \epsilon_1 \\ \vdots \\ \epsilon_n \end{pmatrix} 
+\\
+~
+\\
+\mathbf{y} ~~~\;
+&= \beta_0 ~~~\mathbb{1} 
+&&+ \beta_1 ~~~\; \mathbf{x} 
+&&+ ~~~ \boldsymbol{\epsilon}
+\end{aligned}
+$$
+
+>* Define the space $\mathcal{M}(\mathbf{x}) = \text{span}\{\mathbb{1}, \mathbf{x}\}$
+
+>* Project $\mathbf{y}$ on $\mathcal{M}(\mathbf{x})$:
+$$\text{Proj}_{\mathcal{M}(\mathbf{x})}\mathbf{y} = \underset{\tilde{\mathbf{y}} \in \mathcal{M}(\mathbf{x})}{\operatorname{argmin}}\{\|\mathbf{y} -\tilde{\mathbf{y}}\|^2 \}$$
+
+## Orthogonal Projection
+
+* Project $\mathbf{y}$ on $\mathcal{M}(\mathbf{x}) = \text{span}\{\mathbb{1}, \mathbf{x}\}$:
+
+$$
+\begin{aligned}
+\text{Proj}_{\mathcal{M}(\mathbf{x})}\mathbf{y} 
+&= \underset{\tilde{\mathbf{y}} \in \mathcal{M}(\mathbf{x})}{\operatorname{argmin}}\{\|\mathbf{y} -\tilde{\mathbf{y}}\|^2 \}\\
+&= \underset{\tilde{\mathbf{y}} = \beta_0 \mathbb{1} + \beta_1 \mathbf{x}\\(\beta_0, \beta_1) \in \mathbb{R}^2}{\operatorname{argmin}}\{\|\mathbf{y} - (\beta_0 \mathbb{1} + \beta_1 \mathbf{x})\|^2 \} \\
+&= \underset{\tilde{\mathbf{y}} = \beta_0 \mathbb{1} + \beta_1 \mathbf{x}\\(\beta_0, \beta_1) \in \mathbb{R}^2}{\operatorname{argmin}}\{\sum_{i = 1}^n \left(y_i - (\beta_0 + \beta_1 x_i)\right)^2 \} \\
+&= \hat{\mathbf{y}} \\
+\end{aligned}
+$$
+
+>* The **OLS** estimator is the **projection** of $\mathbf{y}$ on $\mathcal{M}(\mathbf{x})$
+
+## Geometrical Interpretation
+
+```{r proj, echo=FALSE, fig.height=5, fig.width=5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+yv <- c(0.8, 1.0)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+yhatv <- c(0.8, 0.3)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "red", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "red", pos = 2)
+# X
+arrows(x0 = or[1], y0 = or[2], x1 = xv[1], y1 = xv[2],
+       length = 0.1, col = "black", lwd = 2)
+text(xv[1], xv[2], labels = expression(bold(x)), col = "black", pos = 1)
+# one
+arrows(x0 = or[1], y0 = or[2], x1 = onev[1], y1 = onev[2],
+       length = 0.1, col = "black", lwd = 2)
+text(onev[1], onev[2], labels = expression(bold("1")), col = "black", pos = 2)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "blue", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y)) == paste(hat(beta)[0], bold("1")) + paste(hat(beta)[1], bold(x))),
+     col = "blue", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "black", lwd = 1, lty = 2)
+st <- 0.03
+segments(x0 = yhatv[1], y0 = yhatv[2] + st,
+         x1 = yhatv[1] - st*5/sqrt(26), y1 = yhatv[2] + st - st/sqrt(26),
+         col = "black", lwd = 1)
+segments(x0 = yhatv[1] - st*5/sqrt(26), y0 = yhatv[2] - st/sqrt(26),
+         x1 = yhatv[1] - st*5/sqrt(26), y1 = yhatv[2] + st - st/sqrt(26),
+         col = "black", lwd = 1)
+# hat epsilon
+text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+     labels = expression(hat(bold(epsilon))), col = "blue", pos = 4)
+# beta x
+segments(x0 = betaonev[1], y0 = betaonev[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "blue", lwd = 1)
+text((betaonev[1] + yhatv[1])/2, (betaonev[2] + yhatv[2])/2,
+     labels = expression(paste(hat(beta)[1], bold(x))), col = "blue", pos = 3)
+# beta one
+segments(x0 = betaxv[1], y0 = betaxv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "blue", lwd = 1)
+text((betaxv[1] + yhatv[1])/2, (betaxv[2] + yhatv[2])/2,
+     labels = expression(paste(hat(beta)[0], bold("1"))), col = "blue", pos = 4)
+segments(x0 = or[1], y0 = or[2], x1 = betaxv[1], y1 = betaxv[2],
+         col = "black", lwd = 1, lty = 2)
+```
+
+<!-- ************************************************************************ -->
+# Accuracy of the Model
+<!-- ************************************************************************ -->
+
+## Residual Sum of Squares
+
+* Recall that:
+
+$$
+\hat{\sigma}^2 
+= \frac{1}{n-2} \cdot RSS
+= \frac{1}{n-2} \sum_{i = 1}^n \hat{\epsilon}_i^2 
+= \frac{1}{n-2} \|\hat{\epsilon}\|^2 
+$$
+
+>* The RSS measures the **lack of fit** of the model.
+
+>* If $\hat{\mathbf{y}} \approx \mathbf{y}$, the RSS is small.
+
+>* **Absolute** lack of fit: measured in the units of $\mathbf{y}$.
+
+## Variance Decomposition
+
+```{r proj2, echo=FALSE, fig.height=3, fig.width=3, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+yv <- c(0.8, 1.0)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.8, 0.3)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "red", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "red", pos = 2)
+# X
+arrows(x0 = or[1], y0 = or[2], x1 = xv[1], y1 = xv[2],
+       length = 0.1, col = "black", lwd = 2)
+text(xv[1], xv[2], labels = expression(bold(x)), col = "black", pos = 1)
+# one
+arrows(x0 = or[1], y0 = or[2], x1 = onev[1], y1 = onev[2],
+       length = 0.1, col = "black", lwd = 2)
+text(onev[1], onev[2], labels = expression(bold("1")), col = "black", pos = 2)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "blue", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))),
+     col = "blue", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "black", lwd = 1, lty = 2)
+st <- 0.03
+segments(x0 = yhatv[1], y0 = yhatv[2] + st,
+         x1 = yhatv[1] - st*5/sqrt(26), y1 = yhatv[2] + st - st/sqrt(26),
+         col = "black", lwd = 1)
+segments(x0 = yhatv[1] - st*5/sqrt(26), y0 = yhatv[2] - st/sqrt(26),
+         x1 = yhatv[1] - st*5/sqrt(26), y1 = yhatv[2] + st - st/sqrt(26),
+         col = "black", lwd = 1)
+# hat epsilon
+text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+     labels = expression(hat(bold(epsilon))), col = "blue", pos = 4)
+# beta x
+# segments(x0 = betaonev[1], y0 = betaonev[2], x1 = yhatv[1], y1 = yhatv[2],
+         # col = "blue", lwd = 1)
+# text((betaonev[1] + yhatv[1])/2, (betaonev[2] + yhatv[2])/2,
+     # labels = expression(paste(hat(beta)[1], bold(x))), col = "blue", pos = 3)
+# beta one
+arrows(x0 = yhatv[1], y0 = yhatv[2], x1 = ybaronev[1], y1 = ybaronev[2],
+       length = 0.1, col = "blue", lwd = 2)
+text(ybaronev[1], ybaronev[2],
+     labels = expression(-paste(bar(y), bold("1"))), col = "blue", pos = 2)
+# segments(x0 = or[1], y0 = or[2], x1 = betaxv[1], y1 = betaxv[2],
+#          col = "black", lwd = 1, lty = 2)
+```
+
+Using Pythagore:
+
+$$
+\begin{aligned}
+\|\mathbf{y} - \bar{y} \mathbb{1}\|^2 
+&= \|\hat{\mathbf{y}} - \bar{y} \mathbb{1} + \mathbf{y} - \hat{\mathbf{y}}\|^2 \\
+&= \|\hat{\mathbf{y}} - \bar{y} \mathbb{1} + \hat{\epsilon}\|^2 \\
+&= \|\hat{\mathbf{y}} - \bar{y} \mathbb{1}\|^2  + \|\hat{\epsilon}\|^2 
+\end{aligned}
+$$
+
+## Variance Decomposition
+
+$$
+\begin{aligned}
+&\|\mathbf{y} - \bar{y} \mathbb{1}\|^2 
+&=&&& \|\hat{\mathbf{y}} - \bar{y} \mathbb{1}\|^2  &&+& \|\hat{\epsilon}\|^2 \\
+&TSS &=&&& ESS &&+& RSS
+\end{aligned}
+$$
+
+* **TSS**: Total Sum of Squares  
+$\to$ Amount of variability in the response $\mathbf{y}$ *before* the regression is performed.
+* **RSS**: Residual Sum of Squares  
+$\to$ Amount of variability that is left *after* performing the regression.
+* **ESS**: Explained Sum of Squares  
+$\to$ Amount of variability that is *explained* by the regression.
+
+## $R^2$ Statistic
+
+$$
+R^2 = \frac{ESS}{TSS} 
+= \frac{\|\hat{\mathbf{y}} - \bar{y} \mathbb{1}\|^2}{\|\mathbf{y} - \bar{y} \mathbb{1}\|^2}
+= 1 - \frac{\|\hat{\epsilon}\|^2}{\|\mathbf{y} - \bar{y} \mathbb{1}\|^2}
+= 1 - \frac{RSS}{TSS}
+$$
+
+* $R^2$ is the **proportion** of variability in $\mathbf{y}$ that can be explained by the regression.
+
+>* $0 \leq R^2 \leq 1$
+
+>* $R^2$ = 1: the regression is perfect.  
+$\to$ $\mathbf{y} = \hat{\mathbf{y}}$ and $\mathbf{y}$ is in $\mathcal{M}(\mathbf{x})$.
+
+>* $R^2$ = 0: the regression is useless.  
+$\to$ $\hat{\mathbf{y}} = \bar{y}\mathbb{1}$, the empirical mean is sufficient.
+
+## Advertising
+
+```{r ad16, echo=FALSE}
+ad.fit <- lm(sales ~ TV)
+plot(TV, sales, pch = 16, cex = 0.7, col = "red")
+abline(a = ad.fit$coefficients[1], b = ad.fit$coefficients[2], col = "blue", lwd = 2)
+segments(x0 = TV, y0 = sales, x1 = TV, y1 = predict(ad.fit))
+```
+$$
+\hat{\sigma}^2 = \frac{1}{n-2} \cdot RSS = `r round(sum((sales - predict(ad.fit))^2) / (n-2), 2)`
+\quad
+R^2 = 1 - \frac{RSS}{TSS} = `r round(1 - sum((sales - predict(ad.fit))^2 / sum((sales - mean(sales))^2)), 2)`
+$$
