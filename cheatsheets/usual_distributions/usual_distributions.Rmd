@@ -1,0 +1,230 @@
+---
+title: "Some Usual Distributions"
+author: "Paul Bastide"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**NOTE**: To be completed. The Wikipedia pages on these distributions are a great resource.
+
+## Gaussian Distribution
+
+### Definition
+
+Let $X$ be a Gaussian random variable with expectation $\mu$ and variance $\sigma^2$:
+$$
+X \sim \mathcal{N}(\mu, \sigma^2).
+$$
+
+It admits a probability density function (pdf):
+$$
+f(x) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)
+\quad
+\forall x \in \mathbb{R},
+$$
+
+And a characteristic function:
+$$
+\phi_{X}(t) = \mathbb{E}[e^{itX}] = e^{i\mu t - \frac{\sigma^2 t^2}{2}}
+\quad
+\forall t \in \mathbb{R}.
+$$
+
+### Density plots
+
+```{r gaussian, echo=FALSE, fig.height=5.5, fig.width=8}
+x <- -1500:1500 / 100
+ccc <- hcl.colors(4)
+# Normal
+mu <- 0; sigma2 <- 1
+plot(x, dnorm(x, mu, sigma2), type = "l", ylab = "f(x)", col = ccc[1], lwd = 2)
+segments(x0 = 0, y0 = 0, x1 = 0, y1 = dnorm(mu, mu, sigma2), lty = 2, col = ccc[1])
+# mean
+mu <- 10; sigma2 <- 1
+lines(x, dnorm(x, mu, sigma2), col = ccc[2], lwd = 2)
+segments(x0 = mu, y0 = 0, x1 = mu, y1 = dnorm(mu, mu, sigma2), lty = 2, col = ccc[2])
+# variance
+mu <- 0; sigma2 <- 5
+lines(x, dnorm(x, mu, sigma2), col = ccc[3], lwd = 2)
+segments(x0 = mu, y0 = 0, x1 = mu, y1 = dnorm(mu, mu, sigma2), lty = 2, col = ccc[3])
+# legend
+legend("topleft",
+       c(expression(paste(mu == 0, "   ; ", sigma^2 == 1)),
+         expression(paste(mu == 10, " ; ", sigma^2 == 1)),
+         expression(paste(mu == 0, "   ; ", sigma^2 == 25))),
+       col = ccc,
+       lwd = 2, lty = 1)
+```
+
+
+### Some Properties
+
+* If $X \sim \mathcal{N}(\mu, \sigma^2)$, then for any $(a, b) \in \mathbb{R}^2$, then
+$Y = aX + b \sim \mathcal{N}(a\mu + b, a^2\sigma^2).$
+
+## Student Distribution
+
+### Definition
+
+Let $Z$ be a standard normal rv : $Z \sim \mathcal{N}(0, 1)$,  
+and $X$ a chi squared rv with $p$ degrees of freedom: $Z \sim \chi^2_p$,
+$Z$ and $X$ independent.
+Then 
+$$
+T = \frac{Z}{\sqrt{X/p}} \sim \mathcal{T}_p
+$$ 
+
+is a Student r.v. with $p$ degrees of freedom.
+
+### Density Plots
+
+```{r student, echo=FALSE, fig.height=5.5, fig.width=8}
+x <- -600:600 / 100
+ccc <- hcl.colors(6)
+# 1
+p <- 1
+plot(x, dt(x, p), type = "l", ylab = "f(x)", ylim = c(0, 0.4), col = ccc[1], lwd = 2)
+segments(x0 = 0, y0 = -1, x1 = 0, y1 = dt(0, p), lty = 2, col = ccc[1])
+# 2 - 5
+k <- 1
+for (p in c(3, 10)) {
+  k <- k + 1
+  lines(x, dt(x, p), col = ccc[k], lwd = 2)
+}
+# normal
+mu <- 0; sigma2 <- 1
+lines(x, dnorm(x, mu, sigma2), col = ccc[5], lwd = 2)
+# legend
+legend("topright",
+       c(expression(p == 1), expression(p == 3), expression(p == 10),
+         expression(paste(mu == 0, "   ; ", sigma^2 == 1))),
+       col = ccc[c(1:k, 5)],
+       lwd = 2, lty = 1)
+```
+
+### Properties
+
+* For $p \geq 3$:
+$$
+\mathbb{E}[T] = 0
+\quad
+\mathbb{Var}[T] = \frac{p}{p-2}.
+$$
+
+* It converges in distribution towards the standard Gaussian.
+
+## Chi Squared Distribution
+
+### Definition
+
+Let $X_1, \dotsc, X_p$ be $p$ standard normal iid rv : $X_i \sim \mathcal{N}(0, 1)$.
+Then 
+$$
+X = \sum_{i = 1}^p X_i \sim \chi^2_p
+$$ 
+
+is a Chi squared r.v. with $p$ degrees of freedom.
+
+### Density Plots
+
+```{r chisq, echo=FALSE, fig.height=5.5, fig.width=8}
+x <- 0:800 / 100
+ccc <- hcl.colors(6)
+# 1
+p <- 1
+plot(x, dchisq(x, p), type = "l", ylab = "f(x)", ylim = c(0, 0.5), col = ccc[1], lwd = 2)
+segments(x0 = p, y0 = -1, x1 = p, y1 = dchisq(p, p), lty = 2, col = ccc[1])
+# 2 - 5
+for (p in 2:5) {
+  lines(x, dchisq(x, p), col = ccc[p], lwd = 2)
+  segments(x0 = p, y0 = -1, x1 = p, y1 = dchisq(p, p), lty = 2, col = ccc[p])
+}
+# legend
+legend("topright",
+       c(expression(p == 1), expression(p == 2), expression(p == 3), expression(p == 4), expression(p == 5)),
+       col = ccc,
+       lwd = 2, lty = 1)
+```
+
+### Properties
+
+* We have:
+$$
+\mathbb{E}[X] = p
+\quad
+\mathbb{Var}[X] = 2p.
+$$
+
+* It converges in distribution towards the Gaussian with matching moments.
+
+```{r chisq2, echo=FALSE, fig.height=5.5, fig.width=8}
+x <- 0:10000 / 100
+# 50
+p <- 50
+plot(x, dchisq(x, p), type = "l", ylab = "f(x)", ylim = c(0, 0.05), col = ccc[1], lwd = 2)
+segments(x0 = p, y0 = -1, x1 = p, y1 = dchisq(p, p), lty = 2, col = ccc[1])
+# normal
+mu <- p; sigma2 <- sqrt(2*p)
+lines(x, dnorm(x, mu, sigma2), col = ccc[4])
+# legend
+legend("topright",
+       c(expression(p == 50),
+         expression(paste(mu == 50, "   ; ", sigma^2 == 100))),
+       col = ccc[c(1, 4)],
+       lwd = c(2, 1), lty = 1)
+```
+
+## Fisher Distribution
+
+### Definition
+
+Let $U_1 \sim \chi^2_{p_1}$ and $U_2 \sim \chi^2_{p_2}$,
+$U_1$ and $U_2$ independent.
+Then 
+$$
+F = \frac{U_1/p_1}{U_2/p_2} \sim \mathcal{F}^{p_1}_{p_2}
+$$ 
+
+is a Fisher r.v. with $(p_1, p_2)$ degrees of freedom.
+
+### Distribution Plots
+
+```{r fisher, echo=FALSE, fig.height=5.5, fig.width=8}
+x <- 0:600 / 100
+ccc <- hcl.colors(6)
+# 1
+p1 <- 2
+p <- 3
+plot(x, df(x, p1, p), type = "l", ylab = "f(x)", ylim = c(0, 1), col = ccc[1], lwd = 2)
+segments(x0 = p/(p-2), y0 = -1, x1 = p/(p-2), y1 = df(p/(p-2), p1, p), lty = 2, col = ccc[1])
+# 2 - 5
+k <- 1
+for (p in c(5, 10)) {
+  k <- k + 1
+  lines(x, df(x, p1, p), col = ccc[k], lwd = 2)
+  segments(x0 = p/(p-2), y0 = -1, x1 = p/(p-2), y1 = df(p/(p-2), p1, p), lty = 2, col = ccc[k])
+}
+# normal
+lines(x, 2 * dchisq(2 * x, p1), col = ccc[5], lwd = 2)
+# legend
+legend("topright",
+       c(expression(paste(p[1] == 2, "   ; ", p[2] == 3)),
+         expression(paste(p[1] == 2, "   ; ", p[2] == 5)),
+         expression(paste(p[1] == 2, "   ; ", p[2] == 10)),
+         expression(paste(p == 2, " [", chi[p]^2 / p, "]"))),
+       col = ccc[c(1:k, 5)],
+       lwd = 2, lty = 1)
+```
+
+### Properties
+
+* For $p_2 \geq 3$:
+$$
+\mathbb{E}[T] =  \frac{p_2}{p_2 - 2}.
+$$
+
+* When $p_2$ goes to infinity, $\mathcal{F}^{p_1}_{p_2}$ converges in distribution
+to $\frac{1}{p_1}\chi^2_{p_1}$.
