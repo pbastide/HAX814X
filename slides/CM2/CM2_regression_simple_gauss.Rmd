@@ -37,45 +37,6 @@ $$ (\hat{\beta}_0, \hat{\beta}_0)
 
 * Properties on the first and second moments *only*.
 
-<!-- $$ -->
-<!-- \begin{aligned} -->
-<!-- &\begin{pmatrix} -->
-<!-- \hat{\beta}_0 \\ -->
-<!-- \hat{\beta}_1  -->
-<!-- \end{pmatrix} -->
-<!-- =  -->
-<!-- \begin{pmatrix} -->
-<!-- \bar{y} - \hat{\beta}_1\bar{x}\\ -->
-<!-- \frac{s_{\mathbf{y},\mathbf{x}}^2}{s_{\mathbf{x}}^2} -->
-<!-- \end{pmatrix} -->
-<!-- \qquad -->
-<!-- \mathbb{E}\left[ -->
-<!-- \begin{pmatrix} -->
-<!-- \hat{\beta}_0 \\ -->
-<!-- \hat{\beta}_1  -->
-<!-- \end{pmatrix} -->
-<!-- \right] -->
-<!-- =  -->
-<!-- \begin{pmatrix} -->
-<!-- \beta_0\\ -->
-<!-- \beta_1 -->
-<!-- \end{pmatrix} -->
-<!-- \\ -->
-<!-- &\mathbb{Var}\left[ -->
-<!-- \begin{pmatrix} -->
-<!-- \hat{\beta}_0 \\ -->
-<!-- \hat{\beta}_1  -->
-<!-- \end{pmatrix} -->
-<!-- \right] -->
-<!-- =  -->
-<!-- \frac{\sigma^2}{n} -->
-<!-- \begin{pmatrix} -->
-<!-- 1 + \frac{\bar{x}^2}{s_{\mathbf{x}}^2} & -\frac{\bar{x}}{s_{\mathbf{x}}^2}\\ -->
-<!-- -\frac{\bar{x}}{s_{\mathbf{x}}^2} & \frac{1}{s_{\mathbf{x}}^2} -->
-<!-- \end{pmatrix} -->
-<!-- \end{aligned} -->
-<!-- $$ -->
-
 
 $$
 \begin{aligned}
@@ -137,10 +98,6 @@ $$
 $$
 
 * [**Note** (H1), (H2) and (H3) are still verified.]
-<!-- ($\mathbb{E}[\epsilon_i] = 0$;  -->
-<!-- $\mathbb{Var}[\epsilon_i] = \sigma^2$;  -->
-<!-- $\mathbb{Cov}[\epsilon_i; \epsilon_j] = 0$; -->
-<!-- $1 \leq i \neq j \leq n$) -->
 
 ## Reminder: Gaussian Distribution 1/2
 
@@ -1147,8 +1104,9 @@ $$
 
 ## Advertising
 
-```{r ad1}
-ad <- read.csv("../data/Advertising.csv", row.names = "X")
+```{r ad1, message=FALSE}
+library(here)
+ad <- read.csv(here("data", "Advertising.csv"), row.names = "X")
 head(ad)
 ```
 
@@ -1237,64 +1195,6 @@ lines(newx, pred_int[, 3], col = "red", lty = 2)
 
 >- To answer these questions better, we need **multiple** linear regression.
 >   - Next chapter.
-
-<!-- ## Example: Test on $\hat{\beta}_1$ - 1/2 -->
-
-<!-- * **Question**: Does $\mathbf{x}$ have an impact on $\mathbf{y}$ ?   -->
-
-<!-- >* **i.e.** Do we have $\beta_1 = 0$ ?   -->
-
-<!-- >* -->
-<!-- $$ -->
-<!-- \mathcal{H}_0: \beta_1 = 0 \\ -->
-<!-- \mathcal{H}_1: \beta_1 \neq 0 \\ -->
-<!-- $$ -->
-
-<!-- >* Under $\mathcal{H}_0$: -->
-<!-- $$ -->
-<!-- T_1 = -->
-<!-- \frac{\hat{\beta}_1}{\sqrt{\hat{\sigma}^2(1/s_{\mathbf{x}}^2)/n}} -->
-<!-- \underset{\mathcal{H}_0}{\sim} -->
-<!-- \mathcal{T}_{n-2} -->
-<!-- $$ -->
-
-<!-- ## Example: Test on $\hat{\beta}_1$ - 2/2 -->
-
-<!-- $$ -->
-<!-- T_1 = -->
-<!-- \frac{\hat{\beta}_1}{\sqrt{\hat{\sigma}^2(1/s_{\mathbf{x}}^2)/n}} -->
-<!-- \underset{\mathcal{H}_0}{\sim} -->
-<!-- \mathcal{T}_{n-2} -->
-<!-- $$ -->
-
-<!-- ```{r test, echo=FALSE, fig.height=4, fig.width=7} -->
-<!-- x <- -5500:5500 / 1000 -->
-<!-- ccc <- hcl.colors(6) -->
-<!-- n <- 5 -->
-<!-- # 1 -->
-<!-- p <- n - 2 -->
-<!-- plot(x, dt(x, p), type = "l", ylab = "density", ylim = c(0, 0.4), col = ccc[1], lwd = 2, xlab = expression(T[1])) -->
-<!-- abline(h = 0) -->
-<!-- # quantiles for alp = 5% test -->
-<!-- alp <- 0.05 -->
-<!-- quants <- qt(c(alp / 2, 1 - alp / 2), p) -->
-<!-- segments(x0 = quants, y0 = -1, x1 = quants, y1 = dt(0, p), lty = 2, col = ccc[3]) -->
-<!-- axis(side = 1, at = quants, labels = c(expression(q[alpha/2]), expression(q[1 - alpha/2])), col.ticks = ccc[3], col.axis = ccc[3]) -->
-<!-- # Color area under the curve -->
-<!-- x_low <- -5500:(quants[1]*1000)/1000 -->
-<!-- polygon(c(x_low, rev(x_low)), -->
-<!--         c(dt(x_low, p), rep(0, length(x_low))), -->
-<!--         col = ccc[3], border = NA) -->
-<!-- x_high <- (quants[2]*1000):5500/1000 -->
-<!-- polygon(c(x_high, rev(x_high)), -->
-<!--         c(dt(x_high, p), rep(0, length(x_low))), -->
-<!--         col = ccc[3], border = NA) -->
-<!-- # legend -->
-<!-- legend("topright", -->
-<!--        c(expression(T[n-2])), -->
-<!--        col = ccc[1], -->
-<!--        lwd = 2, lty = 1) -->
-<!-- ``` -->
 
 <!-- ************************************************************************ -->
 # Joint Distribution of the Coefficients - $\sigma^2$ unknown

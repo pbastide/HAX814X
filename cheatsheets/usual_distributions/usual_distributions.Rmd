@@ -190,7 +190,7 @@ $$
 
 is a Fisher r.v. with $(p_1, p_2)$ degrees of freedom.
 
-### Distribution Plots
+### Density Plots
 
 ```{r fisher, echo=FALSE, fig.height=5.5, fig.width=8}
 x <- 0:600 / 100

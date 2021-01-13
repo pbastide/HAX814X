@@ -1509,3 +1509,18 @@ $$
 \quad
 R^2 = 1 - \frac{RSS}{TSS} = `r round(1 - sum((sales - predict(ad.fit))^2 / sum((sales - mean(sales))^2)), 2)`
 $$
+
+<!-- ************************************************************************ -->
+# To be continued
+<!-- ************************************************************************ -->
+
+## Questions
+
+* Confidence interval for $(\hat{\beta}_0, \hat{\beta}_1, \hat{\sigma}^2)$ ?
+
+* Can we test $\hat{\beta}_1 = 0$ (i.e. no linear trend) ?
+
+>* Assumptions on the moments are not enough.  
+$\hookrightarrow$ We need assumptions on the *specific distribution* of the $\epsilon_i$.
+
+>* Most common assumption: $\epsilon_i$ are **Gaussian**.
