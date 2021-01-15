@@ -927,7 +927,7 @@ $$
 
 is a Student r.v. with $p$ degrees of freedom.
 
-We have (for $p \geq 3$):
+We have (for $p > 2$):
 $$
 \mathbb{E}[T] = 0
 \quad
@@ -1287,9 +1287,9 @@ $$
 
 is a Fisher r.v. with $(p_1, p_2)$ degrees of freedom.
 
-We have (for $p_2 \geq 3$):
+We have (for $p_2 > 2$):
 $$
-\mathbb{E}[T] =  \frac{p_2}{p_2 - 2}.
+\mathbb{E}[F] =  \frac{p_2}{p_2 - 2}.
 $$
 
 When $p_2$ goes to infinity, $\mathcal{F}^{p_1}_{p_2}$ converges in distribution

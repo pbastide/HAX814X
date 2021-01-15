@@ -1,6 +1,6 @@
 ---
 title: "Some Usual Distributions"
-author: "Paul Bastide"
+author: "PB"
 output: html_document
 ---
 
@@ -8,7 +8,9 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-**NOTE**: To be completed. The Wikipedia pages on these distributions are a great resource.
+**NOTE**: Only some basic distributions and properties are mentioned. The Wikipedia pages on these distributions are a great resource.
+
+-------
 
 ## Gaussian Distribution
 
@@ -59,25 +61,144 @@ legend("topleft",
        lwd = 2, lty = 1)
 ```
 
+### Moments
+
+$$
+\mathbb{E}[X] = \mu
+\quad
+\mathbb{Var}[X] = \sigma^2.
+$$
 
 ### Some Properties
 
+* The Gaussian distribution with mean $0$ and variance $1$
+is called the *standard normal* distribution.
+
 * If $X \sim \mathcal{N}(\mu, \sigma^2)$, then for any $(a, b) \in \mathbb{R}^2$, then
 $Y = aX + b \sim \mathcal{N}(a\mu + b, a^2\sigma^2).$
+
+* The *mode*, *median* and *mean* of the distribution are all equal to $\mu$.
+
+* If $X_1 \sim \mathcal{N}(\mu_1, \sigma^2_1)$ and $X_2 \sim \mathcal{N}(\mu_2, \sigma^2_2)$ are
+**independent** Gaussian random variables, then their sum $Y = X_1 + X_2$  is also Gaussian, 
+with mean $\mu_1 + \mu_2$ and variance $\sigma^2_1 + \sigma^2_2$:
+$Y \sim \mathcal{N}(\mu_1 + \mu_2, \sigma^2_1 + \sigma^2_2)$
+
+* ... many more (see e.g. the [wikipedia](https://en.wikipedia.org/wiki/Normal_distribution) page).
+
+### `R` functions
+
+The density function of the Gaussian distribution in `R` is `dnorm`.
+
+For information on the distribution function (`pnorm`),
+quantile function (`qnorm`) and random generation (`rnorm`),
+see:
+
+```{r gaussianfun}
+help(dnorm)
+```
+
+-------
+
+## Chi Squared Distribution
+
+### Definition
+
+Let $X_1, \dotsc, X_p$ be $p$ standard normal independent identically distributed
+(iid) random variables: $X_i \sim \mathcal{N}(0, 1)$.
+Then 
+$$
+X = \sum_{i = 1}^p X_i \sim \chi^2_p
+$$ 
+
+is a Chi squared random variable with $p$ degrees of freedom.
+
+### Density Plots
+
+```{r chisq, echo=FALSE, fig.height=5.5, fig.width=8}
+x <- 0:800 / 100
+ccc <- hcl.colors(6)
+# 1
+p <- 1
+plot(x, dchisq(x, p), type = "l", ylab = "f(x)", ylim = c(0, 0.5), col = ccc[1], lwd = 2)
+segments(x0 = p, y0 = -1, x1 = p, y1 = dchisq(p, p), lty = 2, col = ccc[1])
+# 2 - 5
+for (p in 2:5) {
+  lines(x, dchisq(x, p), col = ccc[p], lwd = 2)
+  segments(x0 = p, y0 = -1, x1 = p, y1 = dchisq(p, p), lty = 2, col = ccc[p])
+}
+# legend
+legend("topright",
+       c(expression(p == 1), expression(p == 2), expression(p == 3), expression(p == 4), expression(p == 5)),
+       col = ccc,
+       lwd = 2, lty = 1)
+```
+
+### Moments
+
+$$
+\mathbb{E}[X] = p
+\quad
+\mathbb{Var}[X] = 2p.
+$$
+
+### Some Properties
+
+* The chi squared distribution converges towards the Gaussian distribution with matching moments:  
+if $X \sim \chi^2_{p}$, then the distribution of $\frac{X - p}{\sqrt{2p}}$ converges toward a standard normal distribution when $p$ goes to infinity.
+
+```{r chisq2, echo=FALSE, fig.height=5.5, fig.width=8}
+x <- 0:10000 / 100
+# 50
+p <- 50
+plot(x, dchisq(x, p), type = "l", ylab = "f(x)", ylim = c(0, 0.05), col = ccc[1], lwd = 2)
+segments(x0 = p, y0 = -1, x1 = p, y1 = dchisq(p, p), lty = 2, col = ccc[1])
+# normal
+mu <- p; sigma2 <- sqrt(2*p)
+lines(x, dnorm(x, mu, sigma2), col = ccc[4])
+# legend
+legend("topright",
+       c(expression(p == 50),
+         expression(paste(mu == 50, "   ; ", sigma^2 == 100))),
+       col = ccc[c(1, 4)],
+       lwd = c(2, 1), lty = 1)
+```
+
+* If $X_1 \sim \chi^2_{p_1}$ and $X_2 \sim \chi^2_{p_2}$ are
+**independent** chi squared random variables with respective degrees of freedom $p_1$ and $p_2$,
+then their sum $Y = X_1 + X_2$  is also a chi squared random variable, 
+with $p_1 + p_2$ degrees of freedom:
+$Y \sim \chi^2_{p_1+p_2}$
+
+* ... (see e.g. the [wikipedia](https://en.wikipedia.org/wiki/Chi-square_distribution) page).
+
+### `R` functions
+
+The density function of the chi squared distribution in `R` is `dchisq`.
+
+For information on the distribution function (`pchisq`),
+quantile function (`qchisq`) and random generation (`rchisq`),
+see:
+
+```{r chifun}
+help(dchisq)
+```
+
+-------
 
 ## Student Distribution
 
 ### Definition
 
-Let $Z$ be a standard normal rv : $Z \sim \mathcal{N}(0, 1)$,  
-and $X$ a chi squared rv with $p$ degrees of freedom: $Z \sim \chi^2_p$,
+Let $Z$ be a standard normal random variable : $Z \sim \mathcal{N}(0, 1)$,
+and $X$ a chi squared random variable with $p$ degrees of freedom: $Z \sim \chi^2_p$,
 $Z$ and $X$ independent.
 Then 
 $$
 T = \frac{Z}{\sqrt{X/p}} \sim \mathcal{T}_p
 $$ 
 
-is a Student r.v. with $p$ degrees of freedom.
+is a Student (t) random variable with $p$ degrees of freedom.
 
 ### Density Plots
 
@@ -105,90 +226,48 @@ legend("topright",
        lwd = 2, lty = 1)
 ```
 
-### Properties
+### Moments
 
-* For $p \geq 3$:
 $$
-\mathbb{E}[T] = 0
+\mathbb{E}[T] = 0 ~ (\text{for } p > 1)
 \quad
-\mathbb{Var}[T] = \frac{p}{p-2}.
+\mathbb{Var}[T] = \frac{p}{p-2} ~ (\text{for } p > 2).
 $$
 
-* It converges in distribution towards the standard Gaussian.
+### Some Properties
 
-## Chi Squared Distribution
+* The student distribution converges towards the standard normal distribution:  
+if $T \sim \mathcal{T}_{p}$, then the distribution of $T$ converges towards
+a standard normal distribution when $p$ goes to infinity.
 
-### Definition
+* ... (see e.g. the [wikipedia](https://en.wikipedia.org/wiki/Student%27s_t-distribution) page).
 
-Let $X_1, \dotsc, X_p$ be $p$ standard normal iid rv : $X_i \sim \mathcal{N}(0, 1)$.
-Then 
-$$
-X = \sum_{i = 1}^p X_i \sim \chi^2_p
-$$ 
+### `R` functions
 
-is a Chi squared r.v. with $p$ degrees of freedom.
+The density function of the Student distribution in `R` is `dt`.
 
-### Density Plots
+For information on the distribution function (`pt`),
+quantile function (`qt`) and random generation (`rt`),
+see:
 
-```{r chisq, echo=FALSE, fig.height=5.5, fig.width=8}
-x <- 0:800 / 100
-ccc <- hcl.colors(6)
-# 1
-p <- 1
-plot(x, dchisq(x, p), type = "l", ylab = "f(x)", ylim = c(0, 0.5), col = ccc[1], lwd = 2)
-segments(x0 = p, y0 = -1, x1 = p, y1 = dchisq(p, p), lty = 2, col = ccc[1])
-# 2 - 5
-for (p in 2:5) {
-  lines(x, dchisq(x, p), col = ccc[p], lwd = 2)
-  segments(x0 = p, y0 = -1, x1 = p, y1 = dchisq(p, p), lty = 2, col = ccc[p])
-}
-# legend
-legend("topright",
-       c(expression(p == 1), expression(p == 2), expression(p == 3), expression(p == 4), expression(p == 5)),
-       col = ccc,
-       lwd = 2, lty = 1)
+```{r studentfun}
+help(dt)
 ```
 
-### Properties
-
-* We have:
-$$
-\mathbb{E}[X] = p
-\quad
-\mathbb{Var}[X] = 2p.
-$$
-
-* It converges in distribution towards the Gaussian with matching moments.
-
-```{r chisq2, echo=FALSE, fig.height=5.5, fig.width=8}
-x <- 0:10000 / 100
-# 50
-p <- 50
-plot(x, dchisq(x, p), type = "l", ylab = "f(x)", ylim = c(0, 0.05), col = ccc[1], lwd = 2)
-segments(x0 = p, y0 = -1, x1 = p, y1 = dchisq(p, p), lty = 2, col = ccc[1])
-# normal
-mu <- p; sigma2 <- sqrt(2*p)
-lines(x, dnorm(x, mu, sigma2), col = ccc[4])
-# legend
-legend("topright",
-       c(expression(p == 50),
-         expression(paste(mu == 50, "   ; ", sigma^2 == 100))),
-       col = ccc[c(1, 4)],
-       lwd = c(2, 1), lty = 1)
-```
+-------
 
 ## Fisher Distribution
 
 ### Definition
 
-Let $U_1 \sim \chi^2_{p_1}$ and $U_2 \sim \chi^2_{p_2}$,
+Let $U_1 \sim \chi^2_{p_1}$ and $U_2 \sim \chi^2_{p_2}$, be two chi squared random variables,
 $U_1$ and $U_2$ independent.
 Then 
 $$
 F = \frac{U_1/p_1}{U_2/p_2} \sim \mathcal{F}^{p_1}_{p_2}
 $$ 
 
-is a Fisher r.v. with $(p_1, p_2)$ degrees of freedom.
+is a Fisher (F) random variable with $(p_1, p_2)$ degrees of freedom.
 
 ### Density Plots
 
@@ -219,12 +298,33 @@ legend("topright",
        lwd = 2, lty = 1)
 ```
 
-### Properties
+### Moments
 
-* For $p_2 \geq 3$:
 $$
-\mathbb{E}[T] =  \frac{p_2}{p_2 - 2}.
+\mathbb{E}[F] = \frac{p_2}{p_2 - 2} ~ (\text{for } p_2 > 2)
+\quad
+\mathbb{Var}[F] = \frac{2p_2^2(p_1 + p_2 - 2)}{p_1(p_2-2)^2(p_2-4)} ~ (\text{for } p_2 > 4)
 $$
 
-* When $p_2$ goes to infinity, $\mathcal{F}^{p_1}_{p_2}$ converges in distribution
-to $\frac{1}{p_1}\chi^2_{p_1}$.
+### Some Properties
+
+* If $T \sim \mathcal{T}_{p}$, then $T^2 \sim \mathcal{F}^{1}_{p}$.
+
+* If $F \sim \mathcal{F}^{p_1}_{p_2}$, then $F^{-1} \sim \mathcal{F}^{p_2}_{p_1}$.
+
+* If $F \sim \mathcal{F}^{p_1}_{p_2}$, then the distribution of $p_1 F$ converges 
+to the chi squared distribution $\chi^2_{p_1}$ when $p_2$ goes to infinity.
+
+* ... (see e.g. the [wikipedia](https://en.wikipedia.org/wiki/F-distribution) page).
+
+### `R` functions
+
+The density function of the Student distribution in `R` is `df`.
+
+For information on the distribution function (`pf`),
+quantile function (`qf`) and random generation (`rf`),
+see:
+
+```{r fisherfun}
+help(df)
+```
