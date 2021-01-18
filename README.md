@@ -29,8 +29,8 @@ Dépôt `git` en support du cours [HMMA201](https://moodle.umontpellier.fr/cours
 ## Evaluations
 
 * 1/2 contrôle continu
-	* 1/2 comptes-rendus de TP
-	* 1/2 évaluation partielle
+	* 1/4 comptes-rendus de TP
+	* 3/4 évaluation partielle
 
 * 1/2 Examen final
 

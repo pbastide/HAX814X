@@ -47,7 +47,7 @@ output:
   * 1/2 contrôle continu
   * 1/2 Examen final
   
-* CC = 1/2 TP + 1/2 DM
+* CC = 1/4 TP + 3/4 partiel
 
 ## Ressources
 
