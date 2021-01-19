@@ -561,7 +561,7 @@ $$
 ## The OLS estimators are unbiaised
 
 $$
-\mathbb{E}[\hat{\beta}_0] = \beta_0 \qquad \mathbb{E}[\hat{\beta}_0] = \beta_1
+\mathbb{E}[\hat{\beta}_0] = \beta_0 \qquad \mathbb{E}[\hat{\beta}_1] = \beta_1
 $$
 
 Valid as long as residuals:
@@ -576,7 +576,7 @@ $$
 = \cdots \\
 $$
 
-## OLS is unbiaised - Proof 2/4
+## OLS is unbiaised - Proof 2/4 {.build}
 
 $$
 \mathbb{E}[\hat{\beta}_1] 
@@ -695,6 +695,16 @@ $$
 $$
 \begin{aligned}
 \mathbb{Cov}[\bar{y}; \hat{\beta}_1] 
+&= \cdots
+\end{aligned}
+$$
+
+## OLS Estimators: Variances - Proof 4/6
+
+$$
+\begin{aligned}
+\mathbb{Cov}[\bar{y}; \hat{\beta}_1] 
+&= \mathbb{Cov}\left[\beta_0 + \beta_1\bar{x} + \bar{\epsilon}; \beta_1 + \frac{1}{n s_{\mathbf{x}}^2} \sum_{i = 1}^n (x_i - \bar{x})\epsilon_i\right] \\
 &= \cdots
 \end{aligned}
 $$
@@ -1060,7 +1070,7 @@ $$
 \end{aligned}
 $$
 
-## Unbiased Var Estimator - Proof 3/4
+## Unbiased Var Estimator - Proof 3/4 {.build}
 
 $$
 \begin{aligned}
@@ -1080,7 +1090,6 @@ $$
 &= \frac{\sigma^2}{n} + (x_i - \bar{x})^2\frac{\sigma^2}{n}\frac{1}{s_{\mathbf{x}}^2}
 \end{aligned}
 $$
-
 $~$
 
 $$
@@ -1185,18 +1194,27 @@ $$
 \end{aligned}
 $$
 
-## Prediction Error - Proof 1/2
+## Prediction Error - Proof 1/2 {.build}
+
+$$
+\begin{aligned}
+\mathbb{E}[\hat{\epsilon}_{n+1}] 
+&= \mathbb{E}[y_{n+1} - \hat{\beta}_0 - \hat{\beta}_1 x_{n+1}]\\
+&= \cdots
+\end{aligned}
+$$
 
 $$
 \begin{aligned}
 \mathbb{E}[\hat{\epsilon}_{n+1}] 
 &= \mathbb{E}[y_{n+1} - \hat{\beta}_0 - \hat{\beta}_1 x_{n+1}]\\
 &= \mathbb{E}[y_{n+1}] - \mathbb{E}[\hat{\beta}_0] - \mathbb{E}[\hat{\beta}_1] x_{n+1}\\
-&= \beta_0 + \beta_1 x_{n+1} - \beta_0 - \beta_1 x_{n+1} = 0\\
+&= \beta_0 + \beta_1 x_{n+1} - \beta_0 - \beta_1 x_{n+1} \\
+&= 0
 \end{aligned}
 $$
 
-## Prediction Error - Proof 2/2
+## Prediction Error - Proof 2/2 {.build}
 
 Because $\hat{y}_{n+1}$ *does not depend* on $\epsilon_{n+1}$:
 
