@@ -1035,7 +1035,9 @@ plot(TV, sales, pch = 16, cex = 0.7, col = "red")
 abline(a = ad.fit$coefficients[1], b = ad.fit$coefficients[2], col = "blue", lwd = 2)
 segments(x0 = TV, y0 = sales, x1 = TV, y1 = predict(ad.fit))
 ```
-$$\hat{\sigma}^2 = \frac{1}{n-2} \cdot RSS = \frac{1}{n-2} \sum_{i = 1}^n (y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i)^2 = `r round(sum((sales - predict(ad.fit))^2) / (n-2), 2)`$$
+$$
+\hat{\sigma}^2 = \frac{1}{n-2} \cdot RSS = \frac{1}{n-2} \sum_{i = 1}^n (y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i)^2 = `r round(sum((sales - predict(ad.fit))^2) / (length(TV)-2), 2)`
+$$
 
 ## Unbiased Var Estimator - Proof 1/4
 
@@ -1473,8 +1475,8 @@ $$
 \begin{aligned}
 \|\mathbf{y} - \bar{y} \mathbb{1}\|^2 
 &= \|\hat{\mathbf{y}} - \bar{y} \mathbb{1} + \mathbf{y} - \hat{\mathbf{y}}\|^2 \\
-&= \|\hat{\mathbf{y}} - \bar{y} \mathbb{1} + \hat{\epsilon}\|^2 \\
-&= \|\hat{\mathbf{y}} - \bar{y} \mathbb{1}\|^2  + \|\hat{\epsilon}\|^2 
+&= \|\hat{\mathbf{y}} - \bar{y} \mathbb{1} + \hat{\boldsymbol{\epsilon}}\|^2 \\
+&= \|\hat{\mathbf{y}} - \bar{y} \mathbb{1}\|^2  + \|\hat{\boldsymbol{\epsilon}}\|^2 
 \end{aligned}
 $$
 
@@ -1483,7 +1485,7 @@ $$
 $$
 \begin{aligned}
 &\|\mathbf{y} - \bar{y} \mathbb{1}\|^2 
-&=&&& \|\hat{\mathbf{y}} - \bar{y} \mathbb{1}\|^2  &&+& \|\hat{\epsilon}\|^2 \\
+&=&&& \|\hat{\mathbf{y}} - \bar{y} \mathbb{1}\|^2  &&+& \|\hat{\boldsymbol{\epsilon}}\|^2 \\
 &TSS &=&&& ESS &&+& RSS
 \end{aligned}
 $$
@@ -1523,7 +1525,7 @@ abline(a = ad.fit$coefficients[1], b = ad.fit$coefficients[2], col = "blue", lwd
 segments(x0 = TV, y0 = sales, x1 = TV, y1 = predict(ad.fit))
 ```
 $$
-\hat{\sigma}^2 = \frac{1}{n-2} \cdot RSS = `r round(sum((sales - predict(ad.fit))^2) / (n-2), 2)`
+\hat{\sigma}^2 = \frac{1}{n-2} \cdot RSS = `r round(sum((sales - predict(ad.fit))^2) / (length(TV)-2), 2)`
 \quad
 R^2 = 1 - \frac{RSS}{TSS} = `r round(1 - sum((sales - predict(ad.fit))^2 / sum((sales - mean(sales))^2)), 2)`
 $$
