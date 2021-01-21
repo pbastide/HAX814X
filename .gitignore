@@ -25,3 +25,14 @@
 *.ai
 *.html
 .Rproj.user
+# Latex
+*.syntex.gz
+*.out
+*.log
+*.aux
+*.gnuplot
+*.table
+*.snm
+*.latexmain
+*.toc
+*.nav
