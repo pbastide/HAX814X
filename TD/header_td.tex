@@ -1,0 +1,183 @@
+\makeatletter
+%--------------------------------------------------------------------------------
+
+%\usepackage[french]{babel}
+\usepackage[a4paper,hmargin=20mm,vmargin=25mm]{geometry}
+\usepackage{dsfont}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+%-------------------------------- AMS --------------------------------------%
+\usepackage{amsmath}
+\usepackage{amsbsy}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amscd}
+\usepackage{amsthm}
+
+
+\theoremstyle{definition}
+%\newtheorem{defi}{Definition}[section]
+\newtheorem{defi}{Definition}[]
+\newtheorem{remark}[defi]{Remarque}
+\newtheorem{prop}[]{Proposition}
+\newtheorem{theo}[]{Th\'eor\`eme}
+
+
+
+\usepackage{xcolor}
+\usepackage{mathtools}
+\usepackage{eurosym}
+\usepackage{nicefrac}
+\usepackage{latexsym}
+
+\usepackage{multicol}
+\usepackage[inline]{enumitem}
+\setlist{nosep}
+\setlist[itemize,1]{,label=$-$}
+
+\usepackage{sectsty}
+%\sectionfont{}
+\allsectionsfont{\normalfont\sffamily\bfseries\normalsize}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{calc,fadings,decorations.pathreplacing,matrix,arrows,decorations.text}
+ \usetikzlibrary{patterns}
+
+\newcommand\chideux[1]{#1<=0||(#1!=int(#1))?1/0:x<=0?0.0:exp((0.5*#1-1.0)*log(x)-0.5*x-lgamma(0.5*#1)-#1*0.5*log(2))}
+\newcommand\gauss[2]{1/(#2*sqrt(2*pi))*exp(-((x-#1)^2)/(2*#2^2))} 
+\newcommand\student[1]{gamma(.5*(#1+1))/(sqrt(#1*pi)*gamma(.5*#1))*((1+x^2/#1)^(-.5*(#1+1)))}
+
+\usepackage[framemethod=tikz]{mdframed}
+\mdfdefinestyle{commandline}{leftmargin=.07\linewidth, rightmargin=.07\linewidth,backgroundcolor=gray!20,linewidth=0pt}
+\mdfdefinestyle{codeline}{leftmargin=.01\linewidth, rightmargin=.01\linewidth,linewidth=1pt,backgroundcolor=gray!20,linewidth=0pt}
+
+
+\usepackage{textcomp}
+\usepackage{listings}
+\lstloadlanguages{R}
+\lstset{upquote=true,
+	%columns=flexible,
+	keepspaces=true,
+	breaklines=true,
+	breakindent=0pt,
+	basicstyle={\small\ttfamily}
+	}
+\lstset{extendedchars=true,
+	literate={é}{{\'e}}1
+		 {è}{{\`e}}1
+		 {à}{{\`a}}1
+		 {ç}{{\c{c}}}1
+		 {œ}{{\oe}}1
+		 {ù}{{\`u}}1
+		 {É}{{\'E}}1
+		 {È}{{\`E}}1
+		 {À}{{\`A}}1
+		 {Ç}{{\c{C}}}1
+		 {Œ}{{\OE}}1
+		 {Ê}{{\^E}}1
+		 {ê}{{\^e}}1
+		 {î}{{\^i}}1
+		 {ô}{{\^o}}1
+		 {û}{{\^u}}1
+		 {°}{{\degre}}1
+	}
+
+\lstnewenvironment{script}{%
+\lstset{language=,
+	    aboveskip=0pt,
+	belowskip=0pt
+	}
+}{}
+\surroundwithmdframed[style=commandline]{script}
+
+\lstdefinestyle{codeR}{%
+	aboveskip=0pt,
+	belowskip=0pt,
+	%frame=single,
+	commentstyle=\color{green!50!black}\itshape,
+	language=R,
+	keywordstyle=\color{violet!75},
+	stringstyle=\color{red},
+	showstringspaces=false,
+      %  emph={output,input}, emphstyle=\color{brown!75},
+      %  emph={maFonction}, emphstyle=\underline,
+	}
+
+\lstnewenvironment{codeR}[1][]{\lstset{style=codeR,#1}}{}
+\surroundwithmdframed[style=codeline]{codeR}
+
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+
+\usepackage{pgfplots}
+\usepgfplotslibrary{fillbetween}
+\pgfplotsset{compat=newest}
+%\usepgfplotslibrary{external} 
+%\tikzexternalize[prefix=./output_latex/]
+%\DeclareSymbolFont{RalphSmithFonts}{U}{rsfs}{m}{n}
+%\DeclareSymbolFontAlphabet{\mathscr}{RalphSmithFonts}
+%\def\mathcal#1{{\mathscr #1}}
+
+
+
+% ------------------------------------------- Command -------------------------------%
+\providecommand{\abs}[1]{\left|#1\right|}
+\providecommand{\norm}[1]{\left\Vert#1\right\Vert}
+\providecommand{\U}{\mathcal{U}}
+\providecommand{\R}{\mathbb{R}}
+\providecommand{\Cc}{\mathcal{C}}
+\providecommand{\reg}[1]{\mathcal{C}^{#1}}
+\providecommand{\1}{\mathds{1}}
+\providecommand{\N}{\mathbb{N}}
+\providecommand{\Z}{\mathbb{Z}}
+\providecommand{\C}{\mathbb{C}}
+\providecommand{\F}{\mathbb{F}}
+\providecommand{\K}{\mathbb{K}}
+\providecommand{\p}{\partial}
+\providecommand{\gR}{\textsc{R}}
+\providecommand{\one}{\mathds{1}}
+%\renewcommand{\E}{\mathbb{E}}
+\renewcommand{\P}{\mathbb{P}}
+\providecommand{\ie}{\textit{i.e. }}
+
+\newcommand\rst[2]{{#1}_{\restriction_{#2}}}
+%Operateur
+\providecommand{\abs}[1]{\left\lvert#1\right\rvert}
+\providecommand{\sabs}[1]{\lvert#1\rvert}
+\providecommand{\babs}[1]{\bigg\lvert#1\bigg\rvert}
+\providecommand{\norm}[1]{\left\lVert#1\right\rVert}
+\providecommand{\bnorm}[1]{\bigg\lVert#1\bigg\rVert}
+\providecommand{\snorm}[1]{\lVert#1\rVert}
+\providecommand{\prs}[1]{\left\langle #1\right\rangle}
+\providecommand{\sprs}[1]{\langle #1\rangle}
+\providecommand{\bprs}[1]{\bigg\langle #1\bigg\rangle}
+
+\DeclareMathOperator{\deet}{Det}
+\DeclareMathOperator{\supp}{Supp}
+\DeclareMathOperator{\sinc}{sinc}
+
+
+\usepackage{ifthen}
+
+\newcommand{\eno}[1]{%
+	\ifthenelse{\equal{\version}{eno}}{#1}{}%
+}
+\newcommand{\cor}[1]{%
+        \ifthenelse{\equal{\version}{cor}}{
+\medskip 
+
+{\small \color{gray} #1}
+
+\medskip 
+}{}
+}
+
+%------------------------------------------------------------------------------
+\DeclareUnicodeCharacter{00A0}{~}
+\makeatother
+
