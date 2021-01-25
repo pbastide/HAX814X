@@ -4,9 +4,9 @@ author: "Paul Bastide - Benjamin Charlier"
 date: "27/01/2021"
 output:
   ioslides_presentation:
-  fig_width: 7
-  fig_height: 4
-self_contained: true
+    fig_width: 7
+    fig_height: 4
+  self_contained: true
 ---
   
 <!-- ************************************************************************ -->
@@ -127,16 +127,16 @@ x <- -1500:1500 / 100
 ccc <- hcl.colors(4)
 # Normal
 mu <- 0; sigma2 <- 1
-plot(x, dnorm(x, mu, sigma2), type = "l", ylab = "f(x)", col = ccc[1], lwd = 2)
-segments(x0 = 0, y0 = 0, x1 = 0, y1 = dnorm(mu, mu, sigma2), lty = 2, col = ccc[1])
+plot(x, dnorm(x, mu, sqrt(sigma2)), type = "l", ylab = "f(x)", col = ccc[1], lwd = 2)
+segments(x0 = 0, y0 = 0, x1 = 0, y1 = dnorm(mu, mu, sqrt(sigma2)), lty = 2, col = ccc[1])
 # mean
 mu <- 10; sigma2 <- 1
-lines(x, dnorm(x, mu, sigma2), col = ccc[2], lwd = 2)
-segments(x0 = mu, y0 = 0, x1 = mu, y1 = dnorm(mu, mu, sigma2), lty = 2, col = ccc[2])
+lines(x, dnorm(x, mu, sqrt(sigma2)), col = ccc[2], lwd = 2)
+segments(x0 = mu, y0 = 0, x1 = mu, y1 = dnorm(mu, mu, sqrt(sigma2)), lty = 2, col = ccc[2])
 # variance
-mu <- 0; sigma2 <- 5
-lines(x, dnorm(x, mu, sigma2), col = ccc[3], lwd = 2)
-segments(x0 = mu, y0 = 0, x1 = mu, y1 = dnorm(mu, mu, sigma2), lty = 2, col = ccc[3])
+mu <- 0; sigma2 <- 25
+lines(x, dnorm(x, mu, sqrt(sigma2)), col = ccc[3], lwd = 2)
+segments(x0 = mu, y0 = 0, x1 = mu, y1 = dnorm(mu, mu, sqrt(sigma2)), lty = 2, col = ccc[3])
 # legend
 legend("topleft",
        c(expression(paste(mu == 0, "   ; ", sigma^2 == 1)),
@@ -254,14 +254,14 @@ xobs <- 1
 par(mar = c(5, 8, 4, 0) + 0.1)
 # ML
 mu <- xobs; sigma2 <- 1
-plot(x, dnorm(x, mu, sigma2), type = "l", ylab = "f(x)", col = "firebrick3", lwd = 0)
-segments(x0 = mu, y0 = 0, x1 = mu, y1 = dnorm(mu, mu, sigma2), lty = 2, col = "firebrick3", lwd = 2)
+plot(x, dnorm(x, mu, sqrt(sigma2)), type = "l", ylab = "f(x)", col = "firebrick3", lwd = 0)
+segments(x0 = mu, y0 = 0, x1 = mu, y1 = dnorm(mu, mu, sqrt(sigma2)), lty = 2, col = "firebrick3", lwd = 2)
 axis(side = 1, at = xobs, labels = expression(x[obs]), col = "firebrick3",  col.axis = "firebrick3", lwd = 2)
 # mean
 mu <- -1; sigma2 <- 1
-lines(x, dnorm(x, mu, sigma2), lwd = 2)
-segments(x0 = xobs, y0 = dnorm(xobs, mu, sigma2), x1 = -10, y1 = dnorm(xobs, mu, sigma2), lty = 2, lwd = 2)
-axis(side = 2, at = dnorm(xobs, mu, sigma2), labels = expression(paste(L(mu == -1*"|"*x[obs]))), las = 1, hadj = 1.2)
+lines(x, dnorm(x, mu, sqrt(sigma2)), lwd = 2)
+segments(x0 = xobs, y0 = dnorm(xobs, mu, sqrt(sigma2)), x1 = -10, y1 = dnorm(xobs, mu, sqrt(sigma2)), lty = 2, lwd = 2)
+axis(side = 2, at = dnorm(xobs, mu, sqrt(sigma2)), labels = expression(paste(L(mu == -1*"|"*x[obs]))), las = 1, hadj = 1.2)
 ```
 
 ## Reminder: Maximum Likelihood 2/2
@@ -272,21 +272,19 @@ xobs <- 1
 par(mar = c(5, 8, 4, 0) + 0.1)
 # ML
 mu <- xobs; sigma2 <- 1
-plot(x, dnorm(x, mu, sigma2), type = "l", ylab = "f(x)", col = "firebrick3", lwd = 0)
-segments(x0 = mu, y0 = 0, x1 = mu, y1 = dnorm(mu, mu, sigma2), lty = 2, col = "firebrick3", lwd = 2)
+plot(x, dnorm(x, mu, sqrt(sigma2)), type = "l", ylab = "f(x)", col = "firebrick3", lwd = 0)
+segments(x0 = mu, y0 = 0, x1 = mu, y1 = dnorm(mu, mu, sqrt(sigma2)), lty = 2, col = "firebrick3", lwd = 2)
 axis(side = 1, at = xobs, labels = expression(x[obs]), col = "firebrick3",  col.axis = "firebrick3", lwd = 2)
-# segments(x0 = xobs, y0 = dnorm(xobs, mu, sigma2), x1 = -10, y1 = dnorm(xobs, mu, sigma2), lty = 2, col = "red")
-# axis(side = 2, at = dnorm(xobs, mu, sigma2), labels = expression(paste(L(mu == x[obs]*"|"*x[obs]))), las = 1, col = "red",  col.axis = "red", hadj = 1.2)
 # mean
 mu <- 0; sigma2 <- 1
-lines(x, dnorm(x, mu, sigma2), lwd = 2)
-segments(x0 = xobs, y0 = dnorm(xobs, mu, sigma2), x1 = -10, y1 = dnorm(xobs, mu, sigma2), lty = 2, lwd = 2)
-axis(side = 2, at = dnorm(xobs, mu, sigma2), labels = expression(paste(L(mu == 0*"|"*x[obs]))), las = 1, hadj = 1.2, lwd = 2)
+lines(x, dnorm(x, mu, sqrt(sigma2)), lwd = 2)
+segments(x0 = xobs, y0 = dnorm(xobs, mu, sqrt(sigma2)), x1 = -10, y1 = dnorm(xobs, mu, sqrt(sigma2)), lty = 2, lwd = 2)
+axis(side = 2, at = dnorm(xobs, mu, sqrt(sigma2)), labels = expression(paste(L(mu == 0*"|"*x[obs]))), las = 1, hadj = 1.2, lwd = 2)
 # mean
 mu <- -1; sigma2 <- 1
-lines(x, dnorm(x, mu, sigma2), lwd = 0.5)
-segments(x0 = xobs, y0 = dnorm(xobs, mu, sigma2), x1 = -10, y1 = dnorm(xobs, mu, sigma2), lty = 2, lwd = 0.5)
-axis(side = 2, at = dnorm(xobs, mu, sigma2), labels = expression(paste(L(mu == -1*"|"*x[obs]))), las = 1, hadj = 1.2, lwd = 0.5)
+lines(x, dnorm(x, mu, sqrt(sigma2)), lwd = 0.5)
+segments(x0 = xobs, y0 = dnorm(xobs, mu, sqrt(sigma2)), x1 = -10, y1 = dnorm(xobs, mu, sqrt(sigma2)), lty = 2, lwd = 0.5)
+axis(side = 2, at = dnorm(xobs, mu, sqrt(sigma2)), labels = expression(paste(L(mu == -1*"|"*x[obs]))), las = 1, hadj = 1.2, lwd = 0.5)
 ```
 
 ## Reminder: Maximum Likelihood 2/2
@@ -297,21 +295,21 @@ xobs <- 1
 par(mar = c(5, 8, 4, 0) + 0.1)
 # ML
 mu <- xobs; sigma2 <- 1
-plot(x, dnorm(x, mu, sigma2), type = "l", ylab = "f(x)", col = "firebrick3", lwd = 2)
-segments(x0 = mu, y0 = 0, x1 = mu, y1 = dnorm(mu, mu, sigma2), lty = 2, col = "firebrick3", lwd = 2)
+plot(x, dnorm(x, mu, sqrt(sigma2)), type = "l", ylab = "f(x)", col = "firebrick3", lwd = 2)
+segments(x0 = mu, y0 = 0, x1 = mu, y1 = dnorm(mu, mu, sqrt(sigma2)), lty = 2, col = "firebrick3", lwd = 2)
 axis(side = 1, at = xobs, labels = expression(x[obs]), col = "firebrick3",  col.axis = "firebrick3", lwd = 2)
-segments(x0 = xobs, y0 = dnorm(xobs, mu, sigma2), x1 = -10, y1 = dnorm(xobs, mu, sigma2), lty = 2, col = "firebrick3", lwd = 2)
-axis(side = 2, at = dnorm(xobs, mu, sigma2), labels = expression(paste(L(mu == x[obs]*"|"*x[obs]))), las = 1, col = "firebrick3",  col.axis = "firebrick3", hadj = 1.2)
+segments(x0 = xobs, y0 = dnorm(xobs, mu, sqrt(sigma2)), x1 = -10, y1 = dnorm(xobs, mu, sqrt(sigma2)), lty = 2, col = "firebrick3", lwd = 2)
+axis(side = 2, at = dnorm(xobs, mu, sqrt(sigma2)), labels = expression(paste(L(mu == x[obs]*"|"*x[obs]))), las = 1, col = "firebrick3",  col.axis = "firebrick3", hadj = 1.2)
 # mean
 mu <- 0; sigma2 <- 1
-lines(x, dnorm(x, mu, sigma2), lwd = 0.5)
-segments(x0 = xobs, y0 = dnorm(xobs, mu, sigma2), x1 = -10, y1 = dnorm(xobs, mu, sigma2), lty = 2, lwd = 0.5)
-axis(side = 2, at = dnorm(xobs, mu, sigma2), labels = expression(paste(L(mu == 0*"|"*x[obs]))), las = 1, hadj = 1.2, lwd = 0.5)
+lines(x, dnorm(x, mu, sqrt(sigma2)), lwd = 0.5)
+segments(x0 = xobs, y0 = dnorm(xobs, mu, sqrt(sigma2)), x1 = -10, y1 = dnorm(xobs, mu, sqrt(sigma2)), lty = 2, lwd = 0.5)
+axis(side = 2, at = dnorm(xobs, mu, sqrt(sigma2)), labels = expression(paste(L(mu == 0*"|"*x[obs]))), las = 1, hadj = 1.2, lwd = 0.5)
 # mean
 mu <- -1; sigma2 <- 1
-lines(x, dnorm(x, mu, sigma2), lwd = 0.5)
-segments(x0 = xobs, y0 = dnorm(xobs, mu, sigma2), x1 = -10, y1 = dnorm(xobs, mu, sigma2), lty = 2, lwd = 0.5)
-axis(side = 2, at = dnorm(xobs, mu, sigma2), labels = expression(paste(L(mu == -1*"|"*x[obs]))), las = 1, hadj = 1.2, lwd = 0.5)
+lines(x, dnorm(x, mu, sqrt(sigma2)), lwd = 0.5)
+segments(x0 = xobs, y0 = dnorm(xobs, mu, sqrt(sigma2)), x1 = -10, y1 = dnorm(xobs, mu, sqrt(sigma2)), lty = 2, lwd = 0.5)
+axis(side = 2, at = dnorm(xobs, mu, sqrt(sigma2)), labels = expression(paste(L(mu == -1*"|"*x[obs]))), las = 1, hadj = 1.2, lwd = 0.5)
 ```
 
 ## Likelihood of $\mathbf{y}$
@@ -591,7 +589,7 @@ beta_hat_0 <- ols_coef[1]
 beta_hat_1 <- ols_coef[2]
 ```
 
-```{r sim4, echo=FALSE, cache = TRUE}
+```{r sim4, echo=FALSE}
 ## Number of replicates
 r <- 1000
 ## Error replicates (matrix n x r)
@@ -831,8 +829,8 @@ p <- 50
 plot(x, dchisq(x, p), type = "l", ylab = "f(x)", ylim = c(0, 0.05), col = ccc[1], lwd = 2)
 segments(x0 = p, y0 = -1, x1 = p, y1 = dchisq(p, p), lty = 2, col = ccc[1])
 # normal
-mu <- p; sigma2 <- sqrt(2*p)
-lines(x, dnorm(x, mu, sigma2), col = ccc[4])
+mu <- p; sigma2 <- 2*p
+lines(x, dnorm(x, mu, sqrt(sigma2)), col = ccc[4])
 # legend
 legend("topright",
        c(expression(p == 50),
@@ -953,7 +951,7 @@ for (p in c(3, 10)) {
 }
 # normal
 mu <- 0; sigma2 <- 1
-lines(x, dnorm(x, mu, sigma2), col = ccc[5], lwd = 2)
+lines(x, dnorm(x, mu, sqrt(sigma2)), col = ccc[5], lwd = 2)
 # legend
 legend("topright",
        c(expression(p == 1), expression(p == 3), expression(p == 10),
@@ -1146,39 +1144,43 @@ summary(fit_tv)
 fit_tv <- lm(sales ~ TV, data = ad)
 plot(ad$TV, ad$sales)
 abline(fit_tv, col = "black")
+## colors
+contrast_col <- hcl.colors(2)
 ## Confidence interval
 newx <- seq(0, 300, by = 1)
 conf_int <- predict(fit_tv, data.frame(TV = newx), interval = "conf")
 # Plot
-lines(newx, conf_int[, 2], col = "blue", lty = 2)
-lines(newx, conf_int[, 3], col = "blue", lty = 2)
+lines(newx, conf_int[, 2], col = contrast_col[1], lty = 2, lwd = 2)
+lines(newx, conf_int[, 3], col = contrast_col[1], lty = 2, lwd = 2)
 # Prediction intervals
 pred_int <- predict(fit_tv, data.frame(TV = newx), interval = "pred")
 # Plot
-lines(newx, pred_int[, 2], col = "red", lty = 2)
-lines(newx, pred_int[, 3], col = "red", lty = 2)
+lines(newx, pred_int[, 2], col = contrast_col[2], lty = 2, lwd = 2)
+lines(newx, pred_int[, 3], col = contrast_col[2], lty = 2, lwd = 2)
 ```
 
 ## Advertising - TV - 5/6
 
-* 95\% confidence interval (blue) and prediction interval (red)
+* 95\% confidence interval (dark purple) and prediction interval (light yellow)
 
 ```{r ad5, echo = FALSE}
 ## lm fit
 fit_tv <- lm(sales ~ TV, data = ad)
 plot(ad$TV, ad$sales)
 abline(fit_tv, col = "black")
+## colors
+contrast_col <- hcl.colors(2)
 ## Confidence interval
 newx <- seq(0, 300, by = 1)
 conf_int <- predict(fit_tv, data.frame(TV = newx), interval = "conf")
 # Plot
-lines(newx, conf_int[, 2], col = "blue", lty = 2)
-lines(newx, conf_int[, 3], col = "blue", lty = 2)
+lines(newx, conf_int[, 2], col = contrast_col[1], lty = 2, lwd = 2)
+lines(newx, conf_int[, 3], col = contrast_col[1], lty = 2, lwd = 2)
 # Prediction intervals
 pred_int <- predict(fit_tv, data.frame(TV = newx), interval = "pred")
 # Plot
-lines(newx, pred_int[, 2], col = "red", lty = 2)
-lines(newx, pred_int[, 3], col = "red", lty = 2)
+lines(newx, pred_int[, 2], col = contrast_col[2], lty = 2, lwd = 2)
+lines(newx, pred_int[, 3], col = contrast_col[2], lty = 2, lwd = 2)
 ```
 
 ## Advertising - TV - 6/6
