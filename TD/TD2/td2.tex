@@ -1,0 +1,102 @@
+\documentclass{td_um}
+\input{../header_td.tex}
+
+%\def\version{eno}
+\def\version{cor}
+
+\usepackage{hyperref}
+\ue{HMMA201}
+
+\providecommand{\T}{\mathbb{T}}
+\providecommand{\1}{\mathds{1}}
+\title{TD II}
+
+
+\newcommand{\miniscule}{\@setfontsize\miniscule{5}{6}}
+%-----------------------------------------------------------------------------
+\begin{document}
+\maketitle
+
+
+\exo{}  Soit $\theta_{1}$ et $\theta_{2}$ deux paramètres réels inconnus et soit:
+$-Y_{1}$ un estimateur sans biais de $\theta_{1}+\theta_{2}$ et de variance $\sigma^{2}$ $-Y_{2}$ un estimateur sans biais de $2 \theta_{1}-\theta_{2}$ et de variance $4 \sigma^{2}$ $-Y_{3}$ un estimateur sans biais de $6 \theta_{1}+3 \theta_{2}$ et de variance $9 \sigma^{2}$ Les estimateurs $Y_{1}, Y_{2}$ et $Y_{3}$ étant indépendants, nous cherchons les estimateurs sans biais de $\theta_{1}$ et $\theta_{2}$, linéaires en $Y_{1}, Y_{2}$ et $Y_{3},$ et de variance minimale.
+\begin{enumerate}
+    \item Notons $\tilde{\theta}=\alpha Y_{1}+\beta Y_{2}+\gamma Y_{3}$.
+        \begin{enumerate}
+            \item Quelles sont les équations à satisfaire pour que $\tilde{\theta}$ soit un estimateur sans biais de $\theta_{1} ?$
+            \item Dans ce cas-là, exprimer la variance de $\tilde{\theta}$ et la minimiser.
+            \item Idem pour $\theta_{2}$.
+            \item Notons $Z_{1}=Y_{1}, Z_{2}=Y_{2} / 2, Z_{3}=Y_{3} / 3, Z=\left(Z_{1}, Z_{2}, Z_{3}\right)^{\prime}$ et $\theta=\left(\theta_{1}, \theta_{2}\right)^{\prime}$
+        \end{enumerate}
+    \item Trouver la matrice $X$ telle que $\mathbb{E}(Z)=X \theta$.
+        \begin{enumerate}
+            \item Que vaut $\mathbb{V}(Z) ?$
+            \item On peut alors écrire $Z=X \theta+\varepsilon .$ Retrouver les estimateurs de $\theta_{1}$ et $\theta_{2}$ calculés question 1.
+    \end{enumerate}
+\end{enumerate}
+
+\exo{}
+\begin{enumerate}
+    \item Nous avons une variable $Y$ à expliquer par une variable $X$ Nous avons effectué $n=2$ mesures et trouvé
+        $$
+        \left(x_{1}, y_{1}\right)=(4,5) \text { et }\left(x_{2}, y_{2}\right)=(1,5)
+        $$
+        Représenter les variables, estimer $\beta$ dans le modèle $y_{i}=\beta x_{i}+\varepsilon_{i}$ et représenter $\hat{Y}$
+    \item Nous avons maintenant une variable $Y$ à expliquer par deux variables $X_{1}$ et $X_{2}$. Nous avons effectué $n=3$ mesures et trouvé
+        $$
+        \left(x_{1,1}, x_{1,2}, y_{1}\right)=(3,2,0),\left(x_{2,1}, x_{2,2}, y_{2}\right)=(3,3,5) \text { et }\left(x_{3,1}, x_{3,2}, y_{3}\right)=(0,0,3)
+        $$
+        Représenter les variables, estimer $\beta$ dans le modèle $y_{i}=\beta_{1} x_{i .1}+\beta_{2} x_{i, 2}+\varepsilon_{i}$ et représenter $\hat{Y}$.
+\end{enumerate}
+
+\exo{} Soit $X$ une matrice de taille $n \times p$ composée de $p$ vecteurs indépendants de $\mathbb{R}^{n}$. Nous notons $X_{q}$ la matrice composée des $q(q<p)$ premiers vecteurs de $X$. Nous avons les deux modèles suivants :
+$$
+Y=X \beta+\varepsilon \quad \text { et } \quad Y=X_{q} \beta_{q}+\psi
+$$
+Comparer les $R^{2}$ dans les deux modèles.
+
+\exo{} On examine l'évolution d'une variable $Y$ en fonction de deux variables $x$ et $z$. On dispose de $n$ observations de ces variables. On note $X=\begin{pmatrix}\1 & x & z\end{pmatrix}$ où $\1$ est le vecteur constant et $x, z$ sont les vecteurs des variables explicatives.
+\begin{enumerate}
+    \item Nous avons obtenu les résultats suivants:
+        $$
+        X^{\prime} X=\begin{pmatrix}
+                30 & 0 & 0 \\
+                ? & 10 & 7 \\
+                ? & ? & 15
+        \end{pmatrix}
+        $$
+        \begin{enumerate}
+            \item  Donner les valeurs manquantes?
+            \item  Que vaut $n$ ?
+            \item  Calculer le coefficient de corrélation linéaire empirique entre $x$ et $z$.
+        \end{enumerate}
+    \item  La régression linéaire empirique de $Y$ sur $\1 , x, z$ donne
+        $$
+        Y=-2 \1 +x+2 z+\hat{\varepsilon}, \quad S C R=\|\hat{\varepsilon}\|^{2}=12
+        $$
+        \begin{enumerate}
+            \item Déterminer la moyenne arithmétique $\bar{Y}$.
+            \item Calculer la somme des carrés expliquée (SCE), la somme des carrés totale (SCT) et le coefficient de détermination $R^{2}$.
+        \end{enumerate}
+    \item 
+        \begin{enumerate}
+            \item Calculer $X^{\prime} Y$ en utilisant la valeur de $\hat{\beta}$. En déduire $\sum x_{i} y_{i}$ et $\sum z_{i} y_{i}$.
+            \item Calculer les coefficients linéaires $\rho(x, y)$ et $\rho(z, y)$. En déduire la valeur du $R^{2}$ pour le modèle de régression de $y$ par $\1 $ et $x,$ puis de $y$ par $\1 $ et $z$
+            \item Comparer les valeurs des 4 critères de sélection du cours pour le modèle complet ( $y$ par $\1 , x$ et $z$ ) et les 2 modèles réduits $(y$ par $\1 $ et $x$ puis $y$ par Il et $z$ ).
+        \end{enumerate}
+\end{enumerate}
+
+\exo{} Régression sur données agrégées par groupes. On suppose le modèle de régression $Y=X \beta+\varepsilon, \mathbb{E}(\varepsilon)=0, \mathbb{V}(\varepsilon)=\sigma^{2} I_{n},$ valide
+mais les données individuelles $\left(x_{i 1}, \cdots, x_{i p}, y_{i}\right)$ ne sont pas disponibles. On observe seulement les moyennes sur $I$ groupes, notés $C_{1}, \cdots, C_{I},$ d'effectifs $n_{1}, \cdots, n_{I}:$
+$$
+\bar{y}_{k}=\frac{1}{n_{k}} \sum_{i \in C_{k}} y_{i} \text { et } \bar{x}_{k j}=\frac{1}{n_{k}} \sum_{i \in C_{k}} x_{i j}
+$$
+En notant $\bar{\varepsilon}_{k}=\frac{1}{n_{k}} \sum_{i \in C_{k}} \varepsilon_{i},$ on a $\bar{Y}=\bar{X} \beta+\bar{\varepsilon} .$
+\begin{enumerate}
+    \item  Calculer $\mathbb{E}(\bar{\varepsilon})$ et $\mathbb{V}(\bar{\varepsilon})$.
+    \item  Notons $M=\operatorname{diag}\left(\sqrt{n_{1}}, \cdots, \sqrt{n_{I}}\right), Y^{*}=M \bar{Y}, X^{*}=M \bar{X}$ et $\varepsilon^{*}=M \bar{\varepsilon}$. Quelle est la relation entre $Y^{*}, X^{*}$ et $\varepsilon^{*} ?$ Calculer $\mathbb{E}\left(\varepsilon^{*}\right)$ et $\mathbb{V}\left(\varepsilon^{*}\right) ?$
+    \item  En déduire un estimateur de $\beta$.
+    \item  Application numérique $: I=3$ avec $n_{1}=1$ et $n_{2}=n_{3}=2$. $\bar{X}_{1}^{\prime}=(1,1,1), \bar{X}_{2}^{\prime}=(7,12,5)$ et $\bar{Y}^{\prime}=(15,25,10)$
+\end{enumerate}
+\end{document}
+
