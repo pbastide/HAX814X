@@ -220,7 +220,7 @@ $$\mathbf{y} = \beta_0 \mathbb{1} + \beta_1 \mathbf{x} + \boldsymbol{\epsilon}$$
 
 The OLS estimators $\hat{\beta}_0$ and $\hat{\beta}_1$ are given by:
 
-$$ (\hat{\beta}_0, \hat{\beta}_0) 
+$$ (\hat{\beta}_0, \hat{\beta}_1) 
 = \underset{(\beta_0, \beta_1) \in \mathbb{R}^2}{\operatorname{argmin}} 
 \left\{
 \sum_{i = 1}^n (y_i - \beta_0 - \beta_1 x_i)^2
@@ -403,7 +403,7 @@ The OLS regression line goes through the gravity point $(\bar{x}, \bar{y})$
 
 >* $\hat{\beta}_1 = \frac{s_{\mathbf{y},\mathbf{x}}^2}{s_{\mathbf{x}}^2}$  
 With $s_{\mathbf{x}}^2 = \frac{1}{n}\sum_{i = 1}^n (x_i - \bar{x})^2 =  \frac{1}{n}\sum_{i = 1}^n x_i^2 - \bar{x}^2$  
-and $s_{\mathbf{y},\mathbf{x}}^2 = \sum_{i = 1}^n (x_i - \bar{x})(y_i - \bar{y})$  
+and $s_{\mathbf{y},\mathbf{x}}^2 = \frac{1}{n}\sum_{i = 1}^n (x_i - \bar{x})(y_i - \bar{y})$  
 the empirical variance and covariance of $\mathbf{x}$ and $\mathbf{y}$.
 
 <!-- ************************************************************************ -->
@@ -554,7 +554,7 @@ $~$
 
 >* The OLS estimators are **unbiased**
 $$
-\mathbb{E}[\hat{\beta}_0] = \beta_0 \qquad \mathbb{E}[\hat{\beta}_0] = \beta_1
+\mathbb{E}[\hat{\beta}_0] = \beta_0 \qquad \mathbb{E}[\hat{\beta}_1] = \beta_1
 $$
 </div>
 
@@ -882,11 +882,11 @@ $$
 
 * We have $\sum_{i=1}^n q_i = 0$ and $\sum_{i=1}^n q_ix_i = 1$
 
->* Let's show that $\mathbb{Var}[\tilde{\beta}_1] > \mathbb{Var}[\hat{\beta}_1]$
+>* Let's show that $\mathbb{Var}[\tilde{\beta}_1] \geq \mathbb{Var}[\hat{\beta}_1]$
 
 ## Gauss Markov Theorem - Proof 5/8
 
-* Let's show that $\mathbb{Var}[\tilde{\beta}_1] > \mathbb{Var}[\hat{\beta}_1]$
+* Let's show that $\mathbb{Var}[\tilde{\beta}_1] \geq \mathbb{Var}[\hat{\beta}_1]$
 $$
 \begin{aligned}
 \mathbb{Var}[\tilde{\beta}_1] 
@@ -897,7 +897,7 @@ $$
 
 ## Gauss Markov Theorem - Proof 6/8
 
-* Let's show that $\mathbb{Var}[\tilde{\beta}_1] > \mathbb{Var}[\hat{\beta}_1]$
+* Let's show that $\mathbb{Var}[\tilde{\beta}_1] \geq \mathbb{Var}[\hat{\beta}_1]$
 $$
 \begin{aligned}
 \mathbb{Var}[\tilde{\beta}_1] 
@@ -916,7 +916,7 @@ $$
 
 ## Gauss Markov Theorem - Proof 7/8
 
-* Let's show that $\mathbb{Var}[\tilde{\beta}_1] > \mathbb{Var}[\hat{\beta}_1]$
+* Let's show that $\mathbb{Var}[\tilde{\beta}_1] \geq \mathbb{Var}[\hat{\beta}_1]$
 $$
 \begin{aligned}
 \mathbb{Var}[\tilde{\beta}_1] 
