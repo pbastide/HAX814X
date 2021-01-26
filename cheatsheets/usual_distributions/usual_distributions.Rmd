@@ -108,7 +108,7 @@ Let $X_1, \dotsc, X_p$ be $p$ standard normal independent identically distribute
 (iid) random variables: $X_i \sim \mathcal{N}(0, 1)$.
 Then 
 $$
-X = \sum_{i = 1}^p X_i \sim \chi^2_p
+X = \sum_{i = 1}^p X_i^2 \sim \chi^2_p
 $$ 
 
 is a Chi squared random variable with $p$ degrees of freedom.
