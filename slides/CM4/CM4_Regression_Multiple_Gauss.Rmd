@@ -1,0 +1,1200 @@
+---
+title: 'Régression Multiple - Modèle Gaussien'
+author: "Paul Bastide - Benjamin Charlier"
+date: "10/02/2021"
+output:
+  ioslides_presentation:
+    fig_width: 7
+    fig_height: 4
+  self_contained: true
+---
+  
+<!-- ************************************************************************ -->
+# What we know
+<!-- ************************************************************************ -->
+
+## Model
+
+### Model:
+$$
+\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}
+$$
+
+* $\mathbf{y}$ **random** vector of $n$ responses
+* $\mathbf{X}$ **non random** $n\times p$ matrix of predictors
+* $\boldsymbol{\epsilon}$ **random** vector of $n$ errors
+* $\boldsymbol{\beta}$ **non random, unknown** vector of $p$ coefficients
+
+### Assumptions:
+  * (H1) $rg(\mathbf{X}) = p$
+  * (H2) $\mathbb{E}[\boldsymbol{\epsilon}] = 0$ and $\mathbb{Var}[\boldsymbol{\epsilon}] = \sigma^2 \mathbf{I}_n$ 
+
+## OLS Estimators
+
+$$ 
+\hat{\boldsymbol{\beta}} 
+= \underset{\boldsymbol{\beta} \in \mathbb{R}^p}{\operatorname{argmin}} 
+\|\mathbf{y} - \mathbf{X}\boldsymbol{\beta} \|^2
+$$
+$$
+\hat{\boldsymbol{\beta}} = (\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}\mathbf{y}
+\qquad
+\mathbb{E}[\hat{\boldsymbol{\beta}}] = \boldsymbol{\beta}
+\qquad
+\mathbb{Var}[\hat{\boldsymbol{\beta}}] = \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}.
+$$
+
+
+$$ 
+\hat{\mathbf{y}} = \mathbf{X}\hat{\boldsymbol{\beta}} 
+= \mathbf{P}^{\mathbf{X}}\mathbf{y} 
+\qquad
+\hat{\boldsymbol{\epsilon}} = \mathbf{y} - \hat{\mathbf{y}}
+= (\mathbf{I}_n - \mathbf{P}^{\mathbf{X}})\mathbf{y}
+= \mathbf{P}^{\mathbf{X}^\bot}\mathbf{y}
+$$
+
+$$
+\mathbb{E}[\hat{\boldsymbol{\epsilon}}] = \mathbf{0} 
+\qquad
+\mathbb{Var}[\hat{\boldsymbol{\epsilon}}] = \sigma^2 \mathbf{P}^{\mathbf{X}^\bot}
+$$
+
+$$
+\mathbb{E}[\hat{\mathbf{y}}]  = \mathbf{X}\boldsymbol{\beta} 
+\qquad
+\mathbb{Var}[\hat{\mathbf{y}}]  = \sigma^2 \mathbf{P}^{\mathbf{X}}
+$$
+
+$$
+\mathbb{Cov}[\hat{\boldsymbol{\epsilon}}; \hat{\mathbf{y}}] = \mathbf{0}.
+$$
+
+$$
+\hat{\sigma}^2 = \frac{1}{n - p} \| \hat{\epsilon} \|^2
+\qquad
+\mathbb{E}[\hat{\sigma}^2] = \sigma^2
+$$
+
+## Questions
+
+* Confidence interval for $\hat{\boldsymbol{\beta}}, \hat{\sigma}^2$ ?
+
+* Prediction intervals ?
+
+* Assumptions on the moments are not enough.  
+$\hookrightarrow$ We need assumptions on the *specific distribution* of the $\epsilon_i$.
+
+* Most common assumption: $\epsilon_i$ are **Gaussian**.
+
+<!-- ************************************************************************ -->
+# Gaussian Model
+<!-- ************************************************************************ -->
+
+## Gaussian Model
+
+### Model:
+$$
+\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}
+$$
+
+* $\mathbf{y}$ **random** vector of $n$ responses
+* $\mathbf{X}$ **non random** $n\times p$ matrix of predictors
+* $\boldsymbol{\epsilon}$ **random** vector of $n$ errors
+* $\boldsymbol{\beta}$ **non random, unknown** vector of $p$ coefficients
+
+### Assumptions:
+  * (H1) $rg(\mathbf{X}) = p$
+  * (H2) $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I}_n)$ 
+
+## Reminder - Notations
+
+The column and row vectors of $\mathbf{X}$ are written as:
+
+$$
+\mathbf{X} = 
+\begin{pmatrix} \mathbf{x}_{1} & \cdots & \mathbf{x}_{p} \end{pmatrix} 
+=
+\begin{pmatrix} \mathbf{x}^{1} \\ \vdots \\ \mathbf{x}^{n} \end{pmatrix} 
+$$
+
+Hence:
+$$
+y_i = \mathbf{x}^{i} \boldsymbol{\beta} + \epsilon_i \quad \forall~1\leq i \leq n
+$$
+
+<!-- ************************************************************************ -->
+# Maximum Likeihood Estimators
+<!-- ************************************************************************ -->
+
+## Distribution of $\mathbf{y}$
+
+* Model:
+$$
+y_i = \mathbf{x}^i \boldsymbol{\beta} + \epsilon_i
+\quad 
+\text{with}
+\quad
+\epsilon_i 
+\underset{\text{iid}}{\operatorname{\sim}}
+\mathcal{N}(0, \sigma^2) 
+\quad 
+\text{for}
+\quad
+1 \leq i \leq n
+$$
+
+* Distribution of $y_i$:
+$$
+y_i 
+\underset{\text{iid}}{\operatorname{\sim}}
+\mathcal{N}(\mathbf{x}^i \boldsymbol{\beta}, \sigma^2) 
+\quad 
+\text{for}
+\quad
+1 \leq i \leq n
+$$
+
+## Likelihood of $\mathbf{y}$
+
+* Distribution of $y_i$:
+$$
+y_i 
+\underset{\text{iid}}{\operatorname{\sim}}
+\mathcal{N}(\mathbf{x}^i \boldsymbol{\beta}, \sigma^2) 
+\quad 
+\text{for}
+\quad
+1 \leq i \leq n
+$$
+
+* Likelihood of $\mathbf{y} = (y_1, \dotsc, y_n)^T$:
+$$
+\begin{aligned}
+&L(\boldsymbol{\beta}, \sigma^2 | y_1, \dotsc, y_n)
+= \prod_{i = 1}^n L(\boldsymbol{\beta}, \sigma^2 | y_i) & [ind.]\\
+\end{aligned}
+$$
+
+and
+
+$$
+\begin{aligned}
+L(\boldsymbol{\beta}, \sigma^2 | y_i)
+= \cdots
+\end{aligned}
+$$
+
+## Likelihood of $\mathbf{y}$
+
+* Distribution of $y_i$:
+$$
+y_i 
+\underset{\text{iid}}{\operatorname{\sim}}
+\mathcal{N}(\mathbf{x}^i \boldsymbol{\beta}, \sigma^2) 
+\quad 
+\text{for}
+\quad
+1 \leq i \leq n
+$$
+
+* Likelihood of $\mathbf{y} = (y_1, \dotsc, y_n)^T$:
+$$
+\begin{aligned}
+&L(\boldsymbol{\beta}, \sigma^2 | y_1, \dotsc, y_n)
+= \prod_{i = 1}^n L(\boldsymbol{\beta}, \sigma^2 | y_i) & [ind.]\\
+\end{aligned}
+$$
+
+and
+
+$$
+L(\boldsymbol{\beta}, \sigma^2 | y_i)
+= \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(y_i - \mathbf{x}^i \boldsymbol{\beta})^2}{2\sigma^2}\right)
+$$
+
+## Likelihood of $\mathbf{y}$
+
+* Likelihood of $\mathbf{y} = (y_1, \dotsc, y_n)^T$:
+$$
+\begin{aligned}
+&L(\boldsymbol{\beta}, \sigma^2 | y_1, \dotsc, y_n)
+= \prod_{i = 1}^n L(\boldsymbol{\beta}, \sigma^2 | y_i)\\
+&\qquad = \prod_{i = 1}^n \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(y_i - \mathbf{x}^i \boldsymbol{\beta})^2}{2\sigma^2}\right)\\
+&\qquad = \frac{1}{\left(\sqrt{2\pi\sigma^2}\right)^n}\exp\left(-\frac{1}{2\sigma^2}\sum_{i = 1}^n (y_i - \mathbf{x}^i \boldsymbol{\beta})^2\right)\\
+\end{aligned}
+$$
+
+$$
+\log L(\boldsymbol{\beta}, \sigma^2 | y_1, \dotsc, y_n) 
+= - \frac{n}{2} \log(2\pi\sigma^2) - \frac{1}{2\sigma^2}\sum_{i = 1}^n (y_i - \mathbf{x}^i \boldsymbol{\beta})^2\\
+$$
+
+## ML Estimators
+
+* The Maximum Likelihood estimators are:
+$$
+(\hat{\boldsymbol{\beta}}^{ML}, \hat{\sigma}^2_{ML}) 
+= \underset{(\boldsymbol{\beta}, \sigma^2) \in \mathbb{R}^p\times\mathbb{R}_+^*}{\operatorname{argmax}} 
+\log L(\boldsymbol{\beta} \sigma^2 | \mathbf{y})
+$$
+
+with:
+$$
+\log L(\boldsymbol{\beta}, \sigma^2 | \mathbf{y}) 
+= - \frac{n}{2} \log(2\pi\sigma^2) - \frac{1}{2\sigma^2}\sum_{i = 1}^n (y_i - \mathbf{x}^i \boldsymbol{\beta})^2
+$$
+
+## ML Estimators - $\boldsymbol{\beta}$
+
+$$
+\log L(\boldsymbol{\beta}, \sigma^2 | \mathbf{y}) 
+= - \frac{n}{2} \log(2\pi\sigma^2) 
+- \frac{1}{2\sigma^2}
+\underbrace{\sum_{i = 1}^n (y_i - \mathbf{x}^i \boldsymbol{\beta})^2}_{\text{Sum of Squares } \|\mathbf{y} - \mathbf{X}\boldsymbol{\beta} \|^2}\\
+$$
+
+* For any $\sigma^2 > 0$,
+$$
+\hat{\boldsymbol{\beta}}^{ML}
+= \underset{\boldsymbol{\beta} \in \mathbb{R}^p}{\operatorname{argmax}} 
+\log L(\boldsymbol{\beta}, \sigma^2 | \mathbf{y})
+=  \underset{\boldsymbol{\beta} \in \mathbb{R}^p}{\operatorname{argmin}} \|\mathbf{y} - \mathbf{X}\boldsymbol{\beta} \|^2
+= \hat{\boldsymbol{\beta}}^{OLS}
+$$
+
+$\hookrightarrow$ The ML estimators are the same as the OLS estimators.
+
+## ML Estimators - $\sigma^2$
+
+$$
+\begin{aligned}
+\hat{\sigma}^2_{ML}
+&= \underset{\sigma^2 \in \mathbb{R}_+^*}{\operatorname{argmax}} 
+\log L(\hat{\boldsymbol{\beta}}, \sigma^2 | \mathbf{y})\\
+&=  \underset{\sigma^2 \in \mathbb{R}_+^*}{\operatorname{argmax}} 
+- \frac{n}{2} \log(2\pi\sigma^2) - \frac{1}{2\sigma^2}\sum_{i = 1}^n (y_i - \mathbf{x}^i\hat{\boldsymbol{\beta}})^2\\
+&=  \underset{\sigma^2 \in \mathbb{R}_+^*}{\operatorname{argmin}} 
+\frac{n}{2} \log(2\pi\sigma^2) + \frac{1}{2\sigma^2}\sum_{i = 1}^n \hat{\epsilon}_i^2\\
+\end{aligned}
+$$
+We get:
+
+$$
+\hat{\sigma}^2_{ML} 
+= \frac{1}{n}\sum_{i = 1}^n \hat{\epsilon}_i^2
+= \frac{\|\hat{\boldsymbol{\epsilon}} \|^2}{n}
+= \frac{\|\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}} \|^2}{n}
+$$
+
+## ML Estimators - $\sigma^2$ - Remarks
+
+* The ML estimator **is different** from the unbiased estimator of the variance we saw earlier.
+
+$$
+\hat{\sigma}^2_{ML} = \frac{\|\hat{\boldsymbol{\epsilon}} \|^2}{n}
+\neq
+\frac{\|\hat{\boldsymbol{\epsilon}} \|^2}{n-p}= \hat{\sigma}^2
+$$
+
+* The ML estimator of the variance is **biased**:
+$$
+\mathbb{E}[\hat{\sigma}^2_{ML}] = \frac{n - p}{n}\sigma^2 \neq \sigma^2
+$$
+
+<!-- ************************************************************************ -->
+# Reminder - <br> Gaussian Vectors
+<!-- ************************************************************************ -->
+
+## Reminder: Gaussian Distribution 1/4
+
+Let $X$ be a Gaussian r.v. with expectation $\mu$ and variance $\sigma^2$:
+$$
+X \sim \mathcal{N}(\mu, \sigma^2).
+$$
+
+It admits a probability density function (pdf):
+$$
+f(x) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)
+\quad
+\forall x \in \mathbb{R}.
+$$
+
+Moments:
+$$
+\mathbb{E}[X] = \mu
+\quad
+\mathbb{Var}[X] = \sigma^2
+$$
+
+## Reminder: Gaussian Vector 2/4
+
+Let $\mathbf{X}$ be a Gaussian vector with expectation $\boldsymbol{\mu}$ and variance $\mathbf{\Sigma}$:
+$$
+\mathbf{X} \sim \mathcal{N}(\boldsymbol{\mu}, \mathbf{\Sigma}).
+$$
+
+It admits a probability density function (pdf):
+$$
+f(\mathbf{x}) 
+= \frac{1}{\sqrt{(2\pi)^n|\mathbf{\Sigma}|}}
+\exp\left(-\frac{1}{2} (\mathbf{x} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{x} - \boldsymbol{\mu})\right)
+\quad
+\forall x \in \mathbb{R}.
+$$
+
+Any linear combination of its coordinates is Gaussian.
+
+Moments:
+$$
+\mathbb{E}[\mathbf{X}] = \boldsymbol{\mu}
+\quad
+\mathbb{Var}[\mathbf{X}] = \mathbb{E}[(\mathbf{X} - \boldsymbol{\mu})(\mathbf{X} - \boldsymbol{\mu})^T] = \mathbf{\Sigma}
+$$
+
+## Reminder: Gaussian Vector 3/4
+
+**Property**:  
+If $\mathbf{X} \sim \mathcal{N}(\boldsymbol{\mu}, \mathbf{\Sigma})$,
+then for any $\mathbf{a}$ matrix and $\mathbf{b}$ vector,  
+$$
+\mathbf{Y} = \mathbf{a}\mathbf{X} + \mathbf{b} 
+\sim \mathcal{N}(\mathbf{a}\boldsymbol{\mu} + \mathbf{b}, \mathbf{a}\mathbf{\Sigma}\mathbf{a}^T).
+$$
+
+
+**Property**:  
+Let $\mathbf{X} \sim \mathcal{N}(\boldsymbol{\mu}, \mathbf{\Sigma})$, with $\mathbf{\Sigma}$ invertible.
+Then $\mathbf{\Sigma}^{-1}$ is symmetric, positive definite and it is possible to find $\mathbf{\Sigma}^{-1/2}$ invertible
+such that:
+$$
+[\mathbf{\Sigma}^{-1/2}]^T\mathbf{\Sigma}^{-1/2} = \mathbf{\Sigma}^{-1}
+$$
+Then:
+$$
+\mathbf{Y} = \mathbf{\Sigma}^{-1/2}(\mathbf{X} - \boldsymbol{\mu})
+\sim \mathcal{N}(\mathbf{0}, \mathbf{I}).
+$$
+
+## Reminder: Gaussian Vector 4/4 {.build}
+
+**Proof**:  
+$$
+\mathbf{Y} = \mathbf{\Sigma}^{-1/2}(\mathbf{X} - \boldsymbol{\mu})
+$$
+
+Take
+$$
+\mathbf{a} = \mathbf{\Sigma}^{-1/2}
+\quad \text{and} \quad
+\mathbf{b} = -\mathbf{\Sigma}^{-1/2}\boldsymbol{\mu}
+$$
+
+Then:
+$$
+\mathbf{a}\boldsymbol{\mu} + \mathbf{b} = \mathbf{\Sigma}^{-1/2}\boldsymbol{\mu} -\mathbf{\Sigma}^{-1/2}\boldsymbol{\mu} = \mathbf{0}
+$$
+
+and:
+$$
+\mathbf{a}\mathbf{\Sigma}\mathbf{a}^T 
+= \mathbf{\Sigma}^{-1/2}\mathbf{\Sigma}[\mathbf{\Sigma}^{-1/2}]^T
+= \mathbf{I}.
+$$
+
+
+<!-- ************************************************************************ -->
+# Distribution of the Coefficients - $\sigma^2$ known
+<!-- ************************************************************************ -->
+
+## Distribution of $\hat{\boldsymbol{\beta}}$
+
+* We already know the moments of the estimator:
+
+$$
+\hat{\boldsymbol{\beta}} = (\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}\mathbf{y}
+\qquad
+\mathbb{E}[\hat{\boldsymbol{\beta}}] = \boldsymbol{\beta}
+\qquad
+\mathbb{Var}[\hat{\boldsymbol{\beta}}] = \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}.
+$$
+
+* As $\mathbf{y}$ is a Gaussian vector, $\hat{\boldsymbol{\beta}}$ is hence also a Gaussian vector.
+
+* Hence, when the variance $\sigma^2$ is known, we get:
+
+$$
+\hat{\boldsymbol{\beta}}
+\sim
+\mathcal{N}\left(
+\boldsymbol{\beta};
+\sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
+\right).
+$$
+
+<!-- ************************************************************************ -->
+# Cochran Theorem
+<!-- ************************************************************************ -->
+
+## Chi Squared Distribution
+
+**Definition**:  
+Let $X_1, \dotsc, X_p$ be $p$ standard normal iid rv : $X_i \sim \mathcal{N}(0, 1)$.
+$$
+X = \sum_{i = 1}^p X_i^2 \sim \chi^2_p
+$$ 
+
+is a Chi squared r.v. with $p$ degrees of freedom.
+
+**Property**:  
+Let $\mathbf{X}$ be a Gaussian vector of size $p$ with expectation $\boldsymbol{\mu}$ and variance $\mathbf{\Sigma}$:
+$\mathbf{X} \sim \mathcal{N}(\boldsymbol{\mu}, \mathbf{\Sigma})$.
+Then, if $\mathbf{\Sigma}$ is invertible,
+$$
+(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})^T
+\sim \chi^2_p
+$$ 
+
+is a Chi squared r.v. with $p$ degrees of freedom.
+
+## Chi Squared Distribution - Proof {.build}
+
+$\mathbf{X}$ is a Gaussian vector $\mathbf{X} \sim \mathcal{N}(\boldsymbol{\mu}, \mathbf{\Sigma})$.
+with $\mathbf{\Sigma}$ is invertible, so:
+$$
+\mathbf{Y} = \mathbf{\Sigma}^{-1/2}(\mathbf{X} - \boldsymbol{\mu})
+\sim \mathcal{N}(\mathbf{0}, \mathbf{I}_p).
+$$
+
+And:
+$$
+(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})^T
+= \mathbf{Y}^T \mathbf{Y}
+= \sum_{i = 1}^p Y_i^2
+$$
+with $Y_1, \dotsc, Y_p$ be $p$ standard normal iid rv.
+
+Hence:
+$$
+(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})^T
+= \sum_{i = 1}^p Y_i^2
+\sim \chi^2_p.
+$$
+
+
+## Cochran Theorem
+
+**Theorem**:
+Let
+
+* $\mathbf{Y}$ a Gaussian vector $\mathbf{Y} \sim \mathcal{N}(\boldsymbol{\mu}, \sigma^2\mathbf{I}_n)$;
+* $\mathcal{M}$ a subspace of $\mathbb{R}^n$ of dimension $p$;
+* $\mathbf{P}$ the orthogonal projection matrix on $\mathcal{M}$;
+* $\mathbf{P}^{\bot} = \mathbf{I}_n - \mathbf{P}$ the orthogonal projection matrix on $\mathcal{M}^{\bot}$.
+
+Then we have:
+
+(i)
+$\mathbf{P}\mathbf{Y} \sim \mathcal{N}(\mathbf{P}\boldsymbol{\mu}, \sigma^2\mathbf{P})$
+and
+$\mathbf{P}^{\bot}\mathbf{Y} \sim \mathcal{N}(\mathbf{P}^{\bot}\boldsymbol{\mu}, \sigma^2\mathbf{P}^{\bot})$;
+(ii) $\mathbf{P}\mathbf{Y}$ and $\mathbf{P}^{\bot}\mathbf{Y}$ are **independent**;
+(iii)
+$\frac{1}{\sigma^2}\|\mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) \|^2 \sim \chi^2_{p}$
+and
+$\frac{1}{\sigma^2}\|\mathbf{P}^{\bot}(\mathbf{Y} - \boldsymbol{\mu}) \|^2 \sim \chi^2_{n - p}$
+
+## Cochran Theorem - Proof - hints {.smaller}
+
+**Theorem**:
+
+* $\mathbf{Y}$ a Gaussian vector $\mathbf{Y} \sim \mathcal{N}(\boldsymbol{\mu}, \sigma^2\mathbf{I}_n)$; 
+* $\mathbf{P}$ the orthogonal projection matrix on $\mathcal{M}$ dim $p$;
+* $\mathbf{P}^{\bot} = \mathbf{I}_n - \mathbf{P}$ the orthogonal projection matrix on $\mathcal{M}^{\bot}$.
+(i)
+$\mathbf{P}\mathbf{Y} \sim \mathcal{N}(\mathbf{P}\boldsymbol{\mu}, \sigma^2\mathbf{P})$
+and
+$\mathbf{P}^{\bot}\mathbf{Y} \sim \mathcal{N}(\mathbf{P}^{\bot}\boldsymbol{\mu}, \sigma^2\mathbf{P}^{\bot})$;
+(ii) $\mathbf{P}\mathbf{Y}$ and $\mathbf{P}^{\bot}\mathbf{Y}$ are **independent**;
+(iii)
+$\frac{1}{\sigma^2}\|\mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) \|^2 \sim \chi^2_{p}$
+and
+$\frac{1}{\sigma^2}\|\mathbf{P}^{\bot}(\mathbf{Y} - \boldsymbol{\mu}) \|^2 \sim \chi^2_{n - p}$
+
+**Hints**:
+$$
+\begin{aligned}
+&\text{1.}
+&
+\mathbf{X} \sim \mathcal{N}(\boldsymbol{\mu}, \mathbf{\Sigma})
+\implies
+\mathbf{a}\mathbf{X} + \mathbf{b} 
+\sim \mathcal{N}(\mathbf{a}\boldsymbol{\mu} + \mathbf{b}, \mathbf{a}\mathbf{\Sigma}\mathbf{a}^T).\\
+&\text{2.}
+&
+\mathbf{P} = \mathbf{U}\mathbf{\Delta}\mathbf{U}^T
+\qquad
+\mathbf{U}\mathbf{U}^T = \mathbf{I}_n
+\qquad
+\mathbf{\Delta} = 
+\begin{pmatrix}
+\mathbf{I}_p & \mathbf{0}\\
+\mathbf{0} & \mathbf{0}
+\end{pmatrix}.\\
+&\text{2. (bis)}
+&
+\mathbf{Z}
+= \mathbf{U}^T \mathbf{Y}
+\sim \mathcal{N}(\dotsc, \dotsc)
+\quad
+\text{and}
+\quad
+\mathbf{\Delta}\mathbf{Z} 
+= \begin{pmatrix}
+\mathbf{Z}_p\\
+\mathbf{0}_{n-p}
+\end{pmatrix}
+\end{aligned}
+$$
+
+## Cochran Theorem - Proof - (1) {.build}
+
+From the linear property of Gaussian vectors:
+$$
+\mathbf{P}\mathbf{Y}
+\sim \mathcal{N}(\mathbf{P}\boldsymbol{\mu}, \mathbf{P}[\sigma^2\mathbf{I}_n]\mathbf{P}^T)
+$$
+
+but:
+$$
+\begin{aligned}
+\mathbf{P}[\sigma^2\mathbf{I}_n]\mathbf{P}^T
+& = \sigma^2 \mathbf{P}\mathbf{P}^T \\
+& = \sigma^2 \mathbf{P}\mathbf{P} & [\text{orthogonal}] \\
+& = \sigma^2 \mathbf{P} & [\text{projection}] \\
+\end{aligned}
+$$
+
+Same for $\mathbf{P}^{\bot}\mathbf{Y}$.
+
+## Cochran Theorem - Proof - (2) - 1/2 {.build}
+
+As $\mathbf{P}$ is an orthogonal projection matrix:
+$$
+\mathbf{P} = \mathbf{U}\mathbf{\Delta}\mathbf{U}^T
+\qquad
+\mathbf{U}\mathbf{U}^T = \mathbf{I}_n
+\qquad
+\mathbf{\Delta} = 
+\begin{pmatrix}
+\mathbf{I}_p & \mathbf{0}\\
+\mathbf{0} & \mathbf{0}
+\end{pmatrix}
+$$
+
+Define:
+$$
+\mathbf{Z}
+= \mathbf{U}^T \mathbf{Y}
+\sim \mathcal{N}(\mathbf{U}^T\boldsymbol{\mu}, \mathbf{U}^T[\sigma^2\mathbf{I}_n]\mathbf{U} = \sigma^2\mathbf{I}_n).
+$$
+
+Then:
+$$
+\mathbf{\Delta}\mathbf{Z} 
+= \begin{pmatrix}
+\mathbf{Z}_p\\
+\mathbf{0}_{n-p}
+\end{pmatrix}
+\quad
+\text{independent from}
+\quad
+(\mathbf{I}_n - \mathbf{\Delta})\mathbf{Z} 
+= \begin{pmatrix}
+\mathbf{0}_p\\
+\mathbf{Z}_{n-p}
+\end{pmatrix}
+$$
+
+## Cochran Theorem - Proof - (2) - 2/2
+
+$$
+\mathbf{P} = \mathbf{U}\mathbf{\Delta}\mathbf{U}^T
+\qquad
+\mathbf{U}\mathbf{U}^T = \mathbf{I}_n
+\qquad
+\mathbf{\Delta} = 
+\begin{pmatrix}
+\mathbf{I}_p & \mathbf{0}\\
+\mathbf{0} & \mathbf{0}
+\end{pmatrix}
+$$
+
+$$
+\mathbf{\Delta}\mathbf{Z} 
+= \begin{pmatrix}
+\mathbf{Z}_p\\
+\mathbf{0}_{n-p}
+\end{pmatrix}
+\quad
+\text{independent from}
+\quad
+(\mathbf{I}_n - \mathbf{\Delta})\mathbf{Z} 
+= \begin{pmatrix}
+\mathbf{0}_p\\
+\mathbf{Z}_{n-p}
+\end{pmatrix}
+$$
+Lead to:
+$$
+\mathbf{U}\mathbf{\Delta}\mathbf{Z} 
+= \mathbf{U}\mathbf{\Delta}\mathbf{U}^T\mathbf{Y} 
+= \mathbf{P}\mathbf{Y}
+$$
+independent from
+$$
+\mathbf{U}(\mathbf{I}_n - \mathbf{\Delta})\mathbf{Z} 
+= \mathbf{U}(\mathbf{I}_n - \mathbf{\Delta})\mathbf{U}^T\mathbf{Y} 
+= \mathbf{P}^\bot\mathbf{Y}.
+$$
+
+## Cochran Theorem - Proof - (3) - 1/3 {.build}
+
+$$
+\begin{aligned}
+\frac{1}{\sigma^2}\|\mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) \|^2
+&= \frac{1}{\sigma^2}(\mathbf{Y} - \boldsymbol{\mu})^T\mathbf{P}^T \mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) 
+= \cdots \qquad \qquad
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\frac{1}{\sigma^2}\|\mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) \|^2
+&= \frac{1}{\sigma^2}(\mathbf{Y} - \boldsymbol{\mu})^T\mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) \\
+&= \frac{1}{\sigma^2}(\mathbf{Y} - \boldsymbol{\mu})^T\mathbf{U}\mathbf{\Delta}\mathbf{U}^T(\mathbf{Y} - \boldsymbol{\mu})
+\quad [\mathbf{\Delta}^2 = \mathbf{\Delta}]\\
+&= \frac{1}{\sigma^2}(\mathbf{Y} - \boldsymbol{\mu})^T(\mathbf{\Delta}\mathbf{U}^T)^T\mathbf{\Delta}\mathbf{U}^T(\mathbf{Y} - \boldsymbol{\mu})\\
+&= \frac{1}{\sigma^2}(\mathbf{\Delta}\mathbf{U}^T\mathbf{Y} - \mathbf{\Delta}\mathbf{U}^T\boldsymbol{\mu})^T(\mathbf{\Delta}\mathbf{U}^T\mathbf{Y} - \mathbf{\Delta}\mathbf{U}^T\boldsymbol{\mu}) \\
+\end{aligned}
+$$
+
+## Cochran Theorem - Proof - (3) - 2/3 {.build}
+
+$$
+\begin{aligned}
+\frac{1}{\sigma^2}\|\mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) \|^2
+&= \frac{1}{\sigma^2}(\mathbf{\Delta}\mathbf{U}^T\mathbf{Y} - \mathbf{\Delta}\mathbf{U}^T\boldsymbol{\mu})^T(\mathbf{\Delta}\mathbf{U}^T\mathbf{Y} - \mathbf{\Delta}\mathbf{U}^T\boldsymbol{\mu}) \\
+\end{aligned}
+$$
+
+But:
+$$
+\mathbf{\Delta}\mathbf{U}^T \mathbf{Y}
+= \mathbf{\Delta}\mathbf{Z} 
+= \begin{pmatrix}
+\mathbf{Z}_p\\
+\mathbf{0}_{n-p}
+\end{pmatrix}
+\quad
+\text{and}
+\quad
+\mathbf{\Delta}\mathbf{U}^T\boldsymbol{\mu}
+= \begin{pmatrix}
+(\mathbf{U}^T\boldsymbol{\mu})_p\\
+\mathbf{0}_{n-p}
+\end{pmatrix}
+$$
+
+Hence:
+$$
+\begin{aligned}
+\frac{1}{\sigma^2}\|\mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) \|^2
+&= \frac{1}{\sigma^2}(\mathbf{Z}_p - (\mathbf{U}^T\boldsymbol{\mu})_p)^T(\mathbf{Z}_p - (\mathbf{U}^T\boldsymbol{\mu})_p) \\
+\end{aligned}
+$$
+
+## Cochran Theorem - Proof - (3) - 3/3 {.build}
+$$
+\begin{aligned}
+\frac{1}{\sigma^2}\|\mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) \|^2
+&= \frac{1}{\sigma^2}(\mathbf{Z}_p - (\mathbf{U}^T\boldsymbol{\mu})_p)^T(\mathbf{Z}_p - (\mathbf{U}^T\boldsymbol{\mu})_p) \\
+&= (\mathbf{Z}_p - (\mathbf{U}^T\boldsymbol{\mu})_p)^T[\sigma^2\mathbf{I}_p]^{-1}(\mathbf{Z}_p - (\mathbf{U}^T\boldsymbol{\mu})_p) \\
+\end{aligned}
+$$
+
+But:
+$$
+\mathbf{Z}
+\sim \mathcal{N}(\mathbf{U}^T\boldsymbol{\mu}, \sigma^2\mathbf{I}_n)
+\quad
+\text{hence}
+\quad
+\mathbf{Z}_p
+\sim \mathcal{N}((\mathbf{U}^T\boldsymbol{\mu})_p, \sigma^2\mathbf{I}_p)
+$$
+
+thanks to previous lemma:
+$$
+\frac{1}{\sigma^2}\|\mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) \|^2 \sim \chi^2_{p}
+$$
+
+Same for $\frac{1}{\sigma^2}\|\mathbf{P}^\bot(\mathbf{Y} - \boldsymbol{\mu}) \|^2 \sim \chi^2_{n-p}$
+
+<!-- ************************************************************************ -->
+# Distribution of $\hat{\sigma}^2$
+<!-- ************************************************************************ -->
+
+## Distribution of $\hat{\sigma}^2$
+
+When the variance $\sigma^2$ is known, we get:
+
+$$
+\frac{(n-p) \hat{\sigma}^2}{\sigma^2}
+\sim
+\chi^2_{n-p}
+$$
+
+and
+
+$$
+\hat{\boldsymbol{\beta}} \text{ and } \hat{\sigma}^2 \text{ are independent.}
+$$
+
+## Proof: Use Cochran Theorem
+
+We have:
+
+* $\mathbf{Y}$ a Gaussian vector $\mathbf{Y} \sim \mathcal{N}(\mathbf{X}\boldsymbol{\beta}, \sigma^2\mathbf{I}_n)$;
+* $\mathcal{M}(\mathbf{X}) = \text{span}\{\mathbf{x}_1, \dotsc, \mathbf{x}_p\}$;
+* $\mathbf{P}^{\mathbf{X}} = \mathbf{X}(\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}$ orthogonal projection on $\mathcal{M}(\mathbf{X})$;
+* $\mathbf{P}^{\mathbf{X}^\bot} = \mathbf{I}_n - \mathbf{P}^{\mathbf{X}}$
+
+And:
+
+* $\hat{\boldsymbol{\beta}} = (\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}\mathbf{y}$
+* $\hat{\sigma}^2 = \frac{\|\hat{\boldsymbol{\epsilon}} \|^2}{n-p} = \frac{\|\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}} \|^2}{n-p}$
+
+## Proof - Chi squared {.build}
+
+$$
+\begin{aligned}
+\hat{\sigma}^2 
+& = \frac{\|\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}} \|^2}{n-p}
+= \frac{\|\mathbf{y} - \hat{\mathbf{y}} \|^2}{n-p}\\
+& = \frac{\|\mathbf{y} - \mathbf{P}^{\mathbf{X}}\mathbf{y} \|^2}{n-p}
+= \frac{\|\mathbf{P}^{\mathbf{X}^\bot}\mathbf{y} \|^2}{n-p}\\
+\end{aligned}
+$$
+
+Hence:
+$$
+\begin{aligned}
+\frac{n-p}{\sigma^2}\hat{\sigma}^2 
+& = \frac{1}{\sigma^2}\|\mathbf{P}^{\mathbf{X}^\bot}\mathbf{y} \|^2
+\end{aligned}
+$$
+
+And, from Cochran's Theorem:
+Hence:
+$$
+\frac{n-p}{\sigma^2}\hat{\sigma}^2 
+= \frac{1}{\sigma^2}\|\mathbf{P}^{\mathbf{X}^\bot}\mathbf{y} \|^2
+\sim \chi^2_{n-p}.
+$$
+
+## Proof - Independence
+
+$$
+\begin{aligned}
+\hat{\boldsymbol{\beta}} 
+&= (\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}\mathbf{y}\\
+&= (\mathbf{X}^{T}\mathbf{X})^{-1}(\mathbf{X}^{T}\mathbf{X})(\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}\mathbf{y}\\
+&= (\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}(\mathbf{X}(\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T})\mathbf{y}\\
+&= (\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}\mathbf{P}^{\mathbf{X}}\mathbf{y}\\
+\end{aligned}
+$$
+
+and
+$$
+\hat{\sigma}^2 
+= \frac{1}{n-p}\|\mathbf{P}^{\mathbf{X}^\bot}\mathbf{y} \|^2
+$$
+
+But $\mathbf{P}^{\mathbf{X}}\mathbf{y}$ and $\mathbf{P}^{\mathbf{X}^\bot}\mathbf{y}$ are independent
+from Cochran's theorem.
+
+Hence, $\hat{\boldsymbol{\beta}}$ and $\hat{\sigma}^2$ are independent.
+
+<!-- ************************************************************************ -->
+# Distribution of the Coefficients - $\sigma^2$ unknown
+<!-- ************************************************************************ -->
+
+## Distribution of $\hat{\boldsymbol{\beta}}$
+
+When $\sigma^2$ is known:
+
+$$
+\hat{\boldsymbol{\beta}}
+\sim
+\mathcal{N}\left(
+\boldsymbol{\beta};
+\sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
+\right).
+$$
+
+i.e. for $1 \leq k \leq p$:
+
+$$
+\hat{\beta}_k
+\sim
+\mathcal{N}(\beta_k, \sigma^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{kk})
+$$
+
+i.e.
+
+$$
+\frac{\hat{\beta}_k - \beta_k}{\sqrt{\sigma^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{kk}}}
+\sim
+\mathcal{N}(0, 1).
+$$
+
+>* **Problem** $\sigma^2$ is generally *unknown*.
+
+>* **Solution** Replace $\sigma^2$ by $\hat{\sigma}^2$.
+
+## Distribution of $\hat{\boldsymbol{\beta}}$
+
+When $\sigma^2$ is **unknown**, for any $1 \leq k \leq p$:
+$$
+\frac{\hat{\beta}_k - \beta_k}{\sqrt{\hat{\sigma}^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{kk}}}
+\sim
+\mathcal{T}_{n-p}.
+$$
+Notation:
+$$
+\hat{\sigma}^2_k = \hat{\sigma}^2_{\hat{\beta}_k} = \hat{\sigma}^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{kk}
+$$
+
+**Attention**:  
+$$
+[(\mathbf{X}^T\mathbf{X})^{-1}]_{kk}
+\neq
+[(\mathbf{X}^T\mathbf{X})_{kk}]^{-1}
+$$
+
+## Reminder: Student Distribution
+
+* $Z \sim \mathcal{N}(0, 1)$
+* $X \sim \chi^2_p$
+* $Z$ and $X$ independent
+
+Then 
+$$
+T = \frac{Z}{\sqrt{X/p}} \sim \mathcal{T}_p
+$$ 
+
+
+## Distribution of $\hat{\boldsymbol{\beta}}$ - Proof {.build}
+
+$$
+\frac{\hat{\beta}_k - \beta_k}{\sqrt{\sigma^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{kk}}}
+\sim
+\mathcal{N}(0, 1)
+\quad
+\text{and}
+\quad
+\frac{(n-p) \hat{\sigma}^2}{\sigma^2}
+\sim
+\chi^2_{n-p}
+$$
+
+$$
+\frac{\hat{\beta}_k - \beta_k}{\sqrt{\sigma^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{kk}}}
+\quad
+\text{and}
+\quad
+\frac{(n-p) \hat{\sigma}^2}{\sigma^2}
+\quad
+\textbf{independent}
+$$
+
+Hence:
+$$
+\frac{\frac{\hat{\beta}_k - \beta_k}{\sqrt{\sigma^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{kk}}}}{
+\sqrt{\frac{(n-p) \hat{\sigma}^2}{\sigma^2}/ (n-p)}}
+=
+\frac{\hat{\beta}_k - \beta_k}{\sqrt{\hat{\sigma}^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{kk}}}
+\sim
+\mathcal{T}_{n-p}
+$$
+
+<!-- ************************************************************************ -->
+# Confidence Intervals and Tests
+<!-- ************************************************************************ -->
+
+## Confidence intervals {.build}
+
+$$
+\frac{\hat{\beta}_k - \beta_k}{\sqrt{\hat{\sigma}^2_k}}
+\sim
+\mathcal{T}_{n-p}
+\quad
+\text{and}
+\quad
+\frac{n-2}{\sigma^2}\hat{\sigma}^2 \sim \chi^2_{n-p}
+$$
+
+With probability $1-\alpha$:
+$$
+\begin{aligned}
+\beta_k &\in \left[\hat{\beta}_k \pm t_{n-p}(1 - \alpha/2) \sqrt{\hat{\sigma}_k^2}\right]\\
+\sigma^2 &\in \left[\frac{(n-p)\hat{\sigma}^2}{c_{n-p}(1 - \alpha/2)}; \frac{(n-p)\hat{\sigma}^2}{c_{n-p}(\alpha/2)}\right]
+\end{aligned}
+$$
+
+## Tests {.build}
+
+$$
+\text{Hypothesis:}
+\qquad\qquad
+\mathcal{H}_0: \beta_k = 0
+\quad
+\text{vs}
+\quad
+\mathcal{H}_1: \beta_k \neq 0
+$$
+
+$$
+\text{Test Statistic:}
+\qquad\qquad\qquad\qquad
+T_k 
+= \frac{\hat{\beta}_k}{\sqrt{\hat{\sigma}^2_k}}
+\underset{\mathcal{H}_0}{\sim}
+\mathcal{T}_{n-p}
+$$
+
+$$
+\text{Reject Region:}
+\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\\
+\mathbb{P}[\text{Reject} | \mathcal{H}_0 \text{ true}] \leq \alpha
+\qquad\qquad\qquad\qquad\qquad\\
+\qquad\qquad\qquad \iff \mathcal{R}_\alpha = \left\{ t \in \mathbb{R}  ~|~ |T_k| \geq t_{n-p}(1 - \alpha/2) \right\}
+$$
+
+$$
+\text{p value:}\qquad\qquad\qquad\qquad\quad
+p = \mathbb{P}_{\mathcal{H}_0}[|T_k| > T_k^{obs}]
+$$
+
+## Test - Null Distribution
+
+```{r testplot, echo=FALSE, fig.height=5, fig.width=7, fig.align='center'}
+n <- 10
+p <- 5
+ccc <- hcl.colors(5)
+### Student Distribution
+x <- -5500:5500 / 1000
+# 1
+p <- n - p
+plot(x, dt(x, p), type = "l", ylab = "density", ylim = c(0, 0.4), col = ccc[1], lwd = 2, xlab = "")
+abline(h = 0)
+# quantiles for 1 - alp = 95% interval
+alp <- 0.1
+quants <- qt(c(alp / 2, 1 - alp / 2), p)
+segments(x0 = quants, y0 = -1, x1 = quants, y1 = dt(0, p), lty = 2, col = ccc[3])
+axis(side = 1, at = quants, labels = c(expression(t[n-p]^(alpha/2)), expression(t[n-p]^(1 - alpha/2))), col.ticks = ccc[3], col.axis = ccc[3], las = 1, padj = 1.2)
+# Color area under the curve
+x_inf <- -5500:(quants[1]*1000)/1000
+polygon(c(x_inf, rev(x_inf)),
+        c(dt(x_inf, p), rep(0, length(x_inf))),
+        col = ccc[5], border = NA, density = 20)
+x_sup <- (quants[2]*1000):5500/1000
+polygon(c(x_sup, rev(x_sup)),
+        c(dt(x_sup, p), rep(0, length(x_sup))),
+        col = ccc[5], border = NA, density = 20)
+# # beta hat
+# t_obs <- 3
+# segments(t_obs, 5, t_obs, -1, lty = 2, col = ccc[4])
+# axis(side = 1, at = t_obs, labels = expression(T[k]^obs), col.ticks = ccc[4], col.axis = ccc[4], las = 1, padj = 1.2)
+# legend
+legend("topright",
+       c(expression(T[n-p])),
+       col = ccc[1],
+       lwd = 2, lty = 1)
+```
+
+## Test - Do not reject $\mathcal{H}_0$
+
+```{r testplot2, echo=FALSE, fig.height=5, fig.width=7, fig.align='center'}
+n <- 10
+p <- 5
+ccc <- hcl.colors(5)
+### Student Distribution
+x <- -5500:5500 / 1000
+# 1
+p <- n - p
+plot(x, dt(x, p), type = "l", ylab = "density", ylim = c(0, 0.4), col = ccc[1], lwd = 2, xlab = "")
+abline(h = 0)
+# quantiles for 1 - alp = 95% interval
+alp <- 0.1
+quants <- qt(c(alp / 2, 1 - alp / 2), p)
+segments(x0 = quants, y0 = -1, x1 = quants, y1 = dt(0, p), lty = 2, col = ccc[3])
+axis(side = 1, at = quants, labels = c(expression(t[n-p]^(alpha/2)), expression(t[n-p]^(1 - alpha/2))), col.ticks = ccc[3], col.axis = ccc[3], las = 1, padj = 1.2)
+# Color area under the curve
+x_inf <- -5500:(quants[1]*1000)/1000
+polygon(c(x_inf, rev(x_inf)),
+        c(dt(x_inf, p), rep(0, length(x_inf))),
+        col = ccc[5], border = NA, density = 20)
+x_sup <- (quants[2]*1000):5500/1000
+polygon(c(x_sup, rev(x_sup)),
+        c(dt(x_sup, p), rep(0, length(x_sup))),
+        col = ccc[5], border = NA, density = 20)
+# beta hat
+t_obs <- 1
+segments(t_obs, 5, t_obs, -1, lty = 2, col = ccc[4])
+axis(side = 1, at = t_obs, labels = expression(T[k]^obs), col.ticks = ccc[4], col.axis = ccc[4], las = 1, padj = 1.2)
+# legend
+legend("topright",
+       c(expression(T[n-p])),
+       col = ccc[1],
+       lwd = 2, lty = 1)
+```
+
+## Test - Reject $\mathcal{H}_0$
+
+```{r testplot3, echo=FALSE, fig.height=5, fig.width=7, fig.align='center'}
+n <- 10
+p <- 5
+ccc <- hcl.colors(5)
+### Student Distribution
+x <- -5500:5500 / 1000
+# 1
+p <- n - p
+plot(x, dt(x, p), type = "l", ylab = "density", ylim = c(0, 0.4), col = ccc[1], lwd = 2, xlab = "")
+abline(h = 0)
+# quantiles for 1 - alp = 95% interval
+alp <- 0.1
+quants <- qt(c(alp / 2, 1 - alp / 2), p)
+segments(x0 = quants, y0 = -1, x1 = quants, y1 = dt(0, p), lty = 2, col = ccc[3])
+axis(side = 1, at = quants, labels = c(expression(t[n-p]^(alpha/2)), expression(t[n-p]^(1 - alpha/2))), col.ticks = ccc[3], col.axis = ccc[3], las = 1, padj = 1.2)
+# Color area under the curve
+x_inf <- -5500:(quants[1]*1000)/1000
+polygon(c(x_inf, rev(x_inf)),
+        c(dt(x_inf, p), rep(0, length(x_inf))),
+        col = ccc[5], border = NA, density = 20)
+x_sup <- (quants[2]*1000):5500/1000
+polygon(c(x_sup, rev(x_sup)),
+        c(dt(x_sup, p), rep(0, length(x_sup))),
+        col = ccc[5], border = NA, density = 20)
+# beta hat
+t_obs <- 3
+segments(t_obs, 5, t_obs, -1, lty = 2, col = ccc[4])
+axis(side = 1, at = t_obs, labels = expression(T[k]^obs), col.ticks = ccc[4], col.axis = ccc[4], las = 1, padj = 1.2)
+# legend
+legend("topright",
+       c(expression(T[n-p])),
+       col = ccc[1],
+       lwd = 2, lty = 1)
+```
+
+## Test - p value
+
+```{r testplot4, echo=FALSE, fig.height=5, fig.width=7, fig.align='center'}
+n <- 10
+p <- 5
+ccc <- hcl.colors(5)
+### Student Distribution
+x <- -5500:5500 / 1000
+# 1
+p <- n - p
+plot(x, dt(x, p), type = "l", ylab = "density", ylim = c(0, 0.4), col = ccc[1], lwd = 2, xlab = "")
+abline(h = 0)
+# quantiles for 1 - alp = 95% interval
+alp <- 0.1
+quants <- qt(c(alp / 2, 1 - alp / 2), p)
+segments(x0 = quants, y0 = -1, x1 = quants, y1 = dt(0, p), lty = 2, col = ccc[3])
+axis(side = 1, at = quants, labels = c(expression(t[n-p]^(alpha/2)), expression(t[n-p]^(1 - alpha/2))), col.ticks = ccc[3], col.axis = ccc[3], las = 1, padj = 1.2)
+# beta hat
+t_obs <- 3
+segments(t_obs, 5, t_obs, -1, lty = 2, col = ccc[4])
+axis(side = 1, at = t_obs, labels = expression(T[k]^obs), col.ticks = ccc[4], col.axis = ccc[4], las = 1, padj = 1.2)
+segments(-t_obs, 5, -t_obs, -1, lty = 2, col = ccc[4])
+axis(side = 1, at = -t_obs, labels = expression(-T[k]^obs), col.ticks = ccc[4], col.axis = ccc[4], las = 1, padj = 1.2)
+# Color area under the curve
+x_inf <- -5500:(-t_obs*1000)/1000
+polygon(c(x_inf, rev(x_inf)),
+        c(dt(x_inf, p), rep(0, length(x_inf))),
+        col = ccc[4], border = NA, density = 20)
+x_sup <- (t_obs*1000):5500/1000
+polygon(c(x_sup, rev(x_sup)),
+        c(dt(x_sup, p), rep(0, length(x_sup))),
+        col = ccc[4], border = NA, density = 20)
+# legend
+legend("topright",
+       c(expression(T[n-p])),
+       col = ccc[1],
+       lwd = 2, lty = 1)
+```
+
+<!-- ************************************************************************ -->
+# Simulated Dataset
+<!-- ************************************************************************ -->
+
+## Simulated Dataset
+
+$$
+y_i = -1 + 3 x_{i1} - x_{i2} + \epsilon_i
+$$
+
+```{r rsq1, echo=TRUE}
+set.seed(12890926)
+
+## Predictors
+n <- 100
+x_1 <- runif(n, min = -2, max = 2)
+x_2 <- runif(n, min = 0, max = 4)
+
+## Noise
+eps <- rnorm(n, mean = 0, sd = 1)
+
+## Model sim
+beta_0 <- -1; beta_1 <- 3; beta_2 <- -1
+y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+```
+
+## Simulated Dataset - Fit {.smaller}
+
+$$
+y_i = -1 + 3 x_{i1} - x_{i2} + \epsilon_i
+$$
+
+```{r rsq2, echo=TRUE}
+fit <- lm(y_sim ~ x_1 + x_2)
+summary(fit)
+```
+
+## Simulated Dataset - Wrong Fit{.smaller}
+
+```{r rsq3, echo=TRUE}
+## unrelated noise variable x_3
+x_3 <- runif(n, min = -4, max = 0)
+## Fit
+fit <- lm(y_sim ~ x_1 + x_2 + x_3); summary(fit)
+```
+
+<!-- ************************************************************************ -->
+# Advertising
+<!-- ************************************************************************ -->
+
+## Advertising {.smaller}
+
+```{r ad, echo = FALSE, message = FALSE}
+library(here)
+ad <- read.csv(here("data", "Advertising.csv"), row.names = "X")
+```
+
+```{r ad2}
+fit_all <- lm(sales ~ TV + radio + newspaper, data = ad)
+summary(fit_all)
+```
