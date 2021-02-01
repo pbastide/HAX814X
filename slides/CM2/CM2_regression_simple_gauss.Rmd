@@ -1228,51 +1228,51 @@ $$
 \right)
 $$
 
-i.e.
+<!-- i.e. -->
 
-$$
-\frac{1}{\sqrt{\sigma^2}}\mathbf{V}_n^{-1/2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
-\sim
-\mathcal{N}\left(
-\mathbf{0};
-\mathbf{I}_n
-\right)
-$$
+<!-- $$ -->
+<!-- \frac{1}{\sqrt{\sigma^2}}\mathbf{V}_n^{-1/2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right) -->
+<!-- \sim -->
+<!-- \mathcal{N}\left( -->
+<!-- \mathbf{0}; -->
+<!-- \mathbf{I}_n -->
+<!-- \right) -->
+<!-- $$ -->
 
-where $\mathbf{V}_n^{-1/2}$ is a matrix such that 
-$\mathbf{V}_n^{-1/2} \mathbf{V}_n^{-1} [\mathbf{V}_n^{-1/2}]^T = \mathbf{I}_n$
-(Cholesky decomposition)
+<!-- where $\mathbf{V}_n^{-1/2}$ is a matrix such that  -->
+<!-- $\mathbf{V}_n^{-1/2} \mathbf{V}_n^{-1} [\mathbf{V}_n^{-1/2}]^T = \mathbf{I}_n$ -->
+<!-- (Cholesky decomposition) -->
 
-## Reminder: <br> Linear function of a Gaussian
+<!-- ## Reminder: <br> Linear function of a Gaussian -->
 
-If $X \sim \mathcal{N}(\mu, \sigma^2)$, then for any $(a, b) \in \mathbb{R}^2$,  
-$$
-Y = aX + b \sim \mathcal{N}(a\mu + b, a^2\sigma^2).
-$$
+<!-- If $X \sim \mathcal{N}(\mu, \sigma^2)$, then for any $(a, b) \in \mathbb{R}^2$,   -->
+<!-- $$ -->
+<!-- Y = aX + b \sim \mathcal{N}(a\mu + b, a^2\sigma^2). -->
+<!-- $$ -->
 
-If $\mathbf{X} \sim \mathcal{N}(\boldsymbol{\mu}, \mathbf{\Sigma})$,
-then for any $\mathbf{a}$ matrix and $\mathbf{b}$ vector,  
-$$
-\mathbf{Y} = \mathbf{a}\mathbf{X} + \mathbf{b} 
-\sim \mathcal{N}(\mathbf{a}\boldsymbol{\mu} + \mathbf{b}, \mathbf{a}\mathbf{\Sigma}\mathbf{a}^T).
-$$
+<!-- If $\mathbf{X} \sim \mathcal{N}(\boldsymbol{\mu}, \mathbf{\Sigma})$, -->
+<!-- then for any $\mathbf{a}$ matrix and $\mathbf{b}$ vector,   -->
+<!-- $$ -->
+<!-- \mathbf{Y} = \mathbf{a}\mathbf{X} + \mathbf{b}  -->
+<!-- \sim \mathcal{N}(\mathbf{a}\boldsymbol{\mu} + \mathbf{b}, \mathbf{a}\mathbf{\Sigma}\mathbf{a}^T). -->
+<!-- $$ -->
 
-* **Proof**: Exercise.  
-[Hint: use the characteristic function.]
+<!-- * **Proof**: Exercise.   -->
+<!-- [Hint: use the characteristic function.] -->
 
 
-## Distribution of $(\hat{\beta}_0, \hat{\beta}_1)$
+<!-- ## Distribution of $(\hat{\beta}_0, \hat{\beta}_1)$ -->
 
-When $\sigma^2$ is known:
+<!-- When $\sigma^2$ is known: -->
 
-$$
-\frac{1}{\sqrt{\sigma^2}}\mathbf{V}_n^{-1/2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
-\sim
-\mathcal{N}\left(
-\mathbf{0};
-\mathbf{I}_n
-\right)
-$$
+<!-- $$ -->
+<!-- \frac{1}{\sqrt{\sigma^2}}\mathbf{V}_n^{-1/2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right) -->
+<!-- \sim -->
+<!-- \mathcal{N}\left( -->
+<!-- \mathbf{0}; -->
+<!-- \mathbf{I}_n -->
+<!-- \right) -->
+<!-- $$ -->
 
 When $\sigma^2$ is **unknown**:
 $$
@@ -1281,7 +1281,7 @@ $$
 \mathcal{F}^2_{n-2}
 $$
 
-* Replace "squared" standard Gaussian by **Fisher** distribution.
+* with $\mathcal{F}^2_{n-2}$ the **Fisher** distribution.
 
 ## Reminder: Fisher Distribution 1/2
 
