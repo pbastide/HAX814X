@@ -29,7 +29,7 @@ $$y_i = \beta_0 + \beta_1 x_i + \epsilon_i, \quad \forall 1 \leq i \leq n$$
 
 ## OLS Estimators
 
-$$ (\hat{\beta}_0, \hat{\beta}_0) 
+$$ (\hat{\beta}_0, \hat{\beta}_1) 
 = \underset{(\beta_0, \beta_1) \in \mathbb{R}^2}{\operatorname{argmin}} 
 \left\{
 \sum_{i = 1}^n (y_i - \beta_0 - \beta_1 x_i)^2
@@ -48,7 +48,7 @@ $$
 \\
 \mathbb{E}[\hat{\beta}_0] &= \beta_0
 &
-\mathbb{E}[\hat{\beta}_0] &= \beta_1
+\mathbb{E}[\hat{\beta}_1] &= \beta_1
 \\
 \mathbb{Var}[\hat{\beta}_0]
 &= \frac{\sigma^2}{n} \left( 1 + \frac{\bar{x}^2}{s_{\mathbf{x}}^2} \right)
@@ -921,7 +921,7 @@ $$
 ## Reminder: Student Distribution 1/2
 
 Let $Z$ be a standard normal rv : $Z \sim \mathcal{N}(0, 1)$,  
-and $X$ a chi squared rv with $p$ degrees of freedom: $Z \sim \chi^2_p$,
+and $X$ a chi squared rv with $p$ degrees of freedom: $X \sim \chi^2_p$,
 $Z$ and $X$ independent.
 Then 
 $$
