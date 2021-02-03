@@ -633,21 +633,25 @@ of $\mathbf{y}$ on $\mathcal{M}(\mathbf{X})$.
 It is the only vector such that $\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}}$ is orthogonal to
 $\mathcal{M}(\mathbf{X})$.
 
-I.e. $\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}}$ is orthogonal to all $\mathbf{x}_i$:
+I.e. $\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}}$ is orthogonal to all $\mathbf{x}_k$:
 $$
-\langle \mathbf{x}_i,  \mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}} \rangle
-= \mathbf{x}_i^T (\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}}) = 0
+\langle \mathbf{x}_k,  \mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}} \rangle
+= \mathbf{x}_k^T (\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}}) = 0
 \qquad 
-1 \leq i \leq n
+1 \leq k \leq p
 $$
 
 $$
 i.e. \quad 
-(\mathbf{x}_1 \dotsc \mathbf{x}_n)^T (\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}})
+(\mathbf{x}_1 \dotsc \mathbf{x}_p)^T (\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}})
 = 
-\sum_{i = 1}^n \mathbf{x}_i^T (\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}})
+\begin{pmatrix}
+\mathbf{x}_1^T (\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}})\\
+\vdots\\
+\mathbf{x}_p^T (\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}})
+\end{pmatrix}
 =
-0
+\mathbf{0}
 $$
 
 $$
@@ -1041,7 +1045,7 @@ $$
 $$
 \begin{aligned}
 \mathbb{Cov}[\bar{\boldsymbol{\beta}} - \hat{\boldsymbol{\beta}}; \hat{\boldsymbol{\beta}}]
-& = \mathbb{Cov}[\bar{\boldsymbol{\beta}}; \hat{\boldsymbol{\beta}}] + \mathbb{Var}[\hat{\boldsymbol{\beta}}]\\
+& = \mathbb{Cov}[\bar{\boldsymbol{\beta}}; \hat{\boldsymbol{\beta}}] - \mathbb{Var}[\hat{\boldsymbol{\beta}}]\\
 & = \cdots
 \end{aligned}
 $$
@@ -1100,7 +1104,7 @@ Finally:
 $$
 \begin{aligned}
 \mathbb{Cov}[\bar{\boldsymbol{\beta}} - \hat{\boldsymbol{\beta}}; \hat{\boldsymbol{\beta}}]
-& = \mathbb{Cov}[\bar{\boldsymbol{\beta}}; \hat{\boldsymbol{\beta}}] + \mathbb{Var}[\hat{\boldsymbol{\beta}}]\\
+& = \mathbb{Cov}[\bar{\boldsymbol{\beta}}; \hat{\boldsymbol{\beta}}] - \mathbb{Var}[\hat{\boldsymbol{\beta}}]\\
 & = \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1} - \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}\\
 &= 0.
 \end{aligned}
