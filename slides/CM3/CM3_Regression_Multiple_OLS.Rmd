@@ -451,7 +451,7 @@ $$
 
 ## OLS - Definition
 
-The OLS estimators $\hat{\boldsymbol{\beta}}$ is given by:
+The OLS estimator $\hat{\boldsymbol{\beta}}$ is given by: 
 
 $$ 
 \hat{\boldsymbol{\beta}} 
@@ -696,7 +696,7 @@ $$
 The minimum of quadratic function $S$ is obtained at the point where the gradient is zero:
 
 $$ 
-S(\boldsymbol{\beta})
+S(\hat{\boldsymbol{\beta}})
 = \|\mathbf{y} - \mathbf{X}\boldsymbol{\beta} \|^2
 = \boldsymbol{\beta}^T\mathbf{X}^T\mathbf{X}\boldsymbol{\beta}
 - 2 \boldsymbol{\beta}^T\mathbf{X}^T\mathbf{y}
@@ -730,7 +730,7 @@ Let $\mathbf{z}$ be a random vector of dimension $n$.
 
 * The *expectation* of $\mathbf{z}$ is an $n$ vector:
 $$
-\mathbb{E}[\mathbf{z}] = (\mathbb{E}[z_1], \cdots, \mathbb{E}[z_i])^T
+\mathbb{E}[\mathbf{z}] = (\mathbb{E}[z_1], \cdots, \mathbb{E}[z_n])^T
 $$
 
 * The *variance* of $\mathbf{z}$ is an $n \times n$ **matrix**:
