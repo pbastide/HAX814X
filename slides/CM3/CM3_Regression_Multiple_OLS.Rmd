@@ -696,7 +696,7 @@ $$
 The minimum of quadratic function $S$ is obtained at the point where the gradient is zero:
 
 $$ 
-S(\hat{\boldsymbol{\beta}})
+S(\boldsymbol{\beta})
 = \|\mathbf{y} - \mathbf{X}\boldsymbol{\beta} \|^2
 = \boldsymbol{\beta}^T\mathbf{X}^T\mathbf{X}\boldsymbol{\beta}
 - 2 \boldsymbol{\beta}^T\mathbf{X}^T\mathbf{y}
