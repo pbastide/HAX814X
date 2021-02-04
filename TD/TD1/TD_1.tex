@@ -1,8 +1,8 @@
 \documentclass{td_um}
 \input{../header_td.tex}
 
-\def\version{eno}
-%\def\version{cor}
+%\def\version{eno}
+\def\version{cor}
 
 \usepackage{hyperref}
 \ue{HMMA201}
@@ -127,14 +127,14 @@ Soit $y_{1}, \cdots, y_{n}$ des réels. Pour mesurer l'écart d'un réel $x$ à 
 
 \cor{\newpage}
 
-\exo{} Soit $y_{1}, \cdots, y_{n}$ et $x_{1}, \cdots, x_{n}$ des réels. Dans le modèle linéaire simple $y_{i}=\beta_{1}+\beta_{2} x_{i}+\varepsilon_{i}$, on considère la somme des erreurs en valeur absolue
+\exo{} Soit $y_{1}, \cdots, y_{n}$ et $x_{1}, \cdots, x_{n}$ des réels. Dans le modèle linéaire simple $y_{i}=\beta_{0}+\beta_{1} x_{i}+\varepsilon_{i}$, on considère la somme des erreurs en valeur absolue
 \[
-    S\left(\beta_{1}, \beta_{2}\right)=\sum_{i=1}^{n}\abs{y_{i}-\beta_{1}-\beta_{2} x_{i}}
+    S\left(\beta_{1}, \beta_{2}\right)=\sum_{i=1}^{n}\abs{y_{i}-\beta_{0}-\beta_{1} x_{i}}
 \]
-et on notera $\tilde{\beta}_{1}$ et $\tilde{\beta}_{2}$ les estimateurs des moindres valeurs absolues, \textit{i.e.} les valeurs de $\beta_{1}$ et $\beta_{2}$ minimisant la fonction $S(\cdot, \cdot)$. On cherche une stratégie pour obtenir $\tilde{\beta}_{1}$ et $\tilde{\beta}_{2}$.
+et on notera $\tilde{\beta}_{0}$ et $\tilde{\beta}_{1}$ les estimateurs des moindres valeurs absolues, \textit{i.e.} les valeurs de $\beta_{0}$ et $\beta_{1}$ minimisant la fonction $S(\cdot, \cdot)$. On cherche une stratégie pour obtenir $\tilde{\beta}_{0}$ et $\tilde{\beta}_{1}$.
 \begin{enumerate}
- \item La valeur de $\beta_{2}$ étant fixée, quelle est la valeur de $\beta_{1}$ qui minimise la fonction $g\left(\beta_{1}\right)=\sum_{i=1}^{n}\left|y_{i}-\beta_{1}-\beta_{2} x_{i}\right| ?$
- \item En déduire un algorithme pour obtenir $\tilde{\beta}_{1}$ et $\tilde{\beta}_{2}$.
+ \item La valeur de $\beta_{1}$ étant fixée, quelle est la valeur de $\beta_{0}$ qui minimise la fonction $g\left(\beta_{0}\right)=\sum_{i=1}^{n}\left|y_{i}-\beta_{0}-\beta_{1} x_{i}\right| ?$
+ \item En déduire un algorithme pour obtenir $\tilde{\beta}_{0}$ et $\tilde{\beta}_{1}$.
 \end{enumerate}
 
 
@@ -150,10 +150,10 @@ Montrer que le coefficient de détermination $R^{2}$ est égal au carré du coef
 
 
 \exo{}
-Dans le modèle linéaire simple, si on considère la normalité des $\varepsilon_{i},$ on sait que $y_{i} \sim \mathcal{N}\left(\beta_{1}+\beta_{2} x_{i}, \sigma^{2}\right), \forall i=1, \cdots, n$
+Dans le modèle linéaire simple, si on considère la normalité des $\varepsilon_{i},$ on sait que $y_{i} \sim \mathcal{N}\left(\beta_{0}+\beta_{1} x_{i}, \sigma^{2}\right), \forall i=1, \cdots, n$
 \begin{enumerate}
-    \item  Exprimer la vraisemblance des observations $L\left(\beta_{1}, \beta_{2}, \sigma^{2}\right)$.
-    \item  Quelles sont les valeurs de $\beta_{1}$ et $\beta_{2}$ maximisant cette vraisemblance?
+    \item  Exprimer la vraisemblance des observations $L\left(\beta_{0}, \beta_{1}, \sigma^{2}\right)$.
+    \item  Quelles sont les valeurs de $\beta_{0}$ et $\beta_{1}$ maximisant cette vraisemblance?
     \item  Quelle est la valeur de $\sigma^{2}$ maximisant cette vraisemblance? Que peut-on alors dire de l'estimateur du maximum de vraisemblance (EMV) de $\sigma^{2}$ ?
 \end{enumerate}
 
