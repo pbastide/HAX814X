@@ -315,7 +315,7 @@ $$
 
 $$
 \langle \mathbf{x} ; \mathbf{y}\rangle 
-= \frac{1}{4} \left(\|\mathbf{x} - \mathbf{y}\|^2 - \|\mathbf{x} - \mathbf{y}\|^2 \right)
+= \frac{1}{4} \left(\|\mathbf{x} + \mathbf{y}\|^2 - \|\mathbf{x} - \mathbf{y}\|^2 \right)
 $$
 
 $$
@@ -451,7 +451,7 @@ $$
 
 ## OLS - Definition
 
-The OLS estimators $\hat{\boldsymbol{\beta}}$ is given by:
+The OLS estimator $\hat{\boldsymbol{\beta}}$ is given by:
 
 $$ 
 \hat{\boldsymbol{\beta}} 
@@ -709,13 +709,13 @@ $$
 
 $$ 
 \nabla S(\hat{\boldsymbol{\beta}})
-= 2 \mathbf{X}^T\mathbf{X}\boldsymbol{\beta}
+= 2 \mathbf{X}^T\mathbf{X}\hat{\boldsymbol{\beta}}
 - 2 \mathbf{X}^T\mathbf{y}
 = 0
 $$
 
 $$ 
-\mathbf{X}^T\mathbf{X}\boldsymbol{\beta} = \mathbf{X}^T\mathbf{y}
+\mathbf{X}^T\mathbf{X}hat{\boldsymbol{\beta}} = \mathbf{X}^T\mathbf{y}
 $$
 
 Same conclusion as before.
@@ -730,7 +730,7 @@ Let $\mathbf{z}$ be a random vector of dimension $n$.
 
 * The *expectation* of $\mathbf{z}$ is an $n$ vector:
 $$
-\mathbb{E}[\mathbf{z}] = (\mathbb{E}[z_1], \cdots, \mathbb{E}[z_i])^T
+\mathbb{E}[\mathbf{z}] = (\mathbb{E}[z_1], \cdots, \mathbb{E}[z_n])^T
 $$
 
 * The *variance* of $\mathbf{z}$ is an $n \times n$ **matrix**:
