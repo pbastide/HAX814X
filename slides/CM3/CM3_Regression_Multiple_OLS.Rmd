@@ -709,13 +709,13 @@ $$
 
 $$ 
 \nabla S(\hat{\boldsymbol{\beta}})
-= 2 \mathbf{X}^T\mathbf{X}\boldsymbol{\beta}
+= 2 \mathbf{X}^T\mathbf{X}\hat{\boldsymbol{\beta}}
 - 2 \mathbf{X}^T\mathbf{y}
 = 0
 $$
 
 $$ 
-\mathbf{X}^T\mathbf{X}\boldsymbol{\beta} = \mathbf{X}^T\mathbf{y}
+\mathbf{X}^T\mathbf{X}hat{\boldsymbol{\beta}} = \mathbf{X}^T\mathbf{y}
 $$
 
 Same conclusion as before.
