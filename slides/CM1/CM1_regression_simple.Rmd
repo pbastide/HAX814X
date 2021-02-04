@@ -1469,7 +1469,7 @@ text(ybaronev[1], ybaronev[2],
 #          col = "black", lwd = 1, lty = 2)
 ```
 
-Using Pythagore:
+Using Pythagoras's theorem:
 
 $$
 \begin{aligned}
