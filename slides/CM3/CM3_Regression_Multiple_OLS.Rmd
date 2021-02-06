@@ -423,7 +423,7 @@ $\mathbf{P}\mathbf{x}$ and $(\mathbf{I}_n - \mathbf{P})\mathbf{x}$ orthogonal.
 ## Reminder: Matrix of Projection - 4/4 {.build}
 
 **Definition**:  
-An $n$ matrix is said to be *orthogonal* if
+A $n$ matrix is said to be *orthogonal* if
 $\mathbf{U}\mathbf{U}^T = \mathbf{I}_n$.  
 The columns of $\mathbf{U}$ are then an orthogonal basis of $\mathbb{R}^n$.
 
