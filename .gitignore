@@ -36,3 +36,5 @@
 *.latexmain
 *.toc
 *.nav
+# Xournalpp
+*.xopp
