@@ -155,7 +155,7 @@ y_i
 1 \leq i \leq n
 $$
 
-## Likelihood of $\mathbf{y}$
+## Likelihood of $\mathbf{y}$ {.build}
 
 * Distribution of $y_i$:
 $$
@@ -168,7 +168,7 @@ y_i
 1 \leq i \leq n
 $$
 
-* Likelihood of $\mathbf{y} = (y_1, \dotsc, y_n)^T$:
+>* Likelihood of $\mathbf{y} = (y_1, \dotsc, y_n)^T$:
 $$
 \begin{aligned}
 &L(\boldsymbol{\beta}, \sigma^2 | y_1, \dotsc, y_n)
@@ -177,7 +177,6 @@ $$
 $$
 
 and
-
 $$
 \begin{aligned}
 L(\boldsymbol{\beta}, \sigma^2 | y_i)
@@ -236,7 +235,7 @@ $$
 $$
 (\hat{\boldsymbol{\beta}}^{ML}, \hat{\sigma}^2_{ML}) 
 = \underset{(\boldsymbol{\beta}, \sigma^2) \in \mathbb{R}^p\times\mathbb{R}_+^*}{\operatorname{argmax}} 
-\log L(\boldsymbol{\beta} \sigma^2 | \mathbf{y})
+\log L(\boldsymbol{\beta}, \sigma^2 | \mathbf{y})
 $$
 
 with:
@@ -796,7 +795,6 @@ $$
 $$
 
 And, from Cochran's Theorem:
-Hence:
 $$
 \frac{n-p}{\sigma^2}\hat{\sigma}^2 
 = \frac{1}{\sigma^2}\|\mathbf{P}^{\mathbf{X}^\bot}\mathbf{y} \|^2
@@ -979,7 +977,7 @@ $$
 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\\
 \mathbb{P}[\text{Reject} | \mathcal{H}_0 \text{ true}] \leq \alpha
 \qquad\qquad\qquad\qquad\qquad\\
-\qquad\qquad\qquad \iff \mathcal{R}_\alpha = \left\{ t \in \mathbb{R}  ~|~ |T_k| \geq t_{n-p}(1 - \alpha/2) \right\}
+\qquad\qquad\qquad \iff \mathcal{R}_\alpha = \left\{ t \in \mathbb{R}  ~|~ |t| \geq t_{n-p}(1 - \alpha/2) \right\}
 $$
 
 $$
@@ -1182,6 +1180,75 @@ x_3 <- runif(n, min = -4, max = 0)
 ## Fit
 fit <- lm(y_sim ~ x_1 + x_2 + x_3); summary(fit)
 ```
+
+<!-- ************************************************************************ -->
+# Prediction
+<!-- ************************************************************************ -->
+
+## Predict a new point
+
+>* We fitted $\hat{\beta}_1, \dots, \hat{\beta}_p$ on $((y_1, \mathbf{x}^1), \dotsc, (y_n, \mathbf{x}^n))$
+
+>* A new line of predictors $\mathbf{x}^{n+1}$ comes along. How can we guess $y_{n+1}$ ?
+
+>* We use the same model:
+$$
+y_{n+1} = \mathbf{x}^{n+1}\boldsymbol{\beta} + \epsilon_{n+1}
+$$
+with
+$\epsilon_{n+1} \sim \mathcal{N}(0, \sigma^2)$, independent from all $(\epsilon_{i})_{1\leq i \leq n}$.
+
+>* We predict $y_{n+1}$ with:
+$$
+\hat{y}_{n+1} = \mathbf{x}^{n+1}\hat{\boldsymbol{\beta}}
+$$
+
+>* **Question**: What is the error 
+$\hat{\epsilon}_{n+1} = y_{n+1} - \hat{y}_{n+1}$ ?
+
+## Prediction Error - Known variance
+
+The prediction error $\hat{\epsilon}_{n+1} = y_{n+1} - \hat{y}_{n+1}$
+is such that:
+$$
+\hat{\epsilon}_{n+1}
+\sim \mathcal{N}\left(
+0,
+\sigma^2 \left(1 + \mathbf{x}^{n+1} (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{x}^{n+1})^T\right)
+\right)\\
+$$
+**Proof**:  
+
+* $\hat{\epsilon}_{n+1}$ is Gaussian as the sum of two Gaussian variables.  
+* We already know its mean and variance (see previous lesson).
+
+**Remark**: $\mathbf{x}^{n+1} (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{x}^{n+1})^T$ is a *scalar*.
+
+## Prediction Error - Unknown variance
+
+We get:
+$$
+\frac{y_{n+1} - \hat{y}_{n+1}}{\sqrt{\hat{\sigma}^2 \left(1 + \mathbf{x}^{n+1} (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{x}^{n+1})^T\right)}}
+\sim
+\mathcal{T}_{n-p}
+$$
+
+**Proof**:
+
+$$
+\frac{y_{n+1} - \hat{y}_{n+1}}{\sqrt{\hat{\sigma}^2 \left(1 + \mathbf{x}^{n+1} (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{x}^{n+1})^T\right)}}
+=
+\frac{\frac{y_{n+1} - \hat{y}_{n+1}}{\sqrt{\sigma^2 \left(1 + \mathbf{x}^{n+1} (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{x}^{n+1})^T\right)}}}{
+\sqrt{\frac{(n-p) \hat{\sigma}^2}{\sigma^2}/ (n-p)}}
+$$
+
+## Prediction - Confidence Interval
+
+With probability $1-\alpha$:
+$$
+y_{n+1} \in \left[\hat{y}_{n+1} \pm t_{n-p}(1 - \alpha/2) \sqrt{\hat{\sigma}^2 \left(1 + \mathbf{x}^{n+1} (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{x}^{n+1})^T\right)}\right]\\
+$$
+
 
 <!-- ************************************************************************ -->
 # Advertising
