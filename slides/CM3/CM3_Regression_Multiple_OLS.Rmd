@@ -401,7 +401,7 @@ text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
 
 **Definition**:  
 
-* An n square matrix $\mathbf{P}$ is a *projection* matrix if
+* An $n$ square matrix $\mathbf{P}$ is a *projection* matrix if
 $\mathbf{P}^2 = \mathbf{P}$.
 
 >* If $\mathbf{P}^2 = \mathbf{P}$ and $\mathbf{P}$ is symmetric,  
