@@ -662,7 +662,7 @@ $$
 $$
 \begin{aligned}
 \frac{1}{\sigma^2}\|\mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) \|^2
-&= \frac{1}{\sigma^2}(\mathbf{Y} - \boldsymbol{\mu})^T\mathbf{P}^T \mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) 
+&= \frac{1}{\sigma^2}\|\mathbf{U}\mathbf{\Delta}\mathbf{U}^T(\mathbf{Y} - \boldsymbol{\mu}) \|^2
 = \cdots \qquad \qquad
 \end{aligned}
 $$
@@ -670,10 +670,8 @@ $$
 $$
 \begin{aligned}
 \frac{1}{\sigma^2}\|\mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) \|^2
-&= \frac{1}{\sigma^2}(\mathbf{Y} - \boldsymbol{\mu})^T\mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) \\
-&= \frac{1}{\sigma^2}(\mathbf{Y} - \boldsymbol{\mu})^T\mathbf{U}\mathbf{\Delta}\mathbf{U}^T(\mathbf{Y} - \boldsymbol{\mu})
-\quad [\mathbf{\Delta}^2 = \mathbf{\Delta}]\\
-&= \frac{1}{\sigma^2}(\mathbf{Y} - \boldsymbol{\mu})^T(\mathbf{\Delta}\mathbf{U}^T)^T\mathbf{\Delta}\mathbf{U}^T(\mathbf{Y} - \boldsymbol{\mu})\\
+&= \frac{1}{\sigma^2}[\mathbf{U}\mathbf{\Delta}\mathbf{U}^T(\mathbf{Y} - \boldsymbol{\mu})]^T[\mathbf{U}\mathbf{\Delta}\mathbf{U}^T(\mathbf{Y} - \boldsymbol{\mu})] \\
+&= \frac{1}{\sigma^2}[\mathbf{\Delta}\mathbf{U}^T(\mathbf{Y} - \boldsymbol{\mu})]^T\mathbf{U}^T\mathbf{U}[\mathbf{\Delta}\mathbf{U}^T(\mathbf{Y} - \boldsymbol{\mu})] \\
 &= \frac{1}{\sigma^2}(\mathbf{\Delta}\mathbf{U}^T\mathbf{Y} - \mathbf{\Delta}\mathbf{U}^T\boldsymbol{\mu})^T(\mathbf{\Delta}\mathbf{U}^T\mathbf{Y} - \mathbf{\Delta}\mathbf{U}^T\boldsymbol{\mu}) \\
 \end{aligned}
 $$
