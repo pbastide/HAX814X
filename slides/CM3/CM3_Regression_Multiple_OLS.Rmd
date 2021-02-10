@@ -1314,7 +1314,7 @@ $$
 
 $$
 \mathbb{Cov}[\hat{\boldsymbol{\epsilon}}; \hat{\mathbf{y}}] 
-= \mathbf{P}^{\mathbf{X}^\bot}\mathbb{Var}[\mathbf{y}; \mathbf{y}] - \sigma^2\mathbf{P}^{\mathbf{X}^\bot}
+= \mathbf{P}^{\mathbf{X}^\bot}\mathbb{Var}[\mathbf{y}] - \sigma^2\mathbf{P}^{\mathbf{X}^\bot}
 = \cdots
 $$
 
