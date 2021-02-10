@@ -938,7 +938,7 @@ $$
 \quad
 \text{and}
 \quad
-\frac{n-2}{\sigma^2}\hat{\sigma}^2 \sim \chi^2_{n-p}
+\frac{n-p}{\sigma^2}\hat{\sigma}^2 \sim \chi^2_{n-p}
 $$
 
 With probability $1-\alpha$:
