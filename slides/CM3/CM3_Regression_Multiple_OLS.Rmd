@@ -715,7 +715,7 @@ $$
 $$
 
 $$ 
-\mathbf{X}^T\mathbf{X}hat{\boldsymbol{\beta}} = \mathbf{X}^T\mathbf{y}
+\mathbf{X}^T\mathbf{X}\hat{\boldsymbol{\beta}} = \mathbf{X}^T\mathbf{y}
 $$
 
 Same conclusion as before.
@@ -1281,7 +1281,7 @@ $$
 
 
 $$
-\mathbb{Var}[\hat{\boldsymbol{\epsilon}}] 
+\mathbb{Var}[\hat{\mathbf{y}}] 
 = \sigma^2 \mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T
 = \sigma^2 \mathbf{P}^{\mathbf{X}}.
 $$
@@ -1466,7 +1466,7 @@ $$
 \mathbb{Var}[\hat{\epsilon}_{n+1}] 
 &= \sigma^2 + \mathbb{Var}[\mathbf{x}^{n+1}\hat{\boldsymbol{\beta}}]\\
 &= \sigma^2 + \mathbf{x}^{n+1} \mathbb{Var}[\hat{\boldsymbol{\beta}}](\mathbf{x}^{n+1})^T\\
-&= \sigma^2 + \mathbf{x}^{n+1} (\sigma^2 \mathbf{X}^T\mathbf{X}) (\mathbf{x}^{n+1})^T\\
+&= \sigma^2 + \mathbf{x}^{n+1} (\sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}) (\mathbf{x}^{n+1})^T\\
 \end{aligned}
 $$
 
