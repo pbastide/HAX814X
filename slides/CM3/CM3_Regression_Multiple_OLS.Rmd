@@ -1387,7 +1387,7 @@ $$
 \mathbb{Var}[\hat{\epsilon}_{n+1}] 
 &= \sigma^2 + \mathbb{Var}[\mathbf{x}^{n+1}\hat{\boldsymbol{\beta}}]\\
 &= \sigma^2 + \mathbf{x}^{n+1} \mathbb{Var}[\hat{\boldsymbol{\beta}}](\mathbf{x}^{n+1})^T\\
-&= \sigma^2 + \mathbf{x}^{n+1} (\sigma^2 \mathbf{X}^T\mathbf{X}) (\mathbf{x}^{n+1})^T\\
+&= \sigma^2 + \mathbf{x}^{n+1} (\sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}) (\mathbf{x}^{n+1})^T\\
 \end{aligned}
 $$
 
