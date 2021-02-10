@@ -450,7 +450,7 @@ Let $\mathbf{X}$ be a Gaussian vector of size $p$ with expectation $\boldsymbol{
 $\mathbf{X} \sim \mathcal{N}(\boldsymbol{\mu}, \mathbf{\Sigma})$.
 Then, if $\mathbf{\Sigma}$ is invertible,
 $$
-(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})^T
+(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})
 \sim \chi^2_p
 $$ 
 
@@ -467,7 +467,7 @@ $$
 
 And:
 $$
-(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})^T
+(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})
 = \mathbf{Y}^T \mathbf{Y}
 = \sum_{i = 1}^p Y_i^2
 $$
@@ -475,7 +475,7 @@ with $Y_1, \dotsc, Y_p$ be $p$ standard normal iid rv.
 
 Hence:
 $$
-(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})^T
+(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})
 = \sum_{i = 1}^p Y_i^2
 \sim \chi^2_p.
 $$
