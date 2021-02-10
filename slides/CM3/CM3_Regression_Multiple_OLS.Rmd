@@ -1308,25 +1308,25 @@ $$
 
 $$
 \mathbb{Cov}[\hat{\boldsymbol{\epsilon}}; \hat{\mathbf{y}}] 
-= \mathbb{Cov}[\mathbf{P}^{\mathbf{X}}\mathbf{y}; \mathbf{y}] - \sigma^2\mathbf{P}^{\mathbf{X}^\bot}
+= \mathbb{Cov}[\mathbf{P}^{\mathbf{X}^\bot}\mathbf{y}; \mathbf{y}] - \sigma^2\mathbf{P}^{\mathbf{X}^\bot}
 = \cdots
 $$
 
 $$
 \mathbb{Cov}[\hat{\boldsymbol{\epsilon}}; \hat{\mathbf{y}}] 
-= \mathbf{P}^{\mathbf{X}}\mathbb{Var}[\mathbf{y}] - \sigma^2\mathbf{P}^{\mathbf{X}^\bot}
+= \mathbf{P}^{\mathbf{X}^\bot}\mathbb{Var}[\mathbf{y}] - \sigma^2\mathbf{P}^{\mathbf{X}^\bot}
 = \cdots
 $$
 
 $$
 \mathbb{Cov}[\hat{\boldsymbol{\epsilon}}; \hat{\mathbf{y}}] 
-= \mathbf{P}^{\mathbf{X}}[\sigma^2\mathbf{I}_n] - \sigma^2\mathbf{P}^{\mathbf{X}^\bot}
+= \mathbf{P}^{\mathbf{X}^\bot}[\sigma^2\mathbf{I}_n] - \sigma^2\mathbf{P}^{\mathbf{X}^\bot}
 = \cdots
 $$
 
 $$
 \mathbb{Cov}[\hat{\boldsymbol{\epsilon}}; \hat{\mathbf{y}}] 
-= \sigma^2 \mathbf{P}^{\mathbf{X}}- \sigma^2\mathbf{P}^{\mathbf{X}^\bot}
+= \sigma^2 \mathbf{P}^{\mathbf{X}^\bot}- \sigma^2\mathbf{P}^{\mathbf{X}^\bot}
 = \mathbf{0}.
 $$
 
