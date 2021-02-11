@@ -1281,7 +1281,7 @@ $$
 
 
 $$
-\mathbb{Var}[\hat{\boldsymbol{\epsilon}}] 
+\mathbb{Var}[\hat{\mathbf{y}}] 
 = \sigma^2 \mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T
 = \sigma^2 \mathbf{P}^{\mathbf{X}}.
 $$
