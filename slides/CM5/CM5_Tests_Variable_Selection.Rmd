@@ -7,6 +7,8 @@ output:
     fig_width: 7
     fig_height: 4
   self_contained: true
+editor_options: 
+  chunk_output_type: console
 ---
 <!-- ************************************************************************ -->
 # What we know
@@ -87,6 +89,10 @@ $$
 \text{p value:}\qquad\qquad\qquad\qquad\quad
 p = \mathbb{P}_{\mathcal{H}_0}[|T_k| > T_k^{obs}]
 $$
+
+<!-- ************************************************************************ -->
+# Problems with the $t$-test
+<!-- ************************************************************************ -->
 
 ## Simulated Dataset
 
@@ -261,7 +267,7 @@ $$
 \quad
 \text{then}
 \quad
-(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})^T
+(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})
 \sim \chi^2_p
 $$ 
 
@@ -395,7 +401,7 @@ plot.window(c(0, 1.1), c(0, 1.1))
 polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
 or <- c(0.3, 0.2)
 ybaronev <- c(0.55, 0.45)
-yv <- c(0.8, 1.0)
+yv <- c(0.8, 0.7)
 xv <- c(0.5, 0.1 + 0.1/3)
 betaxv <- c(0.6, 0.1)
 onev <- c(0.6, 0.5)
@@ -420,7 +426,7 @@ text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
      labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
 ```
 
-* $\hat{\mathbf{y}}$ **not too far** from $\mathcal{M}(\mathbf{X})$.
+* $\mathbf{y}$ **not too far** from $\mathcal{M}(\mathbf{X})$.
 
 * $\|\hat{\boldsymbol{\epsilon}}\|^2$ **not too large** compared to $\|\hat{\mathbf{y}}\|^2$.
 
@@ -462,7 +468,7 @@ text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
      labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
 ```
 
-* $\hat{\mathbf{y}}$ **almost orth.** to $\mathcal{M}(\mathbf{X})$.
+* $\mathbf{y}$ **almost orth.** to $\mathcal{M}(\mathbf{X})$.
 
 * $\|\hat{\boldsymbol{\epsilon}}\|^2$ **rather large** compared to $\|\hat{\mathbf{y}}\|^2$.
 
@@ -526,7 +532,7 @@ plot.new()
 plot.window(c(0, 1.1), c(0, 1.1))
 polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
 or <- c(0.3, 0.2)
-ybaronev <- c(0.5, 0.4)
+ybaronev <- c(0.55, 0.45)
 yv <- c(0.8, 1.0)
 xv <- c(0.5, 0.1 + 0.1/3)
 betaxv <- c(0.6, 0.1)
@@ -600,7 +606,7 @@ plot.new()
 plot.window(c(0, 1.1), c(0, 1.1))
 polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
 or <- c(0.3, 0.2)
-ybaronev <- c(0.5, 0.4)
+ybaronev <- c(0.55, 0.45)
 yv <- c(0.8, 1.0)
 xv <- c(0.5, 0.1 + 0.1/3)
 betaxv <- c(0.6, 0.1)
@@ -758,14 +764,14 @@ i.e. (Gaussian assumption) they are **independent**.
 From Cochran's theorem:
 $$
 \frac{1}{\sigma^2}\|\mathbf{y} -  \hat{\mathbf{y}}\|^2
-= \|\mathbf{P}^\bot\mathbf{y}\|^2
-= \|\mathbf{P}^\bot\boldsymbol{\epsilon}\|^2
+= \frac{1}{\sigma^2}\|\mathbf{P}^\bot\mathbf{y}\|^2
+= \frac{1}{\sigma^2}\|\mathbf{P}^\bot\boldsymbol{\epsilon}\|^2
 \sim \chi^2_{n-p}
 $$
 
 $$
 \frac{1}{\sigma^2}\|\hat{\mathbf{y}} -  \hat{\mathbf{y}}_0 - \mathbf{P}_0^\bot \mathbf{P}\mathbf{X}\boldsymbol{\beta}\|^2
-= \|\mathbf{P}_0^\bot \mathbf{P}(\mathbf{y} - \mathbf{X}\boldsymbol{\beta})\|^2
+= \frac{1}{\sigma^2}\|\mathbf{P}_0^\bot \mathbf{P}(\mathbf{y} - \mathbf{X}\boldsymbol{\beta})\|^2
 \sim \chi^2_{p-p_0}
 $$
 ($\mathbf{P}_0^\bot \mathbf{P}$ is a projection on a space of dimension $p - p_0$)
@@ -984,17 +990,8 @@ get_stats_fit(lm(y_sim ~ x_1 + x_2 + x_junk.1, data = data_all))
 get_stats_fit(lm(y_sim ~ x_1 + x_junk.1, data = data_all))
 ```
 
-**$R^2$ is not enough.**
 
-## Variable selection - all fits {.smaller}
-
-```{r test132, echo=TRUE}
-## Only one "junk" predictor
-data_sub <- data.frame(y_sim = y_sim,
-                       x_1 = x_1,
-                       x_2 = x_2,
-                       x_junk = x_junk_1)
-
+```{r test132, echo=FALSE}
 ## Function to get statistics for one set of predictors
 get_stats_pred <- function(preds, y, data) {
   fit <- lm(reformulate(preds, y), data = data)
@@ -1018,6 +1015,12 @@ get_all_stats <- function(data_sub) {
 ## Variable selection - $R^2$
 
 ```{r test133, echo=TRUE}
+## Only one "junk" predictor
+data_sub <- data.frame(y_sim = y_sim,
+                       x_1 = x_1,
+                       x_2 = x_2,
+                       x_junk = x_junk_1)
+## Fit all possible models
 get_all_stats(data_sub)
 ```
 
@@ -1039,7 +1042,7 @@ get_stats_fit <- function(fit) {
 }
 ```
 
-## Variable selection - $R_a^2$ {.smaller}
+## Variable selection - $R_a^2$
 
 ```{r test15, echo=TRUE}
 get_all_stats(data_sub)
@@ -1047,11 +1050,7 @@ get_all_stats(data_sub)
 
 **$R_a^2$: adjust for the number of predictors.**
 
-<!-- ************************************************************************ -->
-# Penalized Criteria
-<!-- ************************************************************************ -->
-
-## Adjusted $R^2$
+## Adjusted $R_a^2$
 
 $$
 R_a^2 = 1 - \frac{RSS / (n-p)}{TSS / (n-1)} 
@@ -1063,63 +1062,590 @@ $$
 
 * Intuitive, but not much theoretical justifications.
 
+<!-- ************************************************************************ -->
+# Theoretical Risk
+<!-- ************************************************************************ -->
+
+## Models {.build}
+
+**Ideal model**:
+$$
+\mathbf{y} = \boldsymbol{\mu} + \boldsymbol{\epsilon}
+\quad
+\boldsymbol{\mu} \in \mathbb{R}^n
+\quad
+\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_n).
+$$
+
+$\boldsymbol{\mu}$ the "true" expectation of the observations $\mathbf{y}$.
+
+**Full linear regression model**:
+$$
+\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}
+\quad
+rg(\mathbf{X}) = p,
+\quad
+\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_n).
+$$
+
+Assumes that $\boldsymbol{\mu}$ can be approximated as $\mathbf{X} \boldsymbol{\beta}$,
+i.e. as an element of $\mathcal{M}(\mathbf{X})$.
+
+## Models
+
+**Ideal model**:
+$$
+\mathbf{y} = \boldsymbol{\mu} + \boldsymbol{\epsilon}
+\quad
+\boldsymbol{\mu} \in \mathbb{R}^n
+\quad
+\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_n).
+$$
+
+
+**Sub-models**:  
+keep only predictors $\eta \subset \{1, \dotsc, p\}$
+$$
+\mathbf{y} = \mathbf{X}_{\eta} \boldsymbol{\beta}_{\eta} + \boldsymbol{\epsilon}_{\eta}
+\quad
+rg(\mathbf{X}_{\eta}) = |\eta|,
+\quad
+\boldsymbol{\epsilon}_{\eta} \sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_n).
+$$
+
+with $\mathbf{X}_{\eta}$ the sub-matrix of $\mathbf{X}$:
+$$
+\mathbf{X}_{\eta} = (\mathbf{x}_{\eta_1} ~ \mathbf{x}_{\eta_2} \cdots \mathbf{x}_{\eta_{|\eta|}})
+$$
+
+Assumes that $\boldsymbol{\mu}$ can be approximated as $\mathbf{X}_{\eta} \boldsymbol{\beta}_{\eta}$,
+i.e. as an element of $\mathcal{M}(\mathbf{X}_{\eta})$.
+
+## Models
+
+**Models:**
+$$
+\mathbf{y} = \mathbf{X}_{\eta} \boldsymbol{\beta}_{\eta} + \boldsymbol{\epsilon}_{\eta}
+\quad
+rg(\mathbf{X}_{\eta}) = |\eta|,
+\quad
+\boldsymbol{\epsilon}_{\eta} \sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_n).
+$$
+
+**Estimators:**
+$$ 
+\begin{aligned}
+\hat{\boldsymbol{\beta}}_\eta 
+& = \underset{\boldsymbol{\beta} \in \mathbb{R}^{|\eta|}}{\operatorname{argmin}} 
+\|\mathbf{y} - \mathbf{X}_\eta\boldsymbol{\beta}_\eta \|^2 
+= (\mathbf{X}_\eta^{T}\mathbf{X}_\eta)^{-1}\mathbf{X}_\eta^{T}\mathbf{y}\\
+\hat{\mathbf{y}}_\eta
+& = \mathbf{X}_\eta\hat{\boldsymbol{\beta}}_\eta 
+= \mathbf{P}^{\mathbf{X}_\eta}\mathbf{y} 
+\end{aligned}
+$$
+
+**True expectation**:
+$$ 
+\begin{aligned}
+\mathbf{y}_\eta
+= \mathbf{P}^{\mathbf{X}_\eta}\boldsymbol{\mu} 
+\end{aligned}
+$$
+
+## Risk of an estimator (theoretical)
+
+Risk of an estimator:
+$$
+R(\hat{\mathbf{y}}_\eta)
+= 
+\mathbb{E}\left[
+\|\boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \|^2
+\right]
+$$
+
+**Notes**:
+
+>* $\boldsymbol{\mu}$ is unknown $\to$ cannot be computed in practice.
+
+>* Expectation of the difference between the true mean and the estimated projection.
+
+>* Not subject to overfitting.
+
+
+<!-- ************************************************************************ -->
+# Bias-Variance Decomposition
+<!-- ************************************************************************ -->
+
+## Bias-Variance Decomposition
+
+$$
+R(\hat{\mathbf{y}}_\eta)
+= 
+\mathbb{E}\left[
+\|\boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \|^2
+\right]
+= 
+\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2 + |\eta| \sigma^2
+$$
+
+>* **Bias**: $\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2$  
+>    - Difference between true and projection on the model
+>    - Best that we could do if we knew the truth
+>    - **Decreases** when model is more complex, i.e. $\eta$ gets larger.
+    
+>* **Variance**: $|\eta| \sigma^2$  
+>    - Variance of the estimation
+>    - **Increases** when model is more complex, i.e. $\eta$ gets larger.
+
+>* **Risk is a compromize between bias and variance.**
+
+
+## Bias-Variance - No overfitting {.build}
+
+$$
+R(\hat{\mathbf{y}}_\eta)
+= 
+\mathbb{E}\left[
+\|\boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \|^2
+\right]
+= 
+\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2 + |\eta| \sigma^2
+$$
+
+**No overfitting**: 
+
+Assume:
+
+* $\boldsymbol{\mu} \in \mathcal{M}(\mathbf{X}_{\eta})$ so that 
+$\mathbf{y}_{\eta} = \mathbf{P}^{\mathbf{X}_{\eta}}\boldsymbol{\mu} = \boldsymbol{\mu}$.
+
+* $\eta \subset \eta'$ so that 
+$\mathbf{y}_{\eta'} = \mathbf{P}^{\mathbf{X}_{\eta'}}\boldsymbol{\mu} = \boldsymbol{\mu}$.
+
+Then:
+$$
+\begin{aligned}
+R(\hat{\mathbf{y}}_{\eta'})
+& = \|\boldsymbol{\mu} - \mathbf{y}_{\eta'} \|^2 + |\eta'| \sigma^2 \\
+& \geq \|\boldsymbol{\mu} - \mathbf{y}_{\eta'} \|^2 + |\eta| \sigma^2 
+ = \|\boldsymbol{\mu} - \mathbf{y}_{\eta} \|^2 + |\eta| \sigma^2 \\
+& \geq R(\hat{\mathbf{y}}_\eta)
+\end{aligned}
+$$
+
+## Bias-Variance - Proof - 1/2 {.build}
+
+$$
+R(\hat{\mathbf{y}}_\eta)
+= 
+\mathbb{E}\left[
+\|\boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \|^2
+\right]
+= 
+\mathbb{E}\left[
+\|\boldsymbol{\mu} - \mathbf{y}_\eta + \mathbf{y}_\eta - \hat{\mathbf{y}}_\eta \|^2
+\right]
+$$
+
+$$
+\begin{aligned}
+R(\hat{\mathbf{y}}_\eta)
+&= 
+\mathbb{E}\left[
+\|\boldsymbol{\mu} - \mathbf{P}^{\mathbf{X}_{\eta}}\boldsymbol{\mu} 
++ \mathbf{P}^{\mathbf{X}_{\eta}}\boldsymbol{\mu} - \mathbf{P}^{\mathbf{X}_{\eta}}\mathbf{y} \|^2
+\right] \\
+&= 
+\mathbb{E}\left[
+\|(\mathbf{I}_n - \mathbf{P}^{\mathbf{X}_{\eta}})\boldsymbol{\mu} 
++ \mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} - \mathbf{y}) \|^2
+\right]\\
+&= 
+\mathbb{E}\left[
+\|\mathbf{P}^{\mathbf{X}_{\eta}^\bot}\boldsymbol{\mu} 
++ \mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} - \mathbf{y}) \|^2
+\right]
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+R(\hat{\mathbf{y}}_\eta)
+&= 
+\mathbb{E}\left[
+\|\mathbf{P}^{\mathbf{X}_{\eta}^\bot}\boldsymbol{\mu} \|^2
++ \|\mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} - \mathbf{y}) \|^2
+\right] \\
+&= 
+\|\mathbf{P}^{\mathbf{X}_{\eta}^\bot}\boldsymbol{\mu} \|^2
++ 
+\mathbb{E}\left[
+\|\mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} - \mathbf{y}) \|^2
+\right] \\
+&= 
+\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2
++ 
+\mathbb{E}\left[
+\|\mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} - \mathbf{y}) \|^2
+\right]
+\end{aligned}
+$$
+
+## Bias-Variance - Proof - 2/2 {.build}
+
+$$
+R(\hat{\mathbf{y}}_\eta)
+= 
+\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2
++ 
+\mathbb{E}\left[
+\|\mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} - \mathbf{y}) \|^2
+\right]
+$$
+
+From Cochran's Theorem:
+$$
+\frac{1}{\sigma^2}\|\mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} - \mathbf{y}) \|^2
+\sim
+\chi^2_{|\eta|}
+$$
+
+Hence:
+$$
+\mathbb{E}\left[
+\frac{1}{\sigma^2}\|\mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} - \mathbf{y}) \|^2
+\right]
+=
+|\eta|
+$$
+
+And:
+$$
+R(\hat{\mathbf{y}}_\eta)
+= 
+\|\boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \|^2
++ 
+|\eta|\sigma^2.
+$$
+
+<!-- ************************************************************************ -->
+# Penalized Least Squares 
+<!-- ************************************************************************ -->
+
+## Oracle Estimator
+
+We would like:
+$$
+\eta_0 = \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} R(\hat{\mathbf{y}}_\eta)
+$$
+
+>* Minimize the risk over all possible models.
+
+>* **Problem**: $R(\hat{\mathbf{y}}_\eta)$ is theoretical $\to$ cannot be computed.
+
+>* **Idea**: Minimize an *estimator* $\hat{R}(\hat{\mathbf{y}}_\eta)$ of $R(\hat{\mathbf{y}}_\eta)$:
+$$
+\hat{\eta} = \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta).
+$$
+
+## Expectation of the RSS
+
+For any model $\eta$, the expectation of the RSS is:
+$$
+\mathbb{E}[\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2]
+=
+R(\hat{\mathbf{y}}_\eta) + n\sigma^2 - 2|\eta|\sigma^2
+$$
+
+## Expectation of the RSS - Proof {.build}
+
+$$
+\begin{aligned}
+\mathbb{E}[\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2]
+&= \mathbb{E}[\|\mathbf{y} - \boldsymbol{\mu} + \boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \|^2] \\
+&= 
+\mathbb{E}[\|\mathbf{y} - \boldsymbol{\mu}\|^2 
++ \|\boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \|^2 
++ 2 \langle \mathbf{y} - \boldsymbol{\mu}; \boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \rangle]
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\mathbb{E}[\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2]
+&= 
+\mathbb{E}[\|\boldsymbol{\epsilon}\|^2]
++ R(\hat{\mathbf{y}}_\eta)
++ 2 \mathbb{E}[\langle \boldsymbol{\epsilon}; \boldsymbol{\mu} - \mathbf{P}^{\mathbf{X}_{\eta}}\mathbf{y} \rangle]
+\qquad
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\mathbb{E}[\langle \boldsymbol{\epsilon}; \boldsymbol{\mu} - \mathbf{P}^{\mathbf{X}_{\eta}}\mathbf{y} \rangle]
+&=
+\mathbb{E}[\langle \boldsymbol{\epsilon}; \boldsymbol{\mu} - \mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} + \boldsymbol{\epsilon}) \rangle] \\
+&= 
+\mathbb{E}[\langle \boldsymbol{\epsilon}; \boldsymbol{\mu} - \mathbf{P}^{\mathbf{X}_{\eta}}\boldsymbol{\mu}) \rangle]
+- \mathbb{E}[\langle \boldsymbol{\epsilon}; \mathbf{P}^{\mathbf{X}_{\eta}}\boldsymbol{\epsilon} \rangle]
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\mathbb{E}[\langle \boldsymbol{\epsilon}; \boldsymbol{\mu} - \mathbf{P}^{\mathbf{X}_{\eta}}\mathbf{y} \rangle]
+&= 
+0
+- \mathbb{E}[\langle \mathbf{P}^{\mathbf{X}_{\eta}}\boldsymbol{\epsilon}; \mathbf{P}^{\mathbf{X}_{\eta}}\boldsymbol{\epsilon} \rangle] \qquad\qquad~~ \\
+&= - \mathbb{E}[\| \mathbf{P}^{\mathbf{X}_{\eta}}\boldsymbol{\epsilon}\|^2] \\
+&= - |\eta| \sigma^2
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\mathbb{E}[\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2]
+&= 
+n \sigma^2
++ R(\hat{\mathbf{y}}_\eta)
+- 2 |\eta| \sigma^2
+\qquad\qquad\qquad\qquad
+\end{aligned}
+$$
+
+
 ## Mallow’s $C_p$
 
+We have:
 $$
-C_p = \frac{1}{n} \left( RSS + 2 p \hat{\sigma}^2 \right)
+\mathbb{E}[\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2]
+=
+R(\hat{\mathbf{y}}_\eta) + n\sigma^2 - 2|\eta|\sigma^2
 $$
 
-* Penalize for the number of parameters $p$.
+Mallow's $C_p$:
+$$
+C_p(\hat{\mathbf{y}}_\eta) = \frac{1}{n} \left( \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2 \right)
+$$
 
-* The **smaller** the better.
+>* Penalize for the number of parameters $|\eta|$.
 
-* Un-biased estimate of the risk.
+>* The **smaller** the better.
 
-* Asymptotic theoretical guaranties.
+>* If $\hat{\sigma}^2$ is unbiaised, then:
+$$
+\mathbb{E}[C_p(\hat{\mathbf{y}}_\eta)] 
+= \frac{1}{n}R(\hat{\mathbf{y}}_\eta) + \sigma^2
+$$
+
+## Final Prediction Error - FPE
+
+Mallow's $C_p$:
+$$
+C_p(\hat{\mathbf{y}}_\eta) = \frac{1}{n} \left( \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2_{\text{full}} \right)
+$$
+
+FPE:
+$$
+FPE(\hat{\mathbf{y}}_\eta) = \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2_\eta 
+\quad
+\text{with}
+\quad
+\hat{\sigma}^2_\eta = \frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2} {n - |\eta|}
+$$
+
+Hence:
+$$
+FPE(\hat{\mathbf{y}}_\eta) = \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 
+\left(1 + \frac{2 |\eta|} {n - |\eta|}\right) 
+$$
+
+<!-- ************************************************************************ -->
+# Penalized Log Likelihood 
+<!-- ************************************************************************ -->
+
+## Maximized Log Likelihood {.build}
+
+Recall:
+$$
+\begin{aligned}
+(\hat{\boldsymbol{\beta}}, \hat{\sigma}^2_{ML}) 
+&= \underset{(\boldsymbol{\beta}, \sigma^2) \in \mathbb{R}^p\times\mathbb{R}_+^*}{\operatorname{argmax}} 
+\log L(\boldsymbol{\beta}, \sigma^2 | \mathbf{y})\\
+&= \underset{(\boldsymbol{\beta}, \sigma^2) \in \mathbb{R}^p\times\mathbb{R}_+^*}{\operatorname{argmax}} 
+- \frac{n}{2} \log(2\pi\sigma^2) 
+- \frac{1}{2\sigma^2}\|\mathbf{y} - \mathbf{X}\boldsymbol{\beta} \|^2
+\end{aligned}
+$$
+
+And: 
+$$
+\hat{\sigma}^2_{ML} = \frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2} {n}
+$$
+
+## Maximized Log Likelihood {.build}
+
+The maximized likelihood is equal to:
+$$
+L(\hat{\boldsymbol{\beta}}_\eta, \hat{\sigma}^2_{ML} | \mathbf{y})
+= 
+- \frac{n}{2} \log\left(2\pi\frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2}{n}\right) 
+- \frac{1}{2\frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2}{n}}\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2
+$$
+
+i.e.
+$$
+\log \hat{L}_\eta
+= 
+- \frac{n}{2} \log\left(\frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2}{n}\right) 
+- \frac{n}{2} \log\left(2\pi\right) 
+- \frac{n}{2}
+$$
+
+## Maximized Log Likelihood is increasing {.build}
+
+Remember, for any $\eta \subset \eta'$:
+$$
+\|\mathbf{y} - \hat{\mathbf{y}}_{\eta'}\|^2 \leq \|\mathbf{y} - \hat{\mathbf{y}}_\eta\|^2
+$$
+
+Hence
+$R^2_\eta = 1 - \frac{\|\mathbf{y} - \hat{\mathbf{y}}_\eta\|^2}{\|\mathbf{y} - \bar{y} \mathbb{1}\|^2}$
+always **increases** when we add a predictor.
+
+Similarly:
+$$
+\log \hat{L}_\eta
+= 
+- \frac{n}{2} \log\left(\frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2}{n}\right) 
+- \frac{n}{2} \log\left(2\pi\right) 
+- \frac{n}{2}
+$$
+always **increases** when we add some predictors.
+
+## Penalized Maximized Log Likelihood {.build}
+
+**Problem:** $\log \hat{L}_\eta$ always **increases** when we add some predictors.
+
+$\to$ it can not be used for model selection (same as $R^2$).
+
+**Idea**: add a penalty term that depends on the size of the model
+
+$\to$ minimize:
+$$
+- \log \hat{L}_\eta + f(|\eta|) \qquad \text{with f increasing}
+$$
+
+## Penalized Maximized Log Likelihood {.build}
+
+Minimize:
+$$
+- \log \hat{L}_\eta + f(|\eta|) \qquad \text{with f increasing}
+$$
+
+For $\eta \subset \eta'$:
+
+* $- \log \hat{L}_\eta$ decreases
+
+* $f(|\eta|)$ increases
+
+**Goal**: find $f$ that compensates for the "overfit", i.e. the noisy and insignificant
+increase of the likelihood when we add some unrelated predictors.
+
+## Simulated Dataset
+
+```{r test171, echo=TRUE}
+## Function to get statistics
+get_stats_fit <- function(fit) {
+  sumfit <- summary(fit)
+  res <- data.frame(minusLogLik = -logLik(fit))
+  return(res)
+}
+```
+
+## Variable selection
+
+```{r test181, echo=TRUE}
+## Apply stats to all possible combinations
+all_stats <- get_all_stats(data_sub)
+all_stats
+```
+
+When we add a "junk" variable, $- \log \hat{L}_\eta$ decreases, but not a lot.
+
+**Quetions**: an we find a good penalty that compensates for this noisy increasing ?
+
+<!-- ************************************************************************ -->
+# AIC and BIC
+<!-- ************************************************************************ -->
 
 ## Akaike Information Criterion - AIC
 
 $$
-AIC = -2\ln L + 2p
+AIC = - 2\log \hat{L}_\eta + 2 |\eta|
 $$
 
-* $L$ is the likelihood of the model.
+$~$
+
+* $\hat{L}_\eta$ is the **maximized likelihood** of the model.
+
+* $|\eta|$ is the **dimension** of the model.
 
 * The **smaller** the better.
 
-* Un-biased estimate of the risk.
-
 * Asymptotic theoretical guaranties.
+
+* Easy to use and **widely spread**
 
 ## Bayesian Information Criterion - BIC
 
 $$
-BIC = -2\ln L + p\ln(n)
+BIC = - 2\log \hat{L}_\eta + |\eta| \ln(n)
 $$
 
-* $L$ is the likelihood of the model.
+$~$
+
+* $\hat{L}_\eta$ is the **maximized likelihood** of the model.
+
+* $|\eta|$ is the **dimension** of the model.
 
 * The **smaller** the better.
 
 * Based on an approximation of the marginal likelihood.
 
-* Asymptotic theoretical guaranties.
+* Easy to use and **widely spread**
+
+See: Lebarbier, Mary-Huard. *Le critère BIC : fondements théoriques et interprétation.* 2004. [[inria-00070685]](https://hal.archives-ouvertes.fr/inria-00070685/)
+
+
+## AIC vs BIC
+
+$$
+AIC = - 2\log \hat{L}_\eta + 2 |\eta|
+$$
+
+$$
+BIC = - 2\log \hat{L}_\eta + |\eta| \ln(n)
+$$
+
+* Both have asymptotic theoretical justifications.
+
+* BIC penalizes more than AIC $\to$ chooses smaller models.
+
+* Both **widely used**.
+
+* There are some (better) non-asymptotic criteria, see  
+Giraud C. 2014. *Introduction to high-dimensional statistics.*
 
 ## Simulated Dataset
 
 ```{r test17, echo=TRUE}
-## Mallow's Cp
-C_p <- function(fit) {
-  RSS <- sum(fit$residuals^2)
-  n <- nobs(fit); p <- n - df.residual(fit)
-  sigma2_hat <- RSS / (n-p)
-  return((RSS + 2 * p * sigma2_hat) / n)
-}
-
 ## Function to get statistics
 get_stats_fit <- function(fit) {
   sumfit <- summary(fit)
-  res <- data.frame(Cp = C_p(fit),
+  res <- data.frame(minusLogLik = -logLik(fit),
                     AIC = AIC(fit),
                     BIC = BIC(fit))
   return(res)
@@ -1155,6 +1681,63 @@ apply(all_stats[, -ncol(all_stats)], 2,
 ```
 
 <!-- ************************************************************************ -->
+# AIC vs log FPE
+<!-- ************************************************************************ -->
+
+## Remark: Log FPE {.build}
+
+$$
+\begin{aligned}
+\log \frac1n FPE(\hat{\mathbf{y}}_\eta) 
+&= \log 
+\left(\frac1n \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 
+\left(1 + \frac{2 |\eta|} {n - |\eta|}\right) \right)\\
+&= \log 
+\left(\frac1n \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 \right)
++ \log \left(1 + \frac{2 |\eta|} {n - |\eta|}\right)
+\end{aligned}
+$$
+But:
+$$
+n \log\left(\frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2}{n}\right) 
+= 
+- 2\log \hat{L}_\eta
+- n \log\left(2\pi\right) 
+- n
+$$
+
+## Remark: Log FPE {.build}
+
+Hence:
+$$
+n\log \frac1n FPE(\hat{\mathbf{y}}_\eta) + n \log\left(2\pi\right) + n
+\qquad \qquad \qquad \qquad\\
+\qquad \qquad \qquad \qquad = - 2\log \hat{L}_\eta + n \log \left(1 + \frac{2 |\eta|} {n - |\eta|}\right)\\
+$$
+
+When $n$ is large:
+$$
+n \log \left(1 + \frac{2 |\eta|} {n - |\eta|}\right)
+\approx
+n \frac{2 |\eta|} {n - |\eta|}
+\approx
+2 |\eta|
+$$
+
+## Remark: Log FPE {.build}
+
+Hence:
+$$
+\begin{aligned}
+n\log \frac1n FPE(\hat{\mathbf{y}}_\eta) + n \log\left(2\pi\right) + n 
+&\approx - 2\log \hat{L}_\eta + 2 |\eta| \\
+&\approx AIC(\hat{\mathbf{y}}_\eta)
+\end{aligned}
+$$
+
+The log FPE and the AIC criteria select for the same models (asymptotically).
+
+<!-- ************************************************************************ -->
 # Forward and Backward Search
 <!-- ************************************************************************ -->
 
@@ -1166,9 +1749,7 @@ $$
 
 >* Cannot test all possible models.
 
->* Solutions: LASSO and other penalized criteria (see M2)
-
->* "Manual" solution: forward or backward search
+>* "Manual" solution: forward or backward searches.
 
 ## Forward search
 
@@ -1182,6 +1763,47 @@ $$
 
 >* Choose best fit with $C_p$, AIC or BIC.
 
+## Forward search - Init
+
+```{r forward, message = FALSE}
+## Full formula
+full_formula <- formula(y_sim ~ x_1 + x_2 
+                        + x_junk.1 + x_junk.2 + x_junk.3 
+                        + x_junk.4 + x_junk.5 + x_junk.6)
+
+## Complete search
+2^8
+
+## No predictors
+fit0 <- lm(y_sim ~ 1, data = data_all)
+```
+
+## Forward search - Add term
+
+```{r forward1, message = FALSE}
+## Add one
+library(MASS)
+addterm(fit0, full_formula)
+```
+
+## Forward search - Add term
+
+```{r forward2, message = FALSE}
+## Add x_1
+fit1 <- lm(y_sim ~ 1 + x_1, data = data_all)
+## Add another
+addterm(fit1, full_formula)
+```
+
+## Forward search - Add term
+
+```{r forward3, message = FALSE}
+## Add x_1
+fit2 <- lm(y_sim ~ 1 + x_1 + x_2, data = data_all)
+## Add another
+addterm(fit2, full_formula)
+```
+
 ## Backward search
 
 >* Start with the full model (all predictors)
@@ -1193,3 +1815,94 @@ $$
 >* Repeat until no more predictors to remove.
 
 >* Choose best fit with $C_p$, AIC or BIC.
+
+## Backward search - Init {.smaller}
+
+```{r backward, message = FALSE}
+## Full formula
+fit0 <- lm(y_sim ~ x_1 + x_2 
+                        + x_junk.1 + x_junk.2 + x_junk.3 
+                        + x_junk.4 + x_junk.5 + x_junk.6,
+           data = data_all)
+```
+
+```{r backward1, message = FALSE}
+## drop one
+dropterm(fit0)
+```
+
+## Backward search - Drop term {.smaller}
+
+```{r backward2, message = FALSE}
+## drop x_junk.4
+fit1 <- lm(y_sim ~ x_1 + x_2 
+           + x_junk.1 + x_junk.2 + x_junk.3 
+           + x_junk.5 + x_junk.6, data = data_all)
+## Drop another
+dropterm(fit1)
+```
+
+## Backward search - Drop term {.smaller}
+
+```{r backward3, message = FALSE}
+## drop x_junk.3
+fit2 <- lm(y_sim ~ x_1 + x_2 
+           + x_junk.1 + x_junk.3 
+           + x_junk.5 + x_junk.6, data = data_all)
+## Drop another
+dropterm(fit2)
+```
+
+## Backward search - Drop term {.smaller}
+
+```{r backward4, message = FALSE}
+## drop x_junk.5
+fit3 <- lm(y_sim ~ x_1 + x_2 
+           + x_junk.1 + x_junk.3 
+           + x_junk.6, data = data_all)
+## Drop another
+dropterm(fit3)
+```
+
+## Backward search - Drop term {.smaller}
+
+```{r backward5, message = FALSE}
+## drop x_junk.6
+fit4 <- lm(y_sim ~ x_1 + x_2 
+           + x_junk.1 + x_junk.3 ,
+           data = data_all)
+## Drop another
+dropterm(fit4)
+```
+
+## Backward search - Drop term {.smaller}
+
+```{r backward6, message = FALSE}
+## drop x_junk.5
+fit5 <- lm(y_sim ~ x_1 + x_2 + x_junk.3 ,
+           data = data_all)
+## Drop another
+dropterm(fit5)
+```
+
+## Backward search - Drop term {.smaller}
+
+```{r backward7, message = FALSE}
+## drop x_junk.3
+fit6 <- lm(y_sim ~ x_1 + x_2,
+           data = data_all)
+## Drop another
+dropterm(fit6)
+```
+
+
+## Forward and backward searches
+
+>* Both are **heuristics**.
+
+>* There are no guaranties that both converge to the same solution.
+
+>* No theoretical guaranties on the selected model.
+
+>* Model selecition is still an active area of research.
+>   - See e.g: LASSO and other penalized criteria (M2)
