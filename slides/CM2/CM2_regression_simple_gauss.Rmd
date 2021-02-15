@@ -210,7 +210,7 @@ $$
 >* **Question**: What is the *likelihood* of $\mathbf{y} = (y_1, \dotsc, y_n)^T$ ?
 
 <!-- ************************************************************************ -->
-# Maximum Likeihood Estimators
+# Maximum Likelihood Estimators
 <!-- ************************************************************************ -->
 
 ## Reminder: Likelihood
