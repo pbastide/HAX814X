@@ -124,7 +124,7 @@ y_i = \mathbf{x}^{i} \boldsymbol{\beta} + \epsilon_i \quad \forall~1\leq i \leq 
 $$
 
 <!-- ************************************************************************ -->
-# Maximum Likeihood Estimators
+# Maximum Likelihood Estimators
 <!-- ************************************************************************ -->
 
 ## Distribution of $\mathbf{y}$
