@@ -742,17 +742,21 @@ Let $\mathbf{P}$ projection on $\mathcal{M}(\mathbf{X})$ and
 $\mathbf{P}_0$ projection on $\mathcal{M}(\mathbf{X}_0)$
 
 $$
+\begin{aligned}
 \hat{\mathbf{y}} -  \hat{\mathbf{y}}_0
-= \mathbf{P}\mathbf{y} - \mathbf{P}_0\mathbf{y}
-= \mathbf{P}\mathbf{y} - \mathbf{P}_0\mathbf{P}\mathbf{y}
-= (\mathbf{I}_n - \mathbf{P}_0) \mathbf{P}\mathbf{y}
-= \mathbf{P}_0^\bot \mathbf{P}\mathbf{y}
+&= \mathbf{P}\mathbf{y} - \mathbf{P}_0\mathbf{y}
+= \mathbf{P}\mathbf{y} - \mathbf{P}_0\mathbf{P}\mathbf{y}\\
+&= (\mathbf{I}_n - \mathbf{P}_0) \mathbf{P}\mathbf{y}
+= \mathbf{P}_0^\bot \mathbf{P}\mathbf{y}\\
+&\in \mathcal{M}(\mathbf{X}_0)^\bot \cap \mathcal{M}(\mathbf{X})
+\end{aligned}
 $$
 
 $$
 \mathbf{y} -  \hat{\mathbf{y}}
 = (\mathbf{I}_n - \mathbf{P}) \mathbf{y}
 = \mathbf{P}^\bot \mathbf{y}
+\in \mathcal{M}(\mathbf{X})^\bot
 $$
 
 $\hat{\mathbf{y}} -  \hat{\mathbf{y}}_0$ and $\mathbf{y} -  \hat{\mathbf{y}}$ are **orthogonal**  
