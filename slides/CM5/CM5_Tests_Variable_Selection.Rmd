@@ -1067,6 +1067,125 @@ $$
 * Intuitive, but not much theoretical justifications.
 
 <!-- ************************************************************************ -->
+# Predictive Risk
+<!-- ************************************************************************ -->
+
+## Simulation
+
+```{r predrisk1}
+set.seed(1289)
+
+## Predictors
+n <- 500
+x_1 <- runif(n, min = -2, max = 2)
+x_2 <- runif(n, min = -2, max = 2)
+
+## Model
+beta_0 <- -1; beta_1 <- 3; beta_2 <- -1
+
+## sim
+eps <- rnorm(n, mean = 0, sd = 2)
+y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+```
+
+## Simulation - Fit
+
+```{r predrisk2}
+## Useless predictors
+p_junk <- 100
+x_junk <- matrix(runif(n * p_junk, min = -2, max = 2),
+                 ncol = p_junk)
+
+## Good and Bad dataset
+data_all <- data.frame(y_sim = y_sim,
+                       x_1 = x_1,
+                       x_2 = x_2,
+                       x_junk = x_junk)
+
+## Bad overfitting fit
+fit_bad <- lm(y_sim ~ ., data = data_all)
+pred_bad <- predict(fit_bad)
+
+## Good fit
+fit_good <- lm(y_sim ~ x_1 + x_2, data = data_all)
+pred_good <- predict(fit_good)
+```
+
+## Simulation - Fit {.smaller}
+
+```{r predrisk23, fig.height=4, fig.width=7, fig.align='center'}
+mu_y <- beta_0 + beta_1 * x_1 + beta_2 * x_2
+plot(mu_y, y_sim, pch = 3,
+     ylab = "y", xlab = expression(beta[0] + beta[1]*x[1] + beta[2]*x[2]))
+## Bad prediction (big model)
+points(mu_y, pred_bad, col = "firebrick", pch = 4)
+## Good prediction (small model)
+points(mu_y, pred_good, col = "lightblue", pch = 4)
+```
+
+## RSS: "fitted risk"
+
+The bad (bigger) model is closer to the observed data.
+
+```{r predrisk3}
+## Distance between bad prediction and data (RSS)
+sum((y_sim - pred_bad)^2)
+
+## Distance between good prediction and data (RSS)
+sum((y_sim - pred_good)^2)
+```
+
+**Overfitting**: the RSS is smaller for the bad, bigger model.
+
+## Predictive Risk
+
+Generate new data according to the same generative model:
+
+```{r predrisk4}
+## New dataset from the same model
+eps_new <- rnorm(n, mean = 0, sd = 2)
+y_new <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps_new
+```
+
+**Questions**:  
+Are the predictions from the bad (bigger) model  
+*better or worse*  
+than the predictions from the good (smaller) model,  
+compared to the new data ?
+
+## Predictive Risk
+
+Compute the risk between predictions and new data:
+
+```{r predrisk5}
+## Distance between bad prediction and true
+sum((y_new - pred_bad)^2)
+
+## Distance between good prediction and true
+sum((y_new - pred_good)^2)
+```
+
+The good (smaller) model behaves better on new data.
+
+## Predictive Risk {.build}
+
+**RSS**:
+$\|\mathbf{y} - \hat{\mathbf{y}}_p\|^2$ with $\hat{\mathbf{y}}_p$ learnt on $\mathbf{y}$  
+$\to$ gets smaller when model gets bigger (overfit).
+
+**Predictive Risk**:
+$\| \mathbf{y}' - \hat{\mathbf{y}}_p\|^2$ with $\mathbf{y}'$ same distribution as $\mathbf{y}$.  
+$\to$ becomes larger if $\hat{\mathbf{y}}_p$ is overfit.
+
+**Idea**:  
+We want to select a model that has a good **predictive** risk.  
+i.e. that represents the underlying model best.
+
+**Problem**:  
+In general, we don't have means to generate $\mathbf{y}'$.  
+$\to$ We use an *estimate* of the (theoretical) predictive risk.
+
+<!-- ************************************************************************ -->
 # Theoretical Risk
 <!-- ************************************************************************ -->
 
@@ -1127,6 +1246,11 @@ i.e. as an element of $\mathcal{M}(\mathbf{X}_{\eta})$.
 
 ## Models
 
+**"Truth"**:
+$\mathbf{y} = \boldsymbol{\mu} + \boldsymbol{\epsilon}$, with 
+$\boldsymbol{\mu} \in \mathbb{R}^n$ and 
+$\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_n)$.
+
 **Models:**
 $$
 \mathbf{y} = \mathbf{X}_{\eta} \boldsymbol{\beta}_{\eta} + \boldsymbol{\epsilon}_{\eta}
@@ -1156,6 +1280,121 @@ $$
 = \mathbf{P}^{\mathbf{X}_\eta}\boldsymbol{\mu} 
 \end{aligned}
 $$
+
+## Models
+
+```{r fullproj, echo=FALSE, fig.height=5.5, fig.width=5.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.55, 0.45)
+yv <- c(0.8, 0.7)
+muv <- c(0.6, 0.8)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.8, 0.3)
+muetav <- c(0.6, 0.4)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "dodgerblue2", pos = 4)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue4", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))[eta]),
+     col = "dodgerblue4", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue4", lwd = 1, lty = 2)
+# text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+#      labels = expression(hat(bold(epsilon))[eta]), col = "dodgerblue4", pos = 4)
+# mu
+arrows(x0 = or[1], y0 = or[2], x1 = muv[1], y1 = muv[2],
+       length = 0.1, col = "firebrick2", lwd = 2)
+text(muv[1], muv[2], labels = expression(bold(mu)), col = "firebrick2", pos = 2)
+# yeta
+arrows(x0 = or[1], y0 = or[2], x1 = muetav[1], y1 = muetav[2],
+       length = 0.1, col = "firebrick4", lwd = 2)
+text(muetav[1], muetav[2],
+     labels = expression(bold(y)[eta]),
+     col = "firebrick4", pos = 4)
+# mu - mueta
+segments(x0 = muv[1], y0 = muv[2], x1 = muetav[1], y1 = muetav[2],
+         col = "firebrick4", lwd = 1, lty = 2)
+# text((muv[1] + muetav[1])/2, (muv[2] + muetav[2])/2,
+#      labels = expression(hat(bold(epsilon))[eta]), col = "firebrick4", pos = 4)
+# mu - y
+segments(x0 = muv[1], y0 = muv[2], x1 = yv[1], y1 = yv[2],
+         col = "goldenrod2", lwd = 1, lty = 5)
+text((muv[1] + yv[1])/2, (muv[2] + yv[2])/2,
+     labels =  expression(bold(mu) - bold(y)), col = "goldenrod2", pos = 3)
+```
+
+## Risk
+
+```{r fullproj2, echo=FALSE, fig.height=5.5, fig.width=5.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.55, 0.45)
+yv <- c(0.8, 0.7)
+muv <- c(0.6, 0.8)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.8, 0.3)
+muetav <- c(0.6, 0.4)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "dodgerblue2", pos = 4)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue4", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))[eta]),
+     col = "dodgerblue4", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue4", lwd = 1, lty = 2)
+# text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+#      labels = expression(hat(bold(epsilon))[eta]), col = "dodgerblue4", pos = 4)
+# mu
+arrows(x0 = or[1], y0 = or[2], x1 = muv[1], y1 = muv[2],
+       length = 0.1, col = "firebrick2", lwd = 2)
+text(muv[1], muv[2], labels = expression(bold(mu)), col = "firebrick2", pos = 2)
+# yeta
+arrows(x0 = or[1], y0 = or[2], x1 = muetav[1], y1 = muetav[2],
+       length = 0.1, col = "firebrick4", lwd = 2)
+text(muetav[1], muetav[2],
+     labels = expression(bold(y)[eta]),
+     col = "firebrick4", pos = 4)
+# mu - mueta
+segments(x0 = muv[1], y0 = muv[2], x1 = muetav[1], y1 = muetav[2],
+         col = "firebrick4", lwd = 1, lty = 2)
+# text((muv[1] + muetav[1])/2, (muv[2] + muetav[2])/2,
+#      labels = expression(hat(bold(epsilon))[eta]), col = "firebrick4", pos = 4)
+# mu - y
+# segments(x0 = muv[1], y0 = muv[2], x1 = yv[1], y1 = yv[2],
+#          col = "goldenrod2", lwd = 1, lty = 5)
+# text((muv[1] + yv[1])/2, (muv[2] + yv[2])/2,
+#      labels =  expression(bold(mu) - bold(y)), col = "goldenrod2", pos = 3)
+# mu - yhat
+segments(x0 = muv[1], y0 = muv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "goldenrod4", lwd = 1, lty = 5)
+text((muv[1] + 2*yhatv[1])/3, (muv[2] + 2*yhatv[2])/3,
+     labels =  expression(bold(mu) - hat(bold(y))[eta]), col = "goldenrod4", pos = 2)
+```
 
 ## Risk of an estimator (theoretical)
 
@@ -1434,37 +1673,74 @@ $$
 C_p(\hat{\mathbf{y}}_\eta) = \frac{1}{n} \left( \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2 \right)
 $$
 
->* Penalize for the number of parameters $|\eta|$.
-
->* The **smaller** the better.
-
 >* If $\hat{\sigma}^2$ is unbiaised, then:
 $$
 \mathbb{E}[C_p(\hat{\mathbf{y}}_\eta)] 
 = \frac{1}{n}R(\hat{\mathbf{y}}_\eta) + \sigma^2
 $$
 
-## Final Prediction Error - FPE
+>* Penalize for the number of parameters $|\eta|$.
 
-Mallow's $C_p$:
-$$
-C_p(\hat{\mathbf{y}}_\eta) = \frac{1}{n} \left( \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2_{\text{full}} \right)
-$$
+>* The **smaller** the better.
 
-FPE:
+## Mallow’s $C_p$ {.build}
+
+We have:
 $$
-FPE(\hat{\mathbf{y}}_\eta) = \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2_\eta 
-\quad
-\text{with}
-\quad
-\hat{\sigma}^2_\eta = \frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2} {n - |\eta|}
+C_p(\hat{\mathbf{y}}_\eta) = \frac{1}{n} \left( \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2 \right)
+$$
+And:
+$$
+\mathbb{E}[C_p(\hat{\mathbf{y}}_\eta)] 
+= \frac{1}{n}R(\hat{\mathbf{y}}_\eta) + \sigma^2
 $$
 
 Hence:
 $$
-FPE(\hat{\mathbf{y}}_\eta) = \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 
-\left(1 + \frac{2 |\eta|} {n - |\eta|}\right) 
+\hat{\eta} 
+= \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} C_p(\hat{\mathbf{y}}_\eta)
+= \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta).
 $$
+
+$\to$ Minimizing Mallow's $C_p$ is the same as minimizing an unbiaised estimate of the risk.
+
+## Mallow's $C_p$
+
+$$
+C_p(\hat{\mathbf{y}}_\eta) = \frac{1}{n} \left( \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2 \right)
+$$
+
+* Penalize for the number of parameters $|\eta|$.
+
+* The **smaller** the better.
+
+## Simulated Dataset
+
+```{r test161, echo=TRUE}
+## Mallow's Cp
+Cp <- function(fit) {
+  n <- nobs(fit)
+  p <- n - df.residual(fit)
+  RSS <- deviance(fit)
+  return( (RSS + p * RSS / (n - p)) / n)
+}
+## Function to get statistics
+get_stats_fit <- function(fit) {
+  sumfit <- summary(fit)
+  res <- data.frame(Cp = Cp(fit))
+  return(res)
+}
+```
+
+## Variable selection
+
+```{r test162, echo=TRUE}
+## Apply stats to all possible combinations
+all_stats <- get_all_stats(data_sub)
+all_stats
+```
+
+Mallow's $C_p$ is **smallest** for the true model.
 
 <!-- ************************************************************************ -->
 # Penalized Log Likelihood 
@@ -1577,9 +1853,9 @@ all_stats <- get_all_stats(data_sub)
 all_stats
 ```
 
-When we add a "junk" variable, $- \log \hat{L}_\eta$ decreases, but not a lot.
+When we add "junk" variable, $- \log \hat{L}_\eta$ decreases, but not a lot.
 
-**Quetions**: an we find a good penalty that compensates for this noisy increasing ?
+**Questions**: can we find a good penalty that compensates for this noisy increasing ?
 
 <!-- ************************************************************************ -->
 # AIC and BIC
@@ -1606,7 +1882,7 @@ $~$
 ## Bayesian Information Criterion - BIC
 
 $$
-BIC = - 2\log \hat{L}_\eta + |\eta| \ln(n)
+BIC = - 2\log \hat{L}_\eta + |\eta| \log(n)
 $$
 
 $~$
@@ -1631,7 +1907,7 @@ AIC = - 2\log \hat{L}_\eta + 2 |\eta|
 $$
 
 $$
-BIC = - 2\log \hat{L}_\eta + |\eta| \ln(n)
+BIC = - 2\log \hat{L}_\eta + |\eta| \log(n)
 $$
 
 * Both have asymptotic theoretical justifications.
@@ -1684,62 +1960,6 @@ apply(all_stats[, -ncol(all_stats)], 2,
       function(x) all_stats[which.min(x), ncol(all_stats)])
 ```
 
-<!-- ************************************************************************ -->
-# AIC vs log FPE
-<!-- ************************************************************************ -->
-
-## Remark: Log FPE {.build}
-
-$$
-\begin{aligned}
-\log \frac1n FPE(\hat{\mathbf{y}}_\eta) 
-&= \log 
-\left(\frac1n \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 
-\left(1 + \frac{2 |\eta|} {n - |\eta|}\right) \right)\\
-&= \log 
-\left(\frac1n \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 \right)
-+ \log \left(1 + \frac{2 |\eta|} {n - |\eta|}\right)
-\end{aligned}
-$$
-But:
-$$
-n \log\left(\frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2}{n}\right) 
-= 
-- 2\log \hat{L}_\eta
-- n \log\left(2\pi\right) 
-- n
-$$
-
-## Remark: Log FPE {.build}
-
-Hence:
-$$
-n\log \frac1n FPE(\hat{\mathbf{y}}_\eta) + n \log\left(2\pi\right) + n
-\qquad \qquad \qquad \qquad\\
-\qquad \qquad \qquad \qquad = - 2\log \hat{L}_\eta + n \log \left(1 + \frac{2 |\eta|} {n - |\eta|}\right)\\
-$$
-
-When $n$ is large:
-$$
-n \log \left(1 + \frac{2 |\eta|} {n - |\eta|}\right)
-\approx
-n \frac{2 |\eta|} {n - |\eta|}
-\approx
-2 |\eta|
-$$
-
-## Remark: Log FPE {.build}
-
-Hence:
-$$
-\begin{aligned}
-n\log \frac1n FPE(\hat{\mathbf{y}}_\eta) + n \log\left(2\pi\right) + n 
-&\approx - 2\log \hat{L}_\eta + 2 |\eta| \\
-&\approx AIC(\hat{\mathbf{y}}_\eta)
-\end{aligned}
-$$
-
-The log FPE and the AIC criteria select for the same models (asymptotically).
 
 <!-- ************************************************************************ -->
 # Forward and Backward Search
@@ -1910,3 +2130,216 @@ dropterm(fit6)
 
 >* Model selecition is still an active area of research.
 >   - See e.g: LASSO and other penalized criteria (M2)
+
+<!-- ************************************************************************ -->
+# AIC vs log FPE
+<!-- ************************************************************************ -->
+
+## Final Prediction Error - FPE
+
+Mallow's $C_p$:
+$$
+C_p(\hat{\mathbf{y}}_\eta) = \frac{1}{n} \left( \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2_{\text{full}} \right)
+$$
+
+FPE:
+$$
+FPE(\hat{\mathbf{y}}_\eta) = \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2_\eta 
+\quad
+\text{with}
+\quad
+\hat{\sigma}^2_\eta = \frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2} {n - |\eta|}
+$$
+
+Hence:
+$$
+FPE(\hat{\mathbf{y}}_\eta) = \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 
+\left(1 + \frac{2 |\eta|} {n - |\eta|}\right) 
+$$
+
+## AIC vs Log FPE {.build}
+
+$$
+\begin{aligned}
+\log \frac1n FPE(\hat{\mathbf{y}}_\eta) 
+&= \log 
+\left(\frac1n \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 
+\left(1 + \frac{2 |\eta|} {n - |\eta|}\right) \right)\\
+&= \log 
+\left(\frac1n \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 \right)
++ \log \left(1 + \frac{2 |\eta|} {n - |\eta|}\right)
+\end{aligned}
+$$
+But:
+$$
+n \log\left(\frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2}{n}\right) 
+= 
+- 2\log \hat{L}_\eta
+- n \log\left(2\pi\right) 
+- n
+$$
+
+## AIC vs Log FPE {.build}
+
+Hence:
+$$
+n\log \frac1n FPE(\hat{\mathbf{y}}_\eta) + n \log\left(2\pi\right) + n
+\qquad \qquad \qquad \qquad\\
+\qquad \qquad \qquad \qquad = - 2\log \hat{L}_\eta + n \log \left(1 + \frac{2 |\eta|} {n - |\eta|}\right)\\
+$$
+
+When $n$ is large:
+$$
+n \log \left(1 + \frac{2 |\eta|} {n - |\eta|}\right)
+\approx
+n \frac{2 |\eta|} {n - |\eta|}
+\approx
+2 |\eta|
+$$
+
+## AIC vs Log FPE {.build}
+
+Hence:
+$$
+\begin{aligned}
+n\log \frac1n FPE(\hat{\mathbf{y}}_\eta) + n \log\left(2\pi\right) + n 
+&\approx - 2\log \hat{L}_\eta + 2 |\eta| \\
+&\approx AIC(\hat{\mathbf{y}}_\eta)
+\end{aligned}
+$$
+
+The log FPE and the AIC criteria select for the same models (asymptotically).
+
+<!-- ************************************************************************ -->
+# BIC and Laplace Approximation
+<!-- ************************************************************************ -->
+
+## Bayesian Model Selection {.build}
+
+In a **Bayesian setting**,  
+we have priors on the models $\eta$ and parameters $\boldsymbol{\theta}_\eta = (\boldsymbol{\beta}_\eta, \sigma^2_\eta)$:
+$$
+\left\{
+\begin{aligned}
+\eta &\sim \pi_{\eta} \\
+\boldsymbol{\theta}_\eta & \sim p(\boldsymbol{\theta} | \eta)
+\end{aligned}
+\right.
+$$
+
+The **likelihood** given some parameters and a model is:
+$p(\mathbf{y} | \boldsymbol{\theta}, \eta)$
+
+the **marginal likelihood** given a model is:
+$$
+p(\mathbf{y} | \eta)
+= 
+\int p(\mathbf{y} | \boldsymbol{\theta}, \eta) p(\boldsymbol{\theta} | \eta) d\boldsymbol{\theta}
+$$
+
+and the **posterior** probability of the models are:
+$$
+p(\eta | \mathbf{y}).
+$$
+
+## Bayesian Model Selection {.build}
+
+**Goal**: find the model with the *highest* posterior probability:
+$$
+\hat{\eta} 
+= \underset{\eta}{\operatorname{argmax}} 
+p(\eta | \mathbf{y})
+$$
+
+Assume that all models have the same prior probability:
+$$
+\pi_{\eta} \equiv \pi.
+$$
+
+Then, from Bayes rule:
+$$
+p(\eta | \mathbf{y})
+=
+p(\mathbf{y} | \eta)\pi_{\eta} / p(\mathbf{y})
+=
+p(\mathbf{y} | \eta) \times \pi / p(\mathbf{y})
+$$
+
+And:
+$$
+\hat{\eta} 
+= \underset{\eta}{\operatorname{argmax}} 
+p(\eta | \mathbf{y})
+= \underset{\eta}{\operatorname{argmax}} 
+p(\mathbf{y} | \eta).
+$$
+
+## Bayesian Model Selection {.build}
+
+**Goal**: find the model with the *highest* posterior probability:
+$$
+\begin{aligned}
+\hat{\eta} 
+& = \underset{\eta}{\operatorname{argmax}} 
+p(\eta | \mathbf{y}) 
+ = \underset{\eta}{\operatorname{argmax}} 
+p(\mathbf{y} | \eta) \\
+& = \underset{\eta}{\operatorname{argmax}} 
+\int p(\mathbf{y} | \boldsymbol{\theta}, \eta) p(\boldsymbol{\theta} | \eta) d\boldsymbol{\theta}
+\end{aligned}
+$$
+
+**Idea**:  
+Assume that 
+$$p(\mathbf{y} | \boldsymbol{\theta}, \eta) p(\boldsymbol{\theta} | \eta)$$
+is concentrated around its maximum 
+$$p(\mathbf{y} | \boldsymbol{\theta}_\eta^*, \eta) p(\boldsymbol{\theta}_\eta^* | \eta)$$
+and apply Laplace Approximation.
+
+## Laplace Approximation {.build}
+
+Let $L: \mathbb{R}^q \to \mathbb{R}$ be a three times differentiable function,
+with a unique maximum $\mathbf{u}^*$. Then:
+$$
+\int_{\mathbb{R}^q} e^{n L(\mathbf{u})} d \mathbf{u}
+=
+\left(\frac{2\pi}{n}\right)^{q/2} |-L''(\mathbf{u}^*)|^{-1/2}e^{nL(\mathbf{u}^*)}
++ o(n^{-1})
+$$
+
+Applied to:
+$$
+L(\boldsymbol{\theta}) 
+= \frac1n\log p(\mathbf{y} | \boldsymbol{\theta}, \eta) + \frac1n\log p(\boldsymbol{\theta} | \eta)
+$$
+and assuming 
+$\log p(\mathbf{y} | \boldsymbol{\theta}^*, \eta) \approx \log p(\mathbf{y} | \hat{\boldsymbol{\theta}}, \eta)$,
+we get:
+$$
+\log \int p(\mathbf{y} | \boldsymbol{\theta}, \eta) p(\boldsymbol{\theta} | \eta) d\boldsymbol{\theta}
+\approx
+\log p(\mathbf{y} | \hat{\boldsymbol{\theta}}, \eta) - \frac{|\eta|}{2} \log(n).
+$$
+
+## BIC
+
+Hence:
+$$
+\begin{aligned}
+\hat{\eta} 
+& = \underset{\eta}{\operatorname{argmax}} 
+p(\eta | \mathbf{y}) 
+ = \underset{\eta}{\operatorname{argmax}} 
+p(\mathbf{y} | \eta) \\
+& \approx \underset{\eta}{\operatorname{argmax}} 
+\left\{\log p(\mathbf{y} | \hat{\boldsymbol{\theta}}, \eta) - \frac{|\eta|}{2} \log(n)\right\}\\
+& \approx \underset{\eta}{\operatorname{argmin}} 
+\left\{-2\log p(\mathbf{y} | \hat{\boldsymbol{\theta}}, \eta) + |\eta| \log(n) \right\}\\
+&\approx \underset{\eta}{\operatorname{argmax}}
+\left\{- 2\log \hat{L}_\eta + |\eta| \log(n)\right\}
+= \underset{\eta}{\operatorname{argmax}}
+ BIC(\hat{\mathbf{y}}_\eta)
+\end{aligned}
+$$
+
+BIC is an approximation of the marginal likelihood.
