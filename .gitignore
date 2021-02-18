@@ -36,5 +36,6 @@
 *.latexmain
 *.toc
 *.nav
+*_minted*
 # Xournalpp
 *.xopp
