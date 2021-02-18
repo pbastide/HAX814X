@@ -1,0 +1,2345 @@
+---
+title: 'Régression Multiple - Sélection de Variable'
+author: "Paul Bastide - Benjamin Charlier"
+date: "15/02/2021"
+output:
+  ioslides_presentation:
+    fig_width: 7
+    fig_height: 4
+  self_contained: true
+editor_options: 
+  chunk_output_type: console
+---
+<!-- ************************************************************************ -->
+# What we know
+<!-- ************************************************************************ -->
+
+## Gaussian Model
+
+### Model:
+$$
+\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}
+$$
+
+* $\mathbf{y}$ **random** vector of $n$ responses
+* $\mathbf{X}$ **non random** $n\times p$ matrix of predictors
+* $\boldsymbol{\epsilon}$ **random** vector of $n$ errors
+* $\boldsymbol{\beta}$ **non random, unknown** vector of $p$ coefficients
+
+### Assumptions:
+* (H1) $rg(\mathbf{X}) = p$
+* (H2) $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I}_n)$ 
+
+
+## Distribution of the estimators
+
+Distribution of $\hat{\boldsymbol{\beta}}$:
+$$
+\hat{\boldsymbol{\beta}}
+\sim
+\mathcal{N}\left(
+\boldsymbol{\beta};
+\sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
+\right)
+\quad
+\text{and}
+\quad
+\frac{\hat{\beta}_k - \beta_k}{\sqrt{\hat{\sigma}^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{kk}}}
+\sim
+\mathcal{T}_{n-p}.
+$$
+
+Distribution of $\hat{\sigma}^2$:
+$$
+\frac{(n-p) \hat{\sigma}^2}{\sigma^2}
+\sim
+\chi^2_{n-p}.
+$$
+
+## Student t tests
+
+$$
+\text{Hypothesis:}
+\qquad\qquad
+\mathcal{H}_0: \beta_k = 0
+\quad
+\text{vs}
+\quad
+\mathcal{H}_1: \beta_k \neq 0
+$$
+
+$$
+\text{Test Statistic:}
+\qquad\qquad\qquad\qquad
+T_k 
+= \frac{\hat{\beta}_k}{\sqrt{\hat{\sigma}^2_k}}
+\underset{\mathcal{H}_0}{\sim}
+\mathcal{T}_{n-p}
+$$
+
+$$
+\text{Reject Region:}
+\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\\
+\mathbb{P}[\text{Reject} | \mathcal{H}_0 \text{ true}] \leq \alpha
+\qquad\qquad\qquad\qquad\qquad\\
+\qquad\qquad\qquad \iff \mathcal{R}_\alpha = \left\{ t \in \mathbb{R}  ~|~ |t| \geq t_{n-p}(1 - \alpha/2) \right\}
+$$
+
+$$
+\text{p value:}\qquad\qquad\qquad\qquad\quad
+p = \mathbb{P}_{\mathcal{H}_0}[|T_k| > T_k^{obs}]
+$$
+
+<!-- ************************************************************************ -->
+# Problems with the $t$-test
+<!-- ************************************************************************ -->
+
+## Simulated Dataset
+
+$$
+y_i = -1 + 3 x_{i1} - x_{i2} + \epsilon_i
+$$
+
+```{r test1, echo=TRUE}
+set.seed(1289)
+
+## Predictors
+n <- 500
+x_1 <- runif(n, min = -2, max = 2)
+x_2 <- runif(n, min = -2, max = 2)
+
+## Noise
+eps <- rnorm(n, mean = 0, sd = 2)
+
+## Model sim
+beta_0 <- -1; beta_1 <- 3; beta_2 <- -1
+y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+
+## Useless predictor
+x_junk_1 <- runif(n, min = -2, max = 2)
+```
+
+## Simulated Dataset - Fit {.smaller}
+
+$$
+y_i = -1 + 3 x_{i1} - x_{i2} + \epsilon_i
+$$
+
+```{r test2, echo=TRUE}
+fit <- lm(y_sim ~ x_1 + x_2 + x_junk_1)
+summary(fit)
+```
+
+## Simulated Dataset
+
+$$
+y_i = -1 + 3 x_{i1} - x_{i2} + \epsilon_i
+$$
+
+```{r test23, echo=TRUE}
+## Other Useless Predictors
+p_junk <- 100
+x_junk <- matrix(runif(n * p_junk, min = -2, max = 2),
+                 ncol = p_junk)
+
+## Data frame
+data_junk <- data.frame(y_sim = y_sim,
+                        x_junk = x_junk)
+```
+
+## Simulated Dataset - Fit - Junk {.smaller}
+
+```{r test4, echo=TRUE}
+fit <- lm(y_sim ~ -1 + ., data = data_junk)
+summary(fit)
+```
+
+## Simulated Dataset - Fit - Junk {.smaller}
+
+```{r test5, echo=TRUE}
+p_values <- summary(fit)$coefficients[, 4]
+hist(p_values, col = "lightblue", breaks = 20)
+```
+
+## Simulated Dataset - Fit - Junk {.smaller}
+
+```{r test6, echo=TRUE}
+sum(p_values <= 0.05)
+summary(fit)$coefficients[p_values <= 0.05, ]
+```
+
+
+$~$
+
+Reject Region: $\mathbb{P}[\text{Reject} | \mathcal{H}_0 \text{ true}] \leq \alpha$
+
+**Just by chance, about 5% of false discoveries.**
+
+<!-- ************************************************************************ -->
+# Joint Distribution of the Coefficients - $\sigma^2$ unknown
+<!-- ************************************************************************ -->
+
+## Joint distribution of $\hat{\boldsymbol{\beta}}$
+
+When $\sigma^2$ is known:
+
+$$
+\hat{\boldsymbol{\beta}}
+\sim
+\mathcal{N}\left(
+\boldsymbol{\beta};
+\sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
+\right).
+$$
+
+When $\sigma^2$ is **unknown**:
+$$
+\frac{1}{p\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
+\sim
+\mathcal{F}^p_{n-p}
+$$
+
+with $\mathcal{F}^p_{n-p}$ the **Fisher** distribution.
+
+## Reminder: Fisher Distribution
+
+Let $U_1 \sim \chi^2_{p_1}$ and $U_2 \sim \chi^2_{p_2}$,
+$U_1$ and $U_2$ independent.
+Then 
+$$
+F = \frac{U_1/p_1}{U_2/p_2} \sim \mathcal{F}^{p_1}_{p_2}
+$$ 
+
+```{r fisher, echo=FALSE, fig.height=4, fig.width=7, fig.align='center'}
+x <- 0:600 / 100
+ccc <- hcl.colors(6)
+par(mar = c(5, 4, 1, 2) + 0.1)
+# 1
+p1 <- 2
+p2 <- 3
+plot(x, df(x, p1, p2), type = "l", ylab = "f(x)", ylim = c(0, 1), col = ccc[1], lwd = 2)
+# p2
+p2 <- 10
+lines(x, df(x, p1, p2), col = ccc[5], lwd = 2)
+# p1
+p1 <- 10
+lines(x, df(x, p1, p2), col = ccc[2], lwd = 2)
+# p1
+p1 <- 20
+lines(x, df(x, p1, p2), col = ccc[4], lwd = 2)
+# legend
+legend("topright",
+       c(expression(paste(p[1] == 2, "   ; ", p[2] == 3)),
+         expression(paste(p[1] == 2, "   ; ", p[2] == 10)),
+         expression(paste(p[1] == 10, "   ; ", p[2] == 10)),
+         expression(paste(p[1] == 20, "   ; ", p[2] == 10))),
+       col = ccc[c(1, 5, 2, 4)],
+       lwd = 2, lty = 1)
+```
+
+## Joint distribution of $\hat{\boldsymbol{\beta}}$ - Proof - Hints
+
+Let's show:
+$$
+\frac{1}{p\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
+\sim
+\mathcal{F}^p_{n-p}
+$$
+
+**Hints:**  
+$$
+\hat{\boldsymbol{\beta}}
+\sim
+\mathcal{N}\left(
+\boldsymbol{\beta};
+\sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
+\right)
+\quad
+\text{and}
+\quad
+\frac{(n-p) \hat{\sigma}^2}{\sigma^2}
+\sim
+\chi^2_{n-p}
+$$
+
+$$
+\text{If } \mathbf{X} \sim \mathcal{N}(\boldsymbol{\mu}, \mathbf{\Sigma})
+\quad
+\text{then}
+\quad
+(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})
+\sim \chi^2_p
+$$ 
+
+$$
+\text{If }
+U_1 \sim \chi^2_{p_1}
+\text{ and }
+U_2 \sim \chi^2_{p_2}
+\text{ independent, then }
+\frac{U_1/p_1}{U_2/p_2} \sim \mathcal{F}^{p_1}_{p_2}
+$$ 
+
+## Joint distribution of $\hat{\boldsymbol{\beta}}$ - Proof {.build}
+
+$$
+\hat{\boldsymbol{\beta}}
+\sim
+\mathcal{N}\left(
+\boldsymbol{\beta};
+\sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
+\right)
+\qquad\qquad
+\\
+\qquad\qquad
+\implies
+\frac{1}{\sigma^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
+\sim
+\chi^2_{p}
+$$
+
+$$
+\frac{(n-p) \hat{\sigma}^2}{\sigma^2}
+\sim
+\chi^2_{n-p}
+\quad
+\text{ independent from } \hat{\boldsymbol{\beta}}
+$$
+
+Hence:
+$$
+\begin{aligned}
+\frac{
+\frac{1}{\sigma^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right) / p
+}{
+\frac{(n-p) \hat{\sigma}^2}{\sigma^2} / (n-p)
+}
+&=
+\frac{1}{p\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)\\
+&\sim
+\mathcal{F}^p_{n-p}.
+\end{aligned}
+$$
+
+<!-- ************************************************************************ -->
+# Global Fisher F-test
+<!-- ************************************************************************ -->
+
+## Global Fisher F-test
+
+Hypothesis:
+$$
+\mathcal{H}_0: \beta_1 = \cdots = \beta_p = 0
+\quad
+\text{vs}
+\quad
+\mathcal{H}_1: \exists~k ~|~ \beta_k \neq 0
+$$
+
+Test Statistic:
+$$
+F
+= \frac{1}{p\hat{\sigma}^2}\hat{\boldsymbol{\beta}}^T (\mathbf{X}^T\mathbf{X})\hat{\boldsymbol{\beta}}
+\underset{\mathcal{H}_0}{\sim}
+\mathcal{F}^p_{n-p}
+$$
+
+Reject Region:
+$$
+\mathbb{P}[\text{Reject} | \mathcal{H}_0 \text{ true}] \leq \alpha
+\!\iff\! \mathcal{R}_\alpha = \left\{ f \in \mathbb{R}_+  ~|~ f \geq f^p_{n-p}(1 - \alpha) \right\}
+$$
+
+p value:
+$$
+p = \mathbb{P}_{\mathcal{H}_0}[F > F^{obs}]
+$$
+
+## Simulated Dataset - Fit - Junk {.smaller}
+
+```{r test7, echo=TRUE}
+fit <- lm(y_sim ~ -1 + ., data = data_junk)
+f_obs <- summary(fit)$fstatistic
+f_obs
+p_value_f <- 1 - pf(f_obs[1], f_obs[2], f_obs[3])
+p_value_f
+```
+
+We do not reject the null that all the (junk) coefficients are zero (phew).
+
+## Fisher F-Test - Geometry
+
+$$
+\begin{aligned}
+F
+&= \frac{1}{p\hat{\sigma}^2}\hat{\boldsymbol{\beta}}^T (\mathbf{X}^T\mathbf{X})\hat{\boldsymbol{\beta}}
+= \frac{(\mathbf{X}\hat{\boldsymbol{\beta}})^T (\mathbf{X}\hat{\boldsymbol{\beta}}) / p}{\|\hat{\boldsymbol{\epsilon}}\|^2 / (n - p)} \\
+&= \frac{\|\hat{\mathbf{y}}\|^2 / p}{\|\hat{\boldsymbol{\epsilon}}\|^2 / (n - p)}
+= \frac{\|\hat{\mathbf{y}}\|^2 / p}{\|\mathbf{y} -  \hat{\mathbf{y}}\|^2 / (n - p)} \\
+\end{aligned}
+$$
+
+>* $\mathcal{H}_0: \beta_1 = \cdots = \beta_p = 0$ i.e. the model is useless.
+
+>* If $\|\hat{\boldsymbol{\epsilon}}\|^2$ is **small**, then the error is **small**,  
+and $F$ tends to be **large**, i.e. we tend to **reject** $\mathcal{H}_0$:  
+the model is usefull.
+
+>* If $\|\hat{\boldsymbol{\epsilon}}\|^2$ is **large**, then the error is **large**,  
+and $F$ tends to be **small**, i.e. we tend to **not reject** $\mathcal{H}_0$:  
+the model is rather useless.
+
+## Geometrical interpretation
+
+<div class="columns-2">
+**Good model** 
+
+```{r proj2, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.55, 0.45)
+yv <- c(0.8, 0.7)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.8, 0.3)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "firebrick", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "firebrick", pos = 2)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))),
+     col = "dodgerblue2", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue2", lwd = 1, lty = 2)
+# hat epsilon
+text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+     labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
+```
+
+* $\mathbf{y}$ **not too far** from $\mathcal{M}(\mathbf{X})$.
+
+* $\|\hat{\boldsymbol{\epsilon}}\|^2$ **not too large** compared to $\|\hat{\mathbf{y}}\|^2$.
+
+* $F$ tends to be large.
+
+$~$
+
+**Bad model** 
+
+```{r proj1, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.65, 0.45)
+yv <- c(0.4, 1.0)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.4, 0.2)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "firebrick", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "firebrick", pos = 2)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))),
+     col = "dodgerblue2", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue2", lwd = 1, lty = 2)
+# hat epsilon
+text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+     labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
+```
+
+* $\mathbf{y}$ **almost orth.** to $\mathcal{M}(\mathbf{X})$.
+
+* $\|\hat{\boldsymbol{\epsilon}}\|^2$ **rather large** compared to $\|\hat{\mathbf{y}}\|^2$.
+
+* $F$ tends to be small.
+
+</div>
+
+## Simulated Dataset - True and Junk {.smaller}
+
+```{r test8, echo=TRUE}
+## Data frame
+data_all <- data.frame(y_sim = y_sim,
+                       x_1 = x_1,
+                       x_2 = x_2,
+                       x_junk = x_junk)
+## Fit
+fit <- lm(y_sim ~ ., data = data_all)
+## multiple t tests
+p_values_t <- summary(fit)$coefficients[, 4]
+names(p_values_t[p_values_t <= 0.05])
+
+## f test
+f_obs <- summary(fit)$fstatistic
+p_value_f <- 1 - pf(f_obs[1], f_obs[2], f_obs[3])
+p_value_f
+```
+
+<!-- ************************************************************************ -->
+# Nested Models Fisher F-test
+<!-- ************************************************************************ -->
+
+## Nested Models
+
+Can I test ?
+$$
+\begin{aligned}
+\mathcal{H}_0&: \beta_{p_0 + 1} = \cdots = \beta_p = 0 &\text{vs}\\
+\mathcal{H}_1&: \exists~k\in \{p_0+1, \dotsc, p\} ~|~ \beta_k \neq 0
+\end{aligned}
+$$
+
+i.e. decide between the full model:
+$$
+\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}
+$$
+
+and the nested model:
+$$
+\mathbf{y} = \mathbf{X}_0\boldsymbol{\beta}_0 + \boldsymbol{\epsilon}
+$$
+
+with $\mathbf{X} = (\mathbf{X}_0 ~ \mathbf{X}_1)$,
+$rg(\mathbf{X}) = p$ and
+$rg(\mathbf{X}_0) = p_0$.
+
+## Geometrical interpretation
+
+```{r proj3, echo=FALSE, fig.height=5, fig.width=5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.55, 0.45)
+yv <- c(0.8, 1.0)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.8, 0.3)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "firebrick", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "firebrick", pos = 2)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))),
+     col = "dodgerblue2", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue2", lwd = 1, lty = 2)
+# hat epsilon
+text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+     labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
+# M_0
+down <- c(0.25, 0.15)
+up <- c(0.6, 0.5)
+segments(x0 = down[1], y0 = down[2], x1 = up[1], y1 = up[2],
+         col = "darkblue", lwd = 3)
+# yhat 0
+text(ybaronev[1], ybaronev[2],
+     labels = expression(hat(bold(y))[0]),
+     col = "darkblue", pos = 2)
+# epsilon hat 0
+segments(x0 = yv[1], y0 = yv[2], x1 = ybaronev[1], y1 = ybaronev[2],
+         col = "darkblue", lwd = 3, lty = 3)
+text((yv[1] + ybaronev[1])/2, (yv[2] + ybaronev[2])/2,
+     labels = expression(hat(bold(epsilon))[0]), col = "darkblue", pos = 4)
+# yhat yhat 0
+segments(x0 = ybaronev[1], y0 = ybaronev[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "limegreen", lwd = 3, lty = 3)
+```
+
+## Nested Models
+
+**Idea**: Compare
+
+* $\|\hat{\mathbf{y}} -  \hat{\mathbf{y}}_0\|^2$ distance
+of $\hat{\mathbf{y}}$ compared to $\hat{\mathbf{y}}_0$ to
+
+* $\|\mathbf{y} - \hat{\mathbf{y}}\|^2$ residual error.
+
+Then:
+
+>* If $\|\hat{\mathbf{y}} - \hat{\mathbf{y}}_0\|^2$
+**small** compared to $\|\mathbf{y} -  \hat{\mathbf{y}}\|^2$,
+then "$\hat{\mathbf{y}} \approx \hat{\mathbf{y}}_0$" and the null
+model is enough.
+
+>* If $\|\hat{\mathbf{y}} - \hat{\mathbf{y}}_0\|^2$
+**large** compared to $\|\mathbf{y} - \hat{\mathbf{y}}\|^2$,
+then the full model is useful.
+
+## Geometrical interpretation
+
+<div class="columns-2">
+**Good model** 
+
+```{r proj4, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.55, 0.45)
+yv <- c(0.8, 1.0)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.8, 0.3)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "firebrick", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "firebrick", pos = 2)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))),
+     col = "dodgerblue2", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue2", lwd = 1, lty = 2)
+# hat epsilon
+# text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+#      labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
+# M_0
+down <- c(0.25, 0.15)
+up <- c(0.6, 0.5)
+segments(x0 = down[1], y0 = down[2], x1 = up[1], y1 = up[2],
+         col = "darkblue", lwd = 3)
+# yhat 0
+text(ybaronev[1], ybaronev[2],
+     labels = expression(hat(bold(y))[0]),
+     col = "darkblue", pos = 2)
+# epsilon hat 0
+segments(x0 = yv[1], y0 = yv[2], x1 = ybaronev[1], y1 = ybaronev[2],
+         col = "darkblue", lwd = 3, lty = 3)
+# text((yv[1] + ybaronev[1])/2, (yv[2] + ybaronev[2])/2,
+#      labels = expression(hat(bold(epsilon))[0]), col = "darkblue", pos = 4)
+# yhat yhat 0
+segments(x0 = ybaronev[1], y0 = ybaronev[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "limegreen", lwd = 3, lty = 3)
+```
+
+* $\hat{\mathbf{y}}$ **quite different** from $\hat{\mathbf{y}}_0$.
+
+* Full model **does add** information.
+
+$~$
+
+**Bad model** 
+
+```{r proj5, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.45, 0.35)
+yv <- c(0.5, 1.0)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.5, 0.3)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "firebrick", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "firebrick", pos = 2)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))),
+     col = "dodgerblue2", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue2", lwd = 1, lty = 2)
+# hat epsilon
+# text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+#      labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
+# M_0
+down <- c(0.25, 0.15)
+up <- c(0.6, 0.5)
+segments(x0 = down[1], y0 = down[2], x1 = up[1], y1 = up[2],
+         col = "darkblue", lwd = 3)
+# yhat 0
+text(ybaronev[1], ybaronev[2],
+     labels = expression(hat(bold(y))[0]),
+     col = "darkblue", pos = 2)
+# epsilon hat 0
+segments(x0 = yv[1], y0 = yv[2], x1 = ybaronev[1], y1 = ybaronev[2],
+         col = "darkblue", lwd = 3, lty = 3)
+# text((yv[1] + ybaronev[1])/2, (yv[2] + ybaronev[2])/2,
+#      labels = expression(hat(bold(epsilon))[0]), col = "darkblue", pos = 4)
+# yhat yhat 0
+segments(x0 = ybaronev[1], y0 = ybaronev[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "limegreen", lwd = 3, lty = 3)
+```
+
+* $\hat{\mathbf{y}}$ **similar** to $\hat{\mathbf{y}}_0$.
+
+* Full model **does not add** much information.
+
+</div>
+
+## Nested Models - F test
+
+$$
+F = \frac{
+\|\hat{\mathbf{y}} -  \hat{\mathbf{y}}_0\|^2 / (p - p_0)
+}{
+\|\mathbf{y} - \hat{\mathbf{y}}\|^2 / (n - p)
+}
+$$
+
+>* When $F$ is **large**, full model is **useful**.
+
+>* When $F$ is **small**, null model is enough.
+
+>* Distribution of $F$ ?
+
+## Distribution of $F$ - 1/2 {.build}
+
+$$
+F = \frac{
+\|\hat{\mathbf{y}} -  \hat{\mathbf{y}}_0\|^2 / (p - p_0)
+}{
+\|\mathbf{y} - \hat{\mathbf{y}}\|^2 / (n - p)
+}
+$$
+
+Let $\mathbf{P}$ projection on $\mathcal{M}(\mathbf{X})$ and
+$\mathbf{P}_0$ projection on $\mathcal{M}(\mathbf{X}_0)$
+
+$$
+\begin{aligned}
+\hat{\mathbf{y}} -  \hat{\mathbf{y}}_0
+&= \mathbf{P}\mathbf{y} - \mathbf{P}_0\mathbf{y}
+= \mathbf{P}\mathbf{y} - \mathbf{P}_0\mathbf{P}\mathbf{y}\\
+&= (\mathbf{I}_n - \mathbf{P}_0) \mathbf{P}\mathbf{y}
+= \mathbf{P}_0^\bot \mathbf{P}\mathbf{y}\\
+&\in \mathcal{M}(\mathbf{X}_0)^\bot \cap \mathcal{M}(\mathbf{X})
+\end{aligned}
+$$
+
+$$
+\mathbf{y} -  \hat{\mathbf{y}}
+= (\mathbf{I}_n - \mathbf{P}) \mathbf{y}
+= \mathbf{P}^\bot \mathbf{y}
+\in \mathcal{M}(\mathbf{X})^\bot
+$$
+
+$\hat{\mathbf{y}} -  \hat{\mathbf{y}}_0$ and $\mathbf{y} -  \hat{\mathbf{y}}$ are **orthogonal**  
+i.e. their covariance is zero  
+i.e. (Gaussian assumption) they are **independent**.
+
+## Distribution of $F$ - 2/2 {.build}
+
+From Cochran's theorem:
+$$
+\frac{1}{\sigma^2}\|\mathbf{y} -  \hat{\mathbf{y}}\|^2
+= \frac{1}{\sigma^2}\|\mathbf{P}^\bot\mathbf{y}\|^2
+= \frac{1}{\sigma^2}\|\mathbf{P}^\bot\boldsymbol{\epsilon}\|^2
+\sim \chi^2_{n-p}
+$$
+
+$$
+\frac{1}{\sigma^2}\|\hat{\mathbf{y}} -  \hat{\mathbf{y}}_0 - \mathbf{P}_0^\bot \mathbf{P}\mathbf{X}\boldsymbol{\beta}\|^2
+= \frac{1}{\sigma^2}\|\mathbf{P}_0^\bot \mathbf{P}(\mathbf{y} - \mathbf{X}\boldsymbol{\beta})\|^2
+\sim \chi^2_{p-p_0}
+$$
+($\mathbf{P}_0^\bot \mathbf{P}$ is a projection on a space of dimension $p - p_0$)
+
+If $\mathcal{H}_0$ is true, then $\mathbf{P}_0^\bot \mathbf{P}\mathbf{X}\boldsymbol{\beta} = 0$, hence:
+
+$$
+F = \frac{
+\|\hat{\mathbf{y}} -  \hat{\mathbf{y}}_0\|^2 / (p - p_0)
+}{
+\|\mathbf{y} - \hat{\mathbf{y}}\|^2 / (n - p)
+}
+\underset{\mathcal{H}_0}{\sim}
+\mathcal{F}^{p - p_0}_{n - p}.
+$$
+
+## Nested F test {.build}
+
+From Phythagoras's theorem:
+$$
+\begin{aligned}
+\|\mathbf{y} -  \hat{\mathbf{y}}_0\|^2
+&= \|\mathbf{y} - \mathbf{P}\mathbf{y} + \mathbf{P}\mathbf{y} -  \mathbf{P}_0\mathbf{y}\|^2
+= \|\mathbf{P}^\bot\mathbf{y} + \mathbf{P}_0^\bot\mathbf{P}\mathbf{y}\|^2\\
+&= \|\mathbf{P}^\bot\mathbf{y}\|^2 + \|\mathbf{P}_0^\bot\mathbf{P}\mathbf{y}\|^2
+= \|\mathbf{y} -  \hat{\mathbf{y}}\|^2 + \|\hat{\mathbf{y}} -  \hat{\mathbf{y}}_0\|^2\\
+\end{aligned}
+$$
+
+i.e.
+$$
+\|\hat{\mathbf{y}} -  \hat{\mathbf{y}}_0\|^2 
+= \|\mathbf{y} -  \hat{\mathbf{y}}_0\|^2 - \|\mathbf{y} -  \hat{\mathbf{y}}\|^2
+= RSS_0 - RSS
+$$
+
+Hence:
+$$
+F = \frac{
+\|\hat{\mathbf{y}} -  \hat{\mathbf{y}}_0\|^2 / (p - p_0)
+}{
+\|\mathbf{y} - \hat{\mathbf{y}}\|^2 / (n - p)
+}
+= \frac{n - p}{p - p_0}\frac{RSS_0 - RSS}{RSS}
+$$
+
+## Nested F test
+
+To test:
+$$
+\begin{aligned}
+\mathcal{H}_0&: \beta_{p_0 + 1} = \cdots = \beta_p = 0 &\text{vs}\\
+\mathcal{H}_1&: \exists~k\in \{p_0+1, \dotsc, p\} ~|~ \beta_k \neq 0
+\end{aligned}
+$$
+
+we use the $F$ statistics:
+$$
+F = \frac{
+\|\hat{\mathbf{y}} -  \hat{\mathbf{y}}_0\|^2 / (p - p_0)
+}{
+\|\mathbf{y} - \hat{\mathbf{y}}\|^2 / (n - p)
+}
+= \frac{n - p}{p - p_0}\frac{RSS_0 - RSS}{RSS}
+\underset{\mathcal{H}_0}{\sim}
+\mathcal{F}^{p - p_0}_{n - p}.
+$$
+
+## Simulated Dataset - True vs Junk {.smaller}
+
+$$
+y_i = -1 + 3 x_{i1} - x_{i2} + \epsilon_i
+$$
+
+```{r test9, echo=TRUE}
+## Data frame
+data_all <- data.frame(y_sim = y_sim,
+                       x_1 = x_1,
+                       x_2 = x_2,
+                       x_junk = x_junk)
+## Fit true
+fit_small <- lm(y_sim ~ x_1 + x_2, data = data_all)
+## Fit true and junk
+fit_all <- lm(y_sim ~ x_1 + x_2 + x_junk.1 + x_junk.2 + x_junk.3, data = data_all)
+## Comparison
+anova(fit_small, fit_all)
+```
+
+## Simulated Dataset - True vs Junk {.smaller}
+
+$$
+y_i = -1 + 3 x_{i1} - x_{i2} + \epsilon_i
+$$
+
+```{r test10, echo=TRUE}
+## Fit true
+fit_small <- lm(y_sim ~ x_1 + x_2, data = data_all)
+## Fit all
+fit_all <- lm(y_sim ~ ., data = data_all)
+## Comparison
+anova(fit_small, fit_all)$`Pr(>F)`[2]
+```
+
+We do not reject the null hypothesis that the first two variables are enough
+to explain the data.
+
+## Full $F$ test
+
+Assuming that we have an intercept, we often test:
+$$
+\begin{aligned}
+\mathcal{H}_0&: \beta_{2} = \cdots = \beta_p = 0 &\text{vs}\\
+\mathcal{H}_1&: \exists~k\in \{2, \dotsc, p\} ~|~ \beta_k \neq 0
+\end{aligned}
+$$
+
+The associated $F$ statistics is:
+$$
+F = \frac{
+\|\hat{\mathbf{y}} -  \bar{y}\mathbb{1}\|^2 / (p - 1)
+}{
+\|\mathbf{y} - \hat{\mathbf{y}}\|^2 / (n - p)
+}
+\underset{\mathcal{H}_0}{\sim}
+\mathcal{F}^{p - 1}_{n - p}.
+$$
+
+That is the default test returned by `R`.
+
+## Full $F$ test {.smaller}
+
+$$
+y_i = -1 + 3 x_{i1} - x_{i2} + \epsilon_i
+$$
+
+```{r test11, echo=TRUE}
+fit <- lm(y_sim ~ x_1 + x_2)
+summary(fit)
+```
+
+## One coefficient $F$ test
+
+If $p_0 = p-1$, we test:
+$$
+\begin{aligned}
+\mathcal{H}_0&: \beta_p = 0 &\text{vs} \qquad
+\mathcal{H}_1&: \beta_p \neq 0
+\end{aligned}
+$$
+
+The associated $F$ statistics is:
+$$
+F = \frac{
+\|\hat{\mathbf{y}} -  \hat{\mathbf{y}}_{-p}\|^2 / (p - 1)
+}{
+\|\mathbf{y} - \hat{\mathbf{y}}\|^2 / (n - p)
+}
+\underset{\mathcal{H}_0}{\sim}
+\mathcal{F}^{1}_{n - p}.
+$$
+
+It can be shown that:
+$$
+F = T^2 \quad \text{with} \quad T = \frac{\hat{\beta}_p}{\hat{\sigma}_p}
+$$
+so that it is equivalent to the $t$-test.
+
+<!-- ************************************************************************ -->
+# Variable Selection
+<!-- ************************************************************************ -->
+
+## How to choose the "best" model ? {.build}
+
+**Model**:
+$$
+y_i = \beta_1 x_{i1} + \dotsb + \beta_p x_{ip} + \epsilon_i
+$$
+
+**Problem**:  
+Can we choose the "best" subset of non-zero $\beta_k$ ?  
+
+I.e. Can we find the predictors that really have an impact on $\mathbf{y}$ ?
+
+$F$-test on all subsets ? Not practical, multiple testing.
+
+**Idea**:  
+Find a "score" to asses the quality of a given fit.
+
+## Variable selection - $R^2$
+
+$$
+R^2 = 1 - \frac{RSS}{TSS}
+$$
+
+```{r test12, echo=TRUE}
+## Function to get statistics for one fit
+get_stats_fit <- function(fit) {
+  sumfit <- summary(fit)
+  res <- data.frame(R2 = sumfit$r.squared)
+  return(res)
+}
+```
+
+$$
+y_i = -1 + 3 x_{i1} - x_{i2} + \epsilon_i
+$$
+
+## Variable selection - $R^2$ {.smaller}
+
+```{r test13, echo=TRUE}
+## Fit true
+get_stats_fit(lm(y_sim ~ x_1 + x_2, data = data_all))
+## Fit bigger
+get_stats_fit(lm(y_sim ~ x_1 + x_2 + x_junk.1, data = data_all))
+## Fit wrong
+get_stats_fit(lm(y_sim ~ x_1 + x_junk.1, data = data_all))
+```
+
+
+```{r test132, echo=FALSE}
+## Function to get statistics for one set of predictors
+get_stats_pred <- function(preds, y, data) {
+  fit <- lm(reformulate(preds, y), data = data)
+  res <- get_stats_fit(fit)
+  res$preds <- paste(preds, collapse = "+")
+  return(res)
+}
+
+## Function to get all statistics
+get_all_stats <- function(data_sub) {
+  all_preds <- colnames(data_sub)[-1]
+  y <- colnames(data_sub)[1]
+  all_combs <- c(combn(all_preds, 1, get_stats_pred, simplify = FALSE, y = y, data = data_sub),
+                 combn(all_preds, 2, get_stats_pred, simplify = FALSE, y = y, data = data_sub),
+                 combn(all_preds, 3, get_stats_pred, simplify = FALSE, y = y, data = data_sub))
+  res <- do.call(rbind, all_combs)
+  return(res)
+}
+```
+
+## Variable selection - $R^2$
+
+```{r test133, echo=TRUE}
+## Only one "junk" predictor
+data_sub <- data.frame(y_sim = y_sim,
+                       x_1 = x_1,
+                       x_2 = x_2,
+                       x_junk = x_junk_1)
+## Fit all possible models
+get_all_stats(data_sub)
+```
+
+**$R^2$ is not enough.**
+
+## Variable selection - $R_a^2$
+
+$$
+R_a^2 = 1 - \frac{RSS / (n-p)}{TSS / (n-1)} 
+$$
+
+```{r test14, echo=TRUE}
+## Function to get statistics
+get_stats_fit <- function(fit) {
+  sumfit <- summary(fit)
+  res <- data.frame(R2 = sumfit$r.squared,
+                    R2a = sumfit$adj.r.squared)
+  return(res)
+}
+```
+
+## Variable selection - $R_a^2$
+
+```{r test15, echo=TRUE}
+get_all_stats(data_sub)
+```
+
+**$R_a^2$: adjust for the number of predictors.**
+
+## Adjusted $R_a^2$
+
+$$
+R_a^2 = 1 - \frac{RSS / (n-p)}{TSS / (n-1)} 
+$$
+
+* The larger the better.
+
+* When $p$ is bigger, the fit must be really better for $R_a^2$ to raise.
+
+* Intuitive, but not much theoretical justifications.
+
+<!-- ************************************************************************ -->
+# Predictive Risk
+<!-- ************************************************************************ -->
+
+## Simulation
+
+```{r predrisk1}
+set.seed(1289)
+
+## Predictors
+n <- 500
+x_1 <- runif(n, min = -2, max = 2)
+x_2 <- runif(n, min = -2, max = 2)
+
+## Model
+beta_0 <- -1; beta_1 <- 3; beta_2 <- -1
+
+## sim
+eps <- rnorm(n, mean = 0, sd = 2)
+y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+```
+
+## Simulation - Fit
+
+```{r predrisk2}
+## Useless predictors
+p_junk <- 100
+x_junk <- matrix(runif(n * p_junk, min = -2, max = 2),
+                 ncol = p_junk)
+
+## Good and Bad dataset
+data_all <- data.frame(y_sim = y_sim,
+                       x_1 = x_1,
+                       x_2 = x_2,
+                       x_junk = x_junk)
+
+## Bad overfitting fit
+fit_bad <- lm(y_sim ~ ., data = data_all)
+pred_bad <- predict(fit_bad)
+
+## Good fit
+fit_good <- lm(y_sim ~ x_1 + x_2, data = data_all)
+pred_good <- predict(fit_good)
+```
+
+## Simulation - Fit {.smaller}
+
+```{r predrisk23, fig.height=4, fig.width=7, fig.align='center'}
+mu_y <- beta_0 + beta_1 * x_1 + beta_2 * x_2
+plot(mu_y, y_sim, pch = 3,
+     ylab = "y", xlab = expression(beta[0] + beta[1]*x[1] + beta[2]*x[2]))
+## Bad prediction (big model)
+points(mu_y, pred_bad, col = "firebrick", pch = 4)
+## Good prediction (small model)
+points(mu_y, pred_good, col = "lightblue", pch = 4)
+```
+
+## RSS: "fitted risk"
+
+The bad (bigger) model is closer to the observed data.
+
+```{r predrisk3}
+## Distance between bad prediction and data (RSS)
+sum((y_sim - pred_bad)^2)
+
+## Distance between good prediction and data (RSS)
+sum((y_sim - pred_good)^2)
+```
+
+**Overfitting**: the RSS is smaller for the bad, bigger model.
+
+## Predictive Risk
+
+Generate new data according to the same generative model:
+
+```{r predrisk4}
+## New dataset from the same model
+eps_new <- rnorm(n, mean = 0, sd = 2)
+y_new <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps_new
+```
+
+**Questions**:  
+Are the predictions from the bad (bigger) model  
+*better or worse*  
+than the predictions from the good (smaller) model,  
+compared to the new data ?
+
+## Predictive Risk
+
+Compute the risk between predictions and new data:
+
+```{r predrisk5}
+## Distance between bad prediction and true
+sum((y_new - pred_bad)^2)
+
+## Distance between good prediction and true
+sum((y_new - pred_good)^2)
+```
+
+The good (smaller) model behaves better on new data.
+
+## Predictive Risk {.build}
+
+**RSS**:
+$\|\mathbf{y} - \hat{\mathbf{y}}_p\|^2$ with $\hat{\mathbf{y}}_p$ learnt on $\mathbf{y}$  
+$\to$ gets smaller when model gets bigger (overfit).
+
+**Predictive Risk**:
+$\| \mathbf{y}' - \hat{\mathbf{y}}_p\|^2$ with $\mathbf{y}'$ same distribution as $\mathbf{y}$.  
+$\to$ becomes larger if $\hat{\mathbf{y}}_p$ is overfit.
+
+**Idea**:  
+We want to select a model that has a good **predictive** risk.  
+i.e. that represents the underlying model best.
+
+**Problem**:  
+In general, we don't have means to generate $\mathbf{y}'$.  
+$\to$ We use an *estimate* of the (theoretical) predictive risk.
+
+<!-- ************************************************************************ -->
+# Theoretical Risk
+<!-- ************************************************************************ -->
+
+## Models {.build}
+
+**Ideal model**:
+$$
+\mathbf{y} = \boldsymbol{\mu} + \boldsymbol{\epsilon}
+\quad
+\boldsymbol{\mu} \in \mathbb{R}^n
+\quad
+\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_n).
+$$
+
+$\boldsymbol{\mu}$ the "true" expectation of the observations $\mathbf{y}$.
+
+**Full linear regression model**:
+$$
+\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}
+\quad
+rg(\mathbf{X}) = p,
+\quad
+\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_n).
+$$
+
+Assumes that $\boldsymbol{\mu}$ can be approximated as $\mathbf{X} \boldsymbol{\beta}$,
+i.e. as an element of $\mathcal{M}(\mathbf{X})$.
+
+## Models
+
+**Ideal model**:
+$$
+\mathbf{y} = \boldsymbol{\mu} + \boldsymbol{\epsilon}
+\quad
+\boldsymbol{\mu} \in \mathbb{R}^n
+\quad
+\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_n).
+$$
+
+
+**Sub-models**:  
+keep only predictors $\eta \subset \{1, \dotsc, p\}$
+$$
+\mathbf{y} = \mathbf{X}_{\eta} \boldsymbol{\beta}_{\eta} + \boldsymbol{\epsilon}_{\eta}
+\quad
+rg(\mathbf{X}_{\eta}) = |\eta|,
+\quad
+\boldsymbol{\epsilon}_{\eta} \sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_n).
+$$
+
+with $\mathbf{X}_{\eta}$ the sub-matrix of $\mathbf{X}$:
+$$
+\mathbf{X}_{\eta} = (\mathbf{x}_{\eta_1} ~ \mathbf{x}_{\eta_2} \cdots \mathbf{x}_{\eta_{|\eta|}})
+$$
+
+Assumes that $\boldsymbol{\mu}$ can be approximated as $\mathbf{X}_{\eta} \boldsymbol{\beta}_{\eta}$,
+i.e. as an element of $\mathcal{M}(\mathbf{X}_{\eta})$.
+
+## Models
+
+**"Truth"**:
+$\mathbf{y} = \boldsymbol{\mu} + \boldsymbol{\epsilon}$, with 
+$\boldsymbol{\mu} \in \mathbb{R}^n$ and 
+$\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_n)$.
+
+**Models:**
+$$
+\mathbf{y} = \mathbf{X}_{\eta} \boldsymbol{\beta}_{\eta} + \boldsymbol{\epsilon}_{\eta}
+\quad
+rg(\mathbf{X}_{\eta}) = |\eta|,
+\quad
+\boldsymbol{\epsilon}_{\eta} \sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_n).
+$$
+
+**Estimators:**
+$$ 
+\begin{aligned}
+\hat{\boldsymbol{\beta}}_\eta 
+& = \underset{\boldsymbol{\beta} \in \mathbb{R}^{|\eta|}}{\operatorname{argmin}} 
+\|\mathbf{y} - \mathbf{X}_\eta\boldsymbol{\beta}_\eta \|^2 
+= (\mathbf{X}_\eta^{T}\mathbf{X}_\eta)^{-1}\mathbf{X}_\eta^{T}\mathbf{y}\\
+\hat{\mathbf{y}}_\eta
+& = \mathbf{X}_\eta\hat{\boldsymbol{\beta}}_\eta 
+= \mathbf{P}^{\mathbf{X}_\eta}\mathbf{y} 
+\end{aligned}
+$$
+
+**True expectation**:
+$$ 
+\begin{aligned}
+\mathbf{y}_\eta
+= \mathbf{P}^{\mathbf{X}_\eta}\boldsymbol{\mu} 
+\end{aligned}
+$$
+
+## Models
+
+```{r fullproj, echo=FALSE, fig.height=5.5, fig.width=5.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.55, 0.45)
+yv <- c(0.8, 0.7)
+muv <- c(0.6, 0.8)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.8, 0.3)
+muetav <- c(0.6, 0.4)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "dodgerblue2", pos = 4)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue4", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))[eta]),
+     col = "dodgerblue4", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue4", lwd = 1, lty = 2)
+# text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+#      labels = expression(hat(bold(epsilon))[eta]), col = "dodgerblue4", pos = 4)
+# mu
+arrows(x0 = or[1], y0 = or[2], x1 = muv[1], y1 = muv[2],
+       length = 0.1, col = "firebrick2", lwd = 2)
+text(muv[1], muv[2], labels = expression(bold(mu)), col = "firebrick2", pos = 2)
+# yeta
+arrows(x0 = or[1], y0 = or[2], x1 = muetav[1], y1 = muetav[2],
+       length = 0.1, col = "firebrick4", lwd = 2)
+text(muetav[1], muetav[2],
+     labels = expression(bold(y)[eta]),
+     col = "firebrick4", pos = 4)
+# mu - mueta
+segments(x0 = muv[1], y0 = muv[2], x1 = muetav[1], y1 = muetav[2],
+         col = "firebrick4", lwd = 1, lty = 2)
+# text((muv[1] + muetav[1])/2, (muv[2] + muetav[2])/2,
+#      labels = expression(hat(bold(epsilon))[eta]), col = "firebrick4", pos = 4)
+# mu - y
+segments(x0 = muv[1], y0 = muv[2], x1 = yv[1], y1 = yv[2],
+         col = "goldenrod2", lwd = 1, lty = 5)
+text((muv[1] + yv[1])/2, (muv[2] + yv[2])/2,
+     labels =  expression(bold(mu) - bold(y)), col = "goldenrod2", pos = 3)
+```
+
+## Risk
+
+```{r fullproj2, echo=FALSE, fig.height=5.5, fig.width=5.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.55, 0.45)
+yv <- c(0.8, 0.7)
+muv <- c(0.6, 0.8)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.8, 0.3)
+muetav <- c(0.6, 0.4)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "dodgerblue2", pos = 4)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue4", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))[eta]),
+     col = "dodgerblue4", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue4", lwd = 1, lty = 2)
+# text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+#      labels = expression(hat(bold(epsilon))[eta]), col = "dodgerblue4", pos = 4)
+# mu
+arrows(x0 = or[1], y0 = or[2], x1 = muv[1], y1 = muv[2],
+       length = 0.1, col = "firebrick2", lwd = 2)
+text(muv[1], muv[2], labels = expression(bold(mu)), col = "firebrick2", pos = 2)
+# yeta
+arrows(x0 = or[1], y0 = or[2], x1 = muetav[1], y1 = muetav[2],
+       length = 0.1, col = "firebrick4", lwd = 2)
+text(muetav[1], muetav[2],
+     labels = expression(bold(y)[eta]),
+     col = "firebrick4", pos = 4)
+# mu - mueta
+segments(x0 = muv[1], y0 = muv[2], x1 = muetav[1], y1 = muetav[2],
+         col = "firebrick4", lwd = 1, lty = 2)
+# text((muv[1] + muetav[1])/2, (muv[2] + muetav[2])/2,
+#      labels = expression(hat(bold(epsilon))[eta]), col = "firebrick4", pos = 4)
+# mu - y
+# segments(x0 = muv[1], y0 = muv[2], x1 = yv[1], y1 = yv[2],
+#          col = "goldenrod2", lwd = 1, lty = 5)
+# text((muv[1] + yv[1])/2, (muv[2] + yv[2])/2,
+#      labels =  expression(bold(mu) - bold(y)), col = "goldenrod2", pos = 3)
+# mu - yhat
+segments(x0 = muv[1], y0 = muv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "goldenrod4", lwd = 1, lty = 5)
+text((muv[1] + 2*yhatv[1])/3, (muv[2] + 2*yhatv[2])/3,
+     labels =  expression(bold(mu) - hat(bold(y))[eta]), col = "goldenrod4", pos = 2)
+```
+
+## Risk of an estimator (theoretical)
+
+Risk of an estimator:
+$$
+R(\hat{\mathbf{y}}_\eta)
+= 
+\mathbb{E}\left[
+\|\boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \|^2
+\right]
+$$
+
+**Notes**:
+
+>* $\boldsymbol{\mu}$ is unknown $\to$ cannot be computed in practice.
+
+>* Expectation of the difference between the true mean and the estimated projection.
+
+>* Not subject to overfitting.
+
+
+<!-- ************************************************************************ -->
+# Bias-Variance Decomposition
+<!-- ************************************************************************ -->
+
+## Bias-Variance Decomposition
+
+$$
+R(\hat{\mathbf{y}}_\eta)
+= 
+\mathbb{E}\left[
+\|\boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \|^2
+\right]
+= 
+\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2 + |\eta| \sigma^2
+$$
+
+>* **Bias**: $\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2$  
+>    - Difference between true and projection on the model
+>    - Best that we could do if we knew the truth
+>    - **Decreases** when model is more complex, i.e. $\eta$ gets larger.
+    
+>* **Variance**: $|\eta| \sigma^2$  
+>    - Variance of the estimation
+>    - **Increases** when model is more complex, i.e. $\eta$ gets larger.
+
+>* **Risk is a compromize between bias and variance.**
+
+
+## Bias-Variance - No overfitting {.build}
+
+$$
+R(\hat{\mathbf{y}}_\eta)
+= 
+\mathbb{E}\left[
+\|\boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \|^2
+\right]
+= 
+\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2 + |\eta| \sigma^2
+$$
+
+**No overfitting**: 
+
+Assume:
+
+* $\boldsymbol{\mu} \in \mathcal{M}(\mathbf{X}_{\eta})$ so that 
+$\mathbf{y}_{\eta} = \mathbf{P}^{\mathbf{X}_{\eta}}\boldsymbol{\mu} = \boldsymbol{\mu}$.
+
+* $\eta \subset \eta'$ so that 
+$\mathbf{y}_{\eta'} = \mathbf{P}^{\mathbf{X}_{\eta'}}\boldsymbol{\mu} = \boldsymbol{\mu}$.
+
+Then:
+$$
+\begin{aligned}
+R(\hat{\mathbf{y}}_{\eta'})
+& = \|\boldsymbol{\mu} - \mathbf{y}_{\eta'} \|^2 + |\eta'| \sigma^2 \\
+& \geq \|\boldsymbol{\mu} - \mathbf{y}_{\eta'} \|^2 + |\eta| \sigma^2 
+ = \|\boldsymbol{\mu} - \mathbf{y}_{\eta} \|^2 + |\eta| \sigma^2 \\
+& \geq R(\hat{\mathbf{y}}_\eta)
+\end{aligned}
+$$
+
+## Bias-Variance - Proof - 1/2 {.build}
+
+$$
+R(\hat{\mathbf{y}}_\eta)
+= 
+\mathbb{E}\left[
+\|\boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \|^2
+\right]
+= 
+\mathbb{E}\left[
+\|\boldsymbol{\mu} - \mathbf{y}_\eta + \mathbf{y}_\eta - \hat{\mathbf{y}}_\eta \|^2
+\right]
+$$
+
+$$
+\begin{aligned}
+R(\hat{\mathbf{y}}_\eta)
+&= 
+\mathbb{E}\left[
+\|\boldsymbol{\mu} - \mathbf{P}^{\mathbf{X}_{\eta}}\boldsymbol{\mu} 
++ \mathbf{P}^{\mathbf{X}_{\eta}}\boldsymbol{\mu} - \mathbf{P}^{\mathbf{X}_{\eta}}\mathbf{y} \|^2
+\right] \\
+&= 
+\mathbb{E}\left[
+\|(\mathbf{I}_n - \mathbf{P}^{\mathbf{X}_{\eta}})\boldsymbol{\mu} 
++ \mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} - \mathbf{y}) \|^2
+\right]\\
+&= 
+\mathbb{E}\left[
+\|\mathbf{P}^{\mathbf{X}_{\eta}^\bot}\boldsymbol{\mu} 
++ \mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} - \mathbf{y}) \|^2
+\right]
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+R(\hat{\mathbf{y}}_\eta)
+&= 
+\mathbb{E}\left[
+\|\mathbf{P}^{\mathbf{X}_{\eta}^\bot}\boldsymbol{\mu} \|^2
++ \|\mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} - \mathbf{y}) \|^2
+\right] \\
+&= 
+\|\mathbf{P}^{\mathbf{X}_{\eta}^\bot}\boldsymbol{\mu} \|^2
++ 
+\mathbb{E}\left[
+\|\mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} - \mathbf{y}) \|^2
+\right] \\
+&= 
+\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2
++ 
+\mathbb{E}\left[
+\|\mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} - \mathbf{y}) \|^2
+\right]
+\end{aligned}
+$$
+
+## Bias-Variance - Proof - 2/2 {.build}
+
+$$
+R(\hat{\mathbf{y}}_\eta)
+= 
+\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2
++ 
+\mathbb{E}\left[
+\|\mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} - \mathbf{y}) \|^2
+\right]
+$$
+
+From Cochran's Theorem:
+$$
+\frac{1}{\sigma^2}\|\mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} - \mathbf{y}) \|^2
+\sim
+\chi^2_{|\eta|}
+$$
+
+Hence:
+$$
+\mathbb{E}\left[
+\frac{1}{\sigma^2}\|\mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} - \mathbf{y}) \|^2
+\right]
+=
+|\eta|
+$$
+
+And:
+$$
+R(\hat{\mathbf{y}}_\eta)
+= 
+\|\boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \|^2
++ 
+|\eta|\sigma^2.
+$$
+
+<!-- ************************************************************************ -->
+# Penalized Least Squares 
+<!-- ************************************************************************ -->
+
+## Oracle Estimator
+
+We would like:
+$$
+\eta_0 = \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} R(\hat{\mathbf{y}}_\eta)
+$$
+
+>* Minimize the risk over all possible models.
+
+>* **Problem**: $R(\hat{\mathbf{y}}_\eta)$ is theoretical $\to$ cannot be computed.
+
+>* **Idea**: Minimize an *estimator* $\hat{R}(\hat{\mathbf{y}}_\eta)$ of $R(\hat{\mathbf{y}}_\eta)$:
+$$
+\hat{\eta} = \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta).
+$$
+
+## Expectation of the RSS
+
+For any model $\eta$, the expectation of the RSS is:
+$$
+\mathbb{E}[\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2]
+=
+R(\hat{\mathbf{y}}_\eta) + n\sigma^2 - 2|\eta|\sigma^2
+$$
+
+## Expectation of the RSS - Proof {.build}
+
+$$
+\begin{aligned}
+\mathbb{E}[\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2]
+&= \mathbb{E}[\|\mathbf{y} - \boldsymbol{\mu} + \boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \|^2] \\
+&= 
+\mathbb{E}[\|\mathbf{y} - \boldsymbol{\mu}\|^2 
++ \|\boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \|^2 
++ 2 \langle \mathbf{y} - \boldsymbol{\mu}; \boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \rangle]
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\mathbb{E}[\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2]
+&= 
+\mathbb{E}[\|\boldsymbol{\epsilon}\|^2]
++ R(\hat{\mathbf{y}}_\eta)
++ 2 \mathbb{E}[\langle \boldsymbol{\epsilon}; \boldsymbol{\mu} - \mathbf{P}^{\mathbf{X}_{\eta}}\mathbf{y} \rangle]
+\qquad
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\mathbb{E}[\langle \boldsymbol{\epsilon}; \boldsymbol{\mu} - \mathbf{P}^{\mathbf{X}_{\eta}}\mathbf{y} \rangle]
+&=
+\mathbb{E}[\langle \boldsymbol{\epsilon}; \boldsymbol{\mu} - \mathbf{P}^{\mathbf{X}_{\eta}}(\boldsymbol{\mu} + \boldsymbol{\epsilon}) \rangle] \\
+&= 
+\mathbb{E}[\langle \boldsymbol{\epsilon}; \boldsymbol{\mu} - \mathbf{P}^{\mathbf{X}_{\eta}}\boldsymbol{\mu}) \rangle]
+- \mathbb{E}[\langle \boldsymbol{\epsilon}; \mathbf{P}^{\mathbf{X}_{\eta}}\boldsymbol{\epsilon} \rangle]
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\mathbb{E}[\langle \boldsymbol{\epsilon}; \boldsymbol{\mu} - \mathbf{P}^{\mathbf{X}_{\eta}}\mathbf{y} \rangle]
+&= 
+0
+- \mathbb{E}[\langle \mathbf{P}^{\mathbf{X}_{\eta}}\boldsymbol{\epsilon}; \mathbf{P}^{\mathbf{X}_{\eta}}\boldsymbol{\epsilon} \rangle] \qquad\qquad~~ \\
+&= - \mathbb{E}[\| \mathbf{P}^{\mathbf{X}_{\eta}}\boldsymbol{\epsilon}\|^2] \\
+&= - |\eta| \sigma^2
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\mathbb{E}[\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2]
+&= 
+n \sigma^2
++ R(\hat{\mathbf{y}}_\eta)
+- 2 |\eta| \sigma^2
+\qquad\qquad\qquad\qquad
+\end{aligned}
+$$
+
+
+## Mallow’s $C_p$
+
+We have:
+$$
+\mathbb{E}[\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2]
+=
+R(\hat{\mathbf{y}}_\eta) + n\sigma^2 - 2|\eta|\sigma^2
+$$
+
+Mallow's $C_p$:
+$$
+C_p(\hat{\mathbf{y}}_\eta) = \frac{1}{n} \left( \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2 \right)
+$$
+
+>* If $\hat{\sigma}^2$ is unbiaised, then:
+$$
+\mathbb{E}[C_p(\hat{\mathbf{y}}_\eta)] 
+= \frac{1}{n}R(\hat{\mathbf{y}}_\eta) + \sigma^2
+$$
+
+>* Penalize for the number of parameters $|\eta|$.
+
+>* The **smaller** the better.
+
+## Mallow’s $C_p$ {.build}
+
+We have:
+$$
+C_p(\hat{\mathbf{y}}_\eta) = \frac{1}{n} \left( \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2 \right)
+$$
+And:
+$$
+\mathbb{E}[C_p(\hat{\mathbf{y}}_\eta)] 
+= \frac{1}{n}R(\hat{\mathbf{y}}_\eta) + \sigma^2
+$$
+
+Hence:
+$$
+\hat{\eta} 
+= \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} C_p(\hat{\mathbf{y}}_\eta)
+= \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta).
+$$
+
+$\to$ Minimizing Mallow's $C_p$ is the same as minimizing an unbiaised estimate of the risk.
+
+## Mallow's $C_p$
+
+$$
+C_p(\hat{\mathbf{y}}_\eta) = \frac{1}{n} \left( \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2 \right)
+$$
+
+* Penalize for the number of parameters $|\eta|$.
+
+* The **smaller** the better.
+
+## Simulated Dataset
+
+```{r test161, echo=TRUE}
+## Mallow's Cp
+Cp <- function(fit) {
+  n <- nobs(fit)
+  p <- n - df.residual(fit)
+  RSS <- deviance(fit)
+  return( (RSS + p * RSS / (n - p)) / n)
+}
+## Function to get statistics
+get_stats_fit <- function(fit) {
+  sumfit <- summary(fit)
+  res <- data.frame(Cp = Cp(fit))
+  return(res)
+}
+```
+
+## Variable selection
+
+```{r test162, echo=TRUE}
+## Apply stats to all possible combinations
+all_stats <- get_all_stats(data_sub)
+all_stats
+```
+
+Mallow's $C_p$ is **smallest** for the true model.
+
+<!-- ************************************************************************ -->
+# Penalized Log Likelihood 
+<!-- ************************************************************************ -->
+
+## Maximized Log Likelihood {.build}
+
+Recall:
+$$
+\begin{aligned}
+(\hat{\boldsymbol{\beta}}, \hat{\sigma}^2_{ML}) 
+&= \underset{(\boldsymbol{\beta}, \sigma^2) \in \mathbb{R}^p\times\mathbb{R}_+^*}{\operatorname{argmax}} 
+\log L(\boldsymbol{\beta}, \sigma^2 | \mathbf{y})\\
+&= \underset{(\boldsymbol{\beta}, \sigma^2) \in \mathbb{R}^p\times\mathbb{R}_+^*}{\operatorname{argmax}} 
+- \frac{n}{2} \log(2\pi\sigma^2) 
+- \frac{1}{2\sigma^2}\|\mathbf{y} - \mathbf{X}\boldsymbol{\beta} \|^2
+\end{aligned}
+$$
+
+And: 
+$$
+\hat{\sigma}^2_{ML} = \frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2} {n}
+$$
+
+## Maximized Log Likelihood {.build}
+
+The maximized likelihood is equal to:
+$$
+L(\hat{\boldsymbol{\beta}}_\eta, \hat{\sigma}^2_{ML} | \mathbf{y})
+= 
+- \frac{n}{2} \log\left(2\pi\frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2}{n}\right) 
+- \frac{1}{2\frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2}{n}}\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2
+$$
+
+i.e.
+$$
+\log \hat{L}_\eta
+= 
+- \frac{n}{2} \log\left(\frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2}{n}\right) 
+- \frac{n}{2} \log\left(2\pi\right) 
+- \frac{n}{2}
+$$
+
+## Maximized Log Likelihood is increasing {.build}
+
+Remember, for any $\eta \subset \eta'$:
+$$
+\|\mathbf{y} - \hat{\mathbf{y}}_{\eta'}\|^2 \leq \|\mathbf{y} - \hat{\mathbf{y}}_\eta\|^2
+$$
+
+Hence
+$R^2_\eta = 1 - \frac{\|\mathbf{y} - \hat{\mathbf{y}}_\eta\|^2}{\|\mathbf{y} - \bar{y} \mathbb{1}\|^2}$
+always **increases** when we add a predictor.
+
+Similarly:
+$$
+\log \hat{L}_\eta
+= 
+- \frac{n}{2} \log\left(\frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2}{n}\right) 
+- \frac{n}{2} \log\left(2\pi\right) 
+- \frac{n}{2}
+$$
+always **increases** when we add some predictors.
+
+## Penalized Maximized Log Likelihood {.build}
+
+**Problem:** $\log \hat{L}_\eta$ always **increases** when we add some predictors.
+
+$\to$ it can not be used for model selection (same as $R^2$).
+
+**Idea**: add a penalty term that depends on the size of the model
+
+$\to$ minimize:
+$$
+- \log \hat{L}_\eta + f(|\eta|) \qquad \text{with f increasing}
+$$
+
+## Penalized Maximized Log Likelihood {.build}
+
+Minimize:
+$$
+- \log \hat{L}_\eta + f(|\eta|) \qquad \text{with f increasing}
+$$
+
+For $\eta \subset \eta'$:
+
+* $- \log \hat{L}_\eta$ decreases
+
+* $f(|\eta|)$ increases
+
+**Goal**: find $f$ that compensates for the "overfit", i.e. the noisy and insignificant
+increase of the likelihood when we add some unrelated predictors.
+
+## Simulated Dataset
+
+```{r test171, echo=TRUE}
+## Function to get statistics
+get_stats_fit <- function(fit) {
+  sumfit <- summary(fit)
+  res <- data.frame(minusLogLik = -logLik(fit))
+  return(res)
+}
+```
+
+## Variable selection
+
+```{r test181, echo=TRUE}
+## Apply stats to all possible combinations
+all_stats <- get_all_stats(data_sub)
+all_stats
+```
+
+When we add "junk" variable, $- \log \hat{L}_\eta$ decreases, but not a lot.
+
+**Questions**: can we find a good penalty that compensates for this noisy increasing ?
+
+<!-- ************************************************************************ -->
+# AIC and BIC
+<!-- ************************************************************************ -->
+
+## Akaike Information Criterion - AIC
+
+$$
+AIC = - 2\log \hat{L}_\eta + 2 |\eta|
+$$
+
+$~$
+
+* $\hat{L}_\eta$ is the **maximized likelihood** of the model.
+
+* $|\eta|$ is the **dimension** of the model.
+
+* The **smaller** the better.
+
+* Asymptotic theoretical guaranties.
+
+* Easy to use and **widely spread**
+
+## Bayesian Information Criterion - BIC
+
+$$
+BIC = - 2\log \hat{L}_\eta + |\eta| \log(n)
+$$
+
+$~$
+
+* $\hat{L}_\eta$ is the **maximized likelihood** of the model.
+
+* $|\eta|$ is the **dimension** of the model.
+
+* The **smaller** the better.
+
+* Based on an approximation of the marginal likelihood.
+
+* Easy to use and **widely spread**
+
+See: Lebarbier, Mary-Huard. *Le critère BIC : fondements théoriques et interprétation.* 2004. [[inria-00070685]](https://hal.archives-ouvertes.fr/inria-00070685/)
+
+
+## AIC vs BIC
+
+$$
+AIC = - 2\log \hat{L}_\eta + 2 |\eta|
+$$
+
+$$
+BIC = - 2\log \hat{L}_\eta + |\eta| \log(n)
+$$
+
+* Both have asymptotic theoretical justifications.
+
+* BIC penalizes more than AIC $\to$ chooses smaller models.
+
+* Both **widely used**.
+
+* There are some (better) non-asymptotic criteria, see  
+Giraud C. 2014. *Introduction to high-dimensional statistics.*
+
+## Simulated Dataset
+
+```{r test17, echo=TRUE}
+## Function to get statistics
+get_stats_fit <- function(fit) {
+  sumfit <- summary(fit)
+  res <- data.frame(minusLogLik = -logLik(fit),
+                    AIC = AIC(fit),
+                    BIC = BIC(fit))
+  return(res)
+}
+```
+
+## Variable selection {.smaller}
+
+```{r test18, echo=TRUE}
+## Apply stats to all possible combinations
+all_stats <- get_all_stats(data_sub)
+all_stats
+
+## Select model
+apply(all_stats[, -ncol(all_stats)], 2,
+      function(x) all_stats[which.min(x), ncol(all_stats)])
+```
+
+## Variable selection - Advertising data {.smaller}
+
+```{r test19, message = FALSE}
+## Advertising data
+library(here)
+ad <- read.csv(here("data", "Advertising.csv"), row.names = "X")
+
+## Apply stats to all possible combinations
+all_stats <- get_all_stats(ad)
+all_stats
+
+## Select model
+apply(all_stats[, -ncol(all_stats)], 2,
+      function(x) all_stats[which.min(x), ncol(all_stats)])
+```
+
+
+<!-- ************************************************************************ -->
+# Forward and Backward Search
+<!-- ************************************************************************ -->
+
+## Combinatorial problem
+
+$$
+p \text{ predictors } \to 2^p \text{ possible models.}
+$$
+
+>* Cannot test all possible models.
+
+>* "Manual" solution: forward or backward searches.
+
+## Forward search
+
+>* Start with the null model (no predictor)
+
+>* Try to **add one** predictor ($p$ models to fit)
+
+>* Choose the best fitting among the $p$ models.
+
+>* Repeat until no more predictors to add.
+
+>* Choose best fit with $C_p$, AIC or BIC.
+
+## Forward search - Init
+
+```{r forward, message = FALSE}
+## Full formula
+full_formula <- formula(y_sim ~ x_1 + x_2 
+                        + x_junk.1 + x_junk.2 + x_junk.3 
+                        + x_junk.4 + x_junk.5 + x_junk.6)
+
+## Complete search
+2^8
+
+## No predictors
+fit0 <- lm(y_sim ~ 1, data = data_all)
+```
+
+## Forward search - Add term
+
+```{r forward1, message = FALSE}
+## Add one
+library(MASS)
+addterm(fit0, full_formula)
+```
+
+## Forward search - Add term
+
+```{r forward2, message = FALSE}
+## Add x_1
+fit1 <- lm(y_sim ~ 1 + x_1, data = data_all)
+## Add another
+addterm(fit1, full_formula)
+```
+
+## Forward search - Add term
+
+```{r forward3, message = FALSE}
+## Add x_1
+fit2 <- lm(y_sim ~ 1 + x_1 + x_2, data = data_all)
+## Add another
+addterm(fit2, full_formula)
+```
+
+## Backward search
+
+>* Start with the full model (all predictors)
+
+>* Try to **remove one** predictor ($p$ models to fit)
+
+>* Choose the best fitting among the $p$ models.
+
+>* Repeat until no more predictors to remove.
+
+>* Choose best fit with $C_p$, AIC or BIC.
+
+## Backward search - Init {.smaller}
+
+```{r backward, message = FALSE}
+## Full formula
+fit0 <- lm(y_sim ~ x_1 + x_2 
+                        + x_junk.1 + x_junk.2 + x_junk.3 
+                        + x_junk.4 + x_junk.5 + x_junk.6,
+           data = data_all)
+```
+
+```{r backward1, message = FALSE}
+## drop one
+dropterm(fit0)
+```
+
+## Backward search - Drop term {.smaller}
+
+```{r backward2, message = FALSE}
+## drop x_junk.4
+fit1 <- lm(y_sim ~ x_1 + x_2 
+           + x_junk.1 + x_junk.2 + x_junk.3 
+           + x_junk.5 + x_junk.6, data = data_all)
+## Drop another
+dropterm(fit1)
+```
+
+## Backward search - Drop term {.smaller}
+
+```{r backward3, message = FALSE}
+## drop x_junk.3
+fit2 <- lm(y_sim ~ x_1 + x_2 
+           + x_junk.1 + x_junk.3 
+           + x_junk.5 + x_junk.6, data = data_all)
+## Drop another
+dropterm(fit2)
+```
+
+## Backward search - Drop term {.smaller}
+
+```{r backward4, message = FALSE}
+## drop x_junk.5
+fit3 <- lm(y_sim ~ x_1 + x_2 
+           + x_junk.1 + x_junk.3 
+           + x_junk.6, data = data_all)
+## Drop another
+dropterm(fit3)
+```
+
+## Backward search - Drop term {.smaller}
+
+```{r backward5, message = FALSE}
+## drop x_junk.6
+fit4 <- lm(y_sim ~ x_1 + x_2 
+           + x_junk.1 + x_junk.3 ,
+           data = data_all)
+## Drop another
+dropterm(fit4)
+```
+
+## Backward search - Drop term {.smaller}
+
+```{r backward6, message = FALSE}
+## drop x_junk.5
+fit5 <- lm(y_sim ~ x_1 + x_2 + x_junk.3 ,
+           data = data_all)
+## Drop another
+dropterm(fit5)
+```
+
+## Backward search - Drop term {.smaller}
+
+```{r backward7, message = FALSE}
+## drop x_junk.3
+fit6 <- lm(y_sim ~ x_1 + x_2,
+           data = data_all)
+## Drop another
+dropterm(fit6)
+```
+
+
+## Forward and backward searches
+
+>* Both are **heuristics**.
+
+>* There are no guaranties that both converge to the same solution.
+
+>* No theoretical guaranties on the selected model.
+
+>* Model selecition is still an active area of research.
+>   - See e.g: LASSO and other penalized criteria (M2)
+
+<!-- ************************************************************************ -->
+# AIC vs log FPE
+<!-- ************************************************************************ -->
+
+## Final Prediction Error - FPE
+
+Mallow's $C_p$:
+$$
+C_p(\hat{\mathbf{y}}_\eta) = \frac{1}{n} \left( \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2_{\text{full}} \right)
+$$
+
+FPE:
+$$
+FPE(\hat{\mathbf{y}}_\eta) = \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2_\eta 
+\quad
+\text{with}
+\quad
+\hat{\sigma}^2_\eta = \frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2} {n - |\eta|}
+$$
+
+Hence:
+$$
+FPE(\hat{\mathbf{y}}_\eta) = \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 
+\left(1 + \frac{2 |\eta|} {n - |\eta|}\right) 
+$$
+
+## AIC vs Log FPE {.build}
+
+$$
+\begin{aligned}
+\log \frac1n FPE(\hat{\mathbf{y}}_\eta) 
+&= \log 
+\left(\frac1n \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 
+\left(1 + \frac{2 |\eta|} {n - |\eta|}\right) \right)\\
+&= \log 
+\left(\frac1n \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 \right)
++ \log \left(1 + \frac{2 |\eta|} {n - |\eta|}\right)
+\end{aligned}
+$$
+But:
+$$
+n \log\left(\frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2}{n}\right) 
+= 
+- 2\log \hat{L}_\eta
+- n \log\left(2\pi\right) 
+- n
+$$
+
+## AIC vs Log FPE {.build}
+
+Hence:
+$$
+n\log \frac1n FPE(\hat{\mathbf{y}}_\eta) + n \log\left(2\pi\right) + n
+\qquad \qquad \qquad \qquad\\
+\qquad \qquad \qquad \qquad = - 2\log \hat{L}_\eta + n \log \left(1 + \frac{2 |\eta|} {n - |\eta|}\right)\\
+$$
+
+When $n$ is large:
+$$
+n \log \left(1 + \frac{2 |\eta|} {n - |\eta|}\right)
+\approx
+n \frac{2 |\eta|} {n - |\eta|}
+\approx
+2 |\eta|
+$$
+
+## AIC vs Log FPE {.build}
+
+Hence:
+$$
+\begin{aligned}
+n\log \frac1n FPE(\hat{\mathbf{y}}_\eta) + n \log\left(2\pi\right) + n 
+&\approx - 2\log \hat{L}_\eta + 2 |\eta| \\
+&\approx AIC(\hat{\mathbf{y}}_\eta)
+\end{aligned}
+$$
+
+The log FPE and the AIC criteria select for the same models (asymptotically).
+
+<!-- ************************************************************************ -->
+# BIC and Laplace Approximation
+<!-- ************************************************************************ -->
+
+## Bayesian Model Selection {.build}
+
+In a **Bayesian setting**,  
+we have priors on the models $\eta$ and parameters $\boldsymbol{\theta}_\eta = (\boldsymbol{\beta}_\eta, \sigma^2_\eta)$:
+$$
+\left\{
+\begin{aligned}
+\eta &\sim \pi_{\eta} \\
+\boldsymbol{\theta}_\eta & \sim p(\boldsymbol{\theta} | \eta)
+\end{aligned}
+\right.
+$$
+
+The **likelihood** given some parameters and a model is:
+$p(\mathbf{y} | \boldsymbol{\theta}, \eta)$
+
+the **marginal likelihood** given a model is:
+$$
+p(\mathbf{y} | \eta)
+= 
+\int p(\mathbf{y} | \boldsymbol{\theta}, \eta) p(\boldsymbol{\theta} | \eta) d\boldsymbol{\theta}
+$$
+
+and the **posterior** probability of the models are:
+$$
+p(\eta | \mathbf{y}).
+$$
+
+## Bayesian Model Selection {.build}
+
+**Goal**: find the model with the *highest* posterior probability:
+$$
+\hat{\eta} 
+= \underset{\eta}{\operatorname{argmax}} 
+p(\eta | \mathbf{y})
+$$
+
+Assume that all models have the same prior probability:
+$$
+\pi_{\eta} \equiv \pi.
+$$
+
+Then, from Bayes rule:
+$$
+p(\eta | \mathbf{y})
+=
+p(\mathbf{y} | \eta)\pi_{\eta} / p(\mathbf{y})
+=
+p(\mathbf{y} | \eta) \times \pi / p(\mathbf{y})
+$$
+
+And:
+$$
+\hat{\eta} 
+= \underset{\eta}{\operatorname{argmax}} 
+p(\eta | \mathbf{y})
+= \underset{\eta}{\operatorname{argmax}} 
+p(\mathbf{y} | \eta).
+$$
+
+## Bayesian Model Selection {.build}
+
+**Goal**: find the model with the *highest* posterior probability:
+$$
+\begin{aligned}
+\hat{\eta} 
+& = \underset{\eta}{\operatorname{argmax}} 
+p(\eta | \mathbf{y}) 
+ = \underset{\eta}{\operatorname{argmax}} 
+p(\mathbf{y} | \eta) \\
+& = \underset{\eta}{\operatorname{argmax}} 
+\int p(\mathbf{y} | \boldsymbol{\theta}, \eta) p(\boldsymbol{\theta} | \eta) d\boldsymbol{\theta}
+\end{aligned}
+$$
+
+**Idea**:  
+Assume that 
+$$p(\mathbf{y} | \boldsymbol{\theta}, \eta) p(\boldsymbol{\theta} | \eta)$$
+is concentrated around its maximum 
+$$p(\mathbf{y} | \boldsymbol{\theta}_\eta^*, \eta) p(\boldsymbol{\theta}_\eta^* | \eta)$$
+and apply Laplace Approximation.
+
+## Laplace Approximation {.build}
+
+Let $L: \mathbb{R}^q \to \mathbb{R}$ be a three times differentiable function,
+with a unique maximum $\mathbf{u}^*$. Then:
+$$
+\int_{\mathbb{R}^q} e^{n L(\mathbf{u})} d \mathbf{u}
+=
+\left(\frac{2\pi}{n}\right)^{q/2} |-L''(\mathbf{u}^*)|^{-1/2}e^{nL(\mathbf{u}^*)}
++ o(n^{-1})
+$$
+
+Applied to:
+$$
+L(\boldsymbol{\theta}) 
+= \frac1n\log p(\mathbf{y} | \boldsymbol{\theta}, \eta) + \frac1n\log p(\boldsymbol{\theta} | \eta)
+$$
+and assuming 
+$\log p(\mathbf{y} | \boldsymbol{\theta}^*, \eta) \approx \log p(\mathbf{y} | \hat{\boldsymbol{\theta}}, \eta)$,
+we get:
+$$
+\log \int p(\mathbf{y} | \boldsymbol{\theta}, \eta) p(\boldsymbol{\theta} | \eta) d\boldsymbol{\theta}
+\approx
+\log p(\mathbf{y} | \hat{\boldsymbol{\theta}}, \eta) - \frac{|\eta|}{2} \log(n).
+$$
+
+## BIC
+
+Hence:
+$$
+\begin{aligned}
+\hat{\eta} 
+& = \underset{\eta}{\operatorname{argmax}} 
+p(\eta | \mathbf{y}) 
+ = \underset{\eta}{\operatorname{argmax}} 
+p(\mathbf{y} | \eta) \\
+& \approx \underset{\eta}{\operatorname{argmax}} 
+\left\{\log p(\mathbf{y} | \hat{\boldsymbol{\theta}}, \eta) - \frac{|\eta|}{2} \log(n)\right\}\\
+& \approx \underset{\eta}{\operatorname{argmin}} 
+\left\{-2\log p(\mathbf{y} | \hat{\boldsymbol{\theta}}, \eta) + |\eta| \log(n) \right\}\\
+&\approx \underset{\eta}{\operatorname{argmax}}
+\left\{- 2\log \hat{L}_\eta + |\eta| \log(n)\right\}
+= \underset{\eta}{\operatorname{argmax}}
+ BIC(\hat{\mathbf{y}}_\eta)
+\end{aligned}
+$$
+
+BIC is an approximation of the marginal likelihood.

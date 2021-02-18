@@ -124,7 +124,7 @@ y_i = \mathbf{x}^{i} \boldsymbol{\beta} + \epsilon_i \quad \forall~1\leq i \leq 
 $$
 
 <!-- ************************************************************************ -->
-# Maximum Likeihood Estimators
+# Maximum Likelihood Estimators
 <!-- ************************************************************************ -->
 
 ## Distribution of $\mathbf{y}$
@@ -450,7 +450,7 @@ Let $\mathbf{X}$ be a Gaussian vector of size $p$ with expectation $\boldsymbol{
 $\mathbf{X} \sim \mathcal{N}(\boldsymbol{\mu}, \mathbf{\Sigma})$.
 Then, if $\mathbf{\Sigma}$ is invertible,
 $$
-(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})^T
+(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})
 \sim \chi^2_p
 $$ 
 
@@ -467,7 +467,7 @@ $$
 
 And:
 $$
-(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})^T
+(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})
 = \mathbf{Y}^T \mathbf{Y}
 = \sum_{i = 1}^p Y_i^2
 $$
@@ -475,7 +475,7 @@ with $Y_1, \dotsc, Y_p$ be $p$ standard normal iid rv.
 
 Hence:
 $$
-(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})^T
+(\mathbf{X} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{X} - \boldsymbol{\mu})
 = \sum_{i = 1}^p Y_i^2
 \sim \chi^2_p.
 $$
@@ -662,7 +662,7 @@ $$
 $$
 \begin{aligned}
 \frac{1}{\sigma^2}\|\mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) \|^2
-&= \frac{1}{\sigma^2}(\mathbf{Y} - \boldsymbol{\mu})^T\mathbf{P}^T \mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) 
+&= \frac{1}{\sigma^2}\|\mathbf{U}\mathbf{\Delta}\mathbf{U}^T(\mathbf{Y} - \boldsymbol{\mu}) \|^2
 = \cdots \qquad \qquad
 \end{aligned}
 $$
@@ -670,10 +670,8 @@ $$
 $$
 \begin{aligned}
 \frac{1}{\sigma^2}\|\mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) \|^2
-&= \frac{1}{\sigma^2}(\mathbf{Y} - \boldsymbol{\mu})^T\mathbf{P}(\mathbf{Y} - \boldsymbol{\mu}) \\
-&= \frac{1}{\sigma^2}(\mathbf{Y} - \boldsymbol{\mu})^T\mathbf{U}\mathbf{\Delta}\mathbf{U}^T(\mathbf{Y} - \boldsymbol{\mu})
-\quad [\mathbf{\Delta}^2 = \mathbf{\Delta}]\\
-&= \frac{1}{\sigma^2}(\mathbf{Y} - \boldsymbol{\mu})^T(\mathbf{\Delta}\mathbf{U}^T)^T\mathbf{\Delta}\mathbf{U}^T(\mathbf{Y} - \boldsymbol{\mu})\\
+&= \frac{1}{\sigma^2}[\mathbf{U}\mathbf{\Delta}\mathbf{U}^T(\mathbf{Y} - \boldsymbol{\mu})]^T[\mathbf{U}\mathbf{\Delta}\mathbf{U}^T(\mathbf{Y} - \boldsymbol{\mu})] \\
+&= \frac{1}{\sigma^2}[\mathbf{\Delta}\mathbf{U}^T(\mathbf{Y} - \boldsymbol{\mu})]^T\mathbf{U}^T\mathbf{U}[\mathbf{\Delta}\mathbf{U}^T(\mathbf{Y} - \boldsymbol{\mu})] \\
 &= \frac{1}{\sigma^2}(\mathbf{\Delta}\mathbf{U}^T\mathbf{Y} - \mathbf{\Delta}\mathbf{U}^T\boldsymbol{\mu})^T(\mathbf{\Delta}\mathbf{U}^T\mathbf{Y} - \mathbf{\Delta}\mathbf{U}^T\boldsymbol{\mu}) \\
 \end{aligned}
 $$
@@ -940,7 +938,7 @@ $$
 \quad
 \text{and}
 \quad
-\frac{n-2}{\sigma^2}\hat{\sigma}^2 \sim \chi^2_{n-p}
+\frac{n-p}{\sigma^2}\hat{\sigma}^2 \sim \chi^2_{n-p}
 $$
 
 With probability $1-\alpha$:

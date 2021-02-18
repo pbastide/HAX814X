@@ -210,7 +210,7 @@ $$
 >* **Question**: What is the *likelihood* of $\mathbf{y} = (y_1, \dotsc, y_n)^T$ ?
 
 <!-- ************************************************************************ -->
-# Maximum Likeihood Estimators
+# Maximum Likelihood Estimators
 <!-- ************************************************************************ -->
 
 ## Reminder: Likelihood
@@ -1373,7 +1373,7 @@ $$
 $$
 \frac{1}{2\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T \mathbf{V}_n^{-1}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
 \leq
-f_{n-1}^2(1 - \alpha)
+f_{n-2}^2(1 - \alpha)
 $$
 
 Since $\mathbf{V}_n^{-1}$ is positive definite, this is the equation of an elliptic region.
