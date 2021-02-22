@@ -598,7 +598,7 @@ $$
 $$
 
 with
-$\mathbf{P}^{\mathbf{X}}\mathbf{y}$ and $(\mathbf{I}_p - \mathbf{P}^{\mathbf{X}})\mathbf{y}$ orthogonal.
+$\mathbf{P}^{\mathbf{X}}\mathbf{y}$ and $(\mathbf{I}_n - \mathbf{P}^{\mathbf{X}})\mathbf{y}$ orthogonal.
 
 <!-- ************************************************************************ -->
 # OLS - Expression
