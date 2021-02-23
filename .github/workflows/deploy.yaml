@@ -7,20 +7,15 @@ on:
 name: deploy
 
 jobs:
-  build:
+  trigger-site-build:
     runs-on: ubuntu-latest
     steps:
-    - name: Check out repository
-      uses: actions/checkout@v2
+      - name: Check out repository
+        uses: actions/checkout@v2
 
-    - name: Build with ncc
-      run: |
-        npm install
-        npm run build
-
-    - name: Trigger site build
-      uses: benc-uk/workflow-dispatch@v1
-      with:
-        workflow: blogdown
-        repo: pbastide/HMMA201_site
-        token: ${{ secrets.PERSONAL_TOKEN }}
+      - name: Trigger site build
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: blogdown
+          repo: pbastide/HMMA201_site
+          token: ${{ secrets.PERSONAL_TOKEN }}
