@@ -355,10 +355,7 @@ $$
 \!\iff\! \mathcal{R}_\alpha = \left\{ f \in \mathbb{R}_+  ~|~ f \geq f^p_{n-p}(1 - \alpha) \right\}
 $$
 
-p value:
-$$
-p = \mathbb{P}_{\mathcal{H}_0}[F > F^{obs}]
-$$
+p value:$\qquad\qquad p = \mathbb{P}_{\mathcal{H}_0}[F > F^{obs}]$
 
 ## Simulated Dataset - Fit - Junk {.smaller}
 
