@@ -314,8 +314,11 @@ $$
 }{
 \frac{(n-p) \hat{\sigma}^2}{\sigma^2} / (n-p)
 }
-&=
-\frac{1}{p\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)\\
+\qquad\qquad\qquad
+\\
+\qquad\qquad
+=
+\frac{1}{p\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
 &\sim
 \mathcal{F}^p_{n-p}.
 \end{aligned}
