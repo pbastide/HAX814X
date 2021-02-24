@@ -755,7 +755,7 @@ $$
 # Distribution of the Variance - $\sigma^2$ known
 <!-- ************************************************************************ -->
 
-## Unbiaised estimator of the Variance
+## Unbiased estimator of the Variance
 
 $$
 \hat{\sigma}^2 = \frac{1}{n-2}\sum_{i = 1}^n \hat{\epsilon}_i^2

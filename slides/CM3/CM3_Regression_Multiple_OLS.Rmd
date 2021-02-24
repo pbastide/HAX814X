@@ -1334,7 +1334,7 @@ $$
 # Variance Estimation
 <!-- ************************************************************************ -->
 
-## Unbiaised Variance Estimator
+## Unbiased Variance Estimator
 
 $$
 \hat{\sigma}^2 = \frac{1}{n - p} \| \hat{\epsilon} \|^2 = \frac{1}{n - p} RSS
@@ -1346,7 +1346,7 @@ is an unbiased estimator of $\sigma^2$.
 $\to$
 n - `p` degrees of freedom.
 
-## Unbiaised Var Estimator - Proof - 1/2
+## Unbiased Var Estimator - Proof - 1/2
 
 $$
 \mathbb{E}[\hat{\sigma}^2] 
@@ -1362,7 +1362,7 @@ $$
 = Tr(\hat{\epsilon} \hat{\epsilon}^T)
 $$
 
-## Unbiaised Var Estimator - Proof - 2/2
+## Unbiased Var Estimator - Proof - 2/2
 
 We get:
 $$
