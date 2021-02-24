@@ -350,6 +350,8 @@ $$
 Reject Region:
 $$
 \mathbb{P}[\text{Reject} | \mathcal{H}_0 \text{ true}] \leq \alpha
+\qquad\qquad\qquad\qquad\qquad\\
+\qquad\qquad\qquad
 \!\iff\! \mathcal{R}_\alpha = \left\{ f \in \mathbb{R}_+  ~|~ f \geq f^p_{n-p}(1 - \alpha) \right\}
 $$
 
