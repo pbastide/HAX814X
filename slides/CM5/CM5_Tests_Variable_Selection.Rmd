@@ -314,8 +314,11 @@ $$
 }{
 \frac{(n-p) \hat{\sigma}^2}{\sigma^2} / (n-p)
 }
-&=
-\frac{1}{p\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)\\
+\qquad\qquad\qquad
+\\
+\qquad\qquad
+=
+\frac{1}{p\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
 &\sim
 \mathcal{F}^p_{n-p}.
 \end{aligned}
@@ -347,13 +350,12 @@ $$
 Reject Region:
 $$
 \mathbb{P}[\text{Reject} | \mathcal{H}_0 \text{ true}] \leq \alpha
+\qquad\qquad\qquad\qquad\qquad\\
+\qquad\qquad\qquad
 \!\iff\! \mathcal{R}_\alpha = \left\{ f \in \mathbb{R}_+  ~|~ f \geq f^p_{n-p}(1 - \alpha) \right\}
 $$
 
-p value:
-$$
-p = \mathbb{P}_{\mathcal{H}_0}[F > F^{obs}]
-$$
+p value:$\qquad\qquad p = \mathbb{P}_{\mathcal{H}_0}[F > F^{obs}]$
 
 ## Simulated Dataset - Fit - Junk {.smaller}
 
@@ -365,7 +367,7 @@ p_value_f <- 1 - pf(f_obs[1], f_obs[2], f_obs[3])
 p_value_f
 ```
 
-We do not reject the null that all the (junk) coefficients are zero (phew).
+We do not reject the null hypothesis that all the (junk) coefficients are zero (phew).
 
 ## Fisher F-Test - Geometry
 
@@ -962,7 +964,7 @@ I.e. Can we find the predictors that really have an impact on $\mathbf{y}$ ?
 $F$-test on all subsets ? Not practical, multiple testing.
 
 **Idea**:  
-Find a "score" to asses the quality of a given fit.
+Find a "score" to assess the quality of a given fit.
 
 ## Variable selection - $R^2$
 
@@ -1211,7 +1213,7 @@ rg(\mathbf{X}) = p,
 \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_n).
 $$
 
-Assumes that $\boldsymbol{\mu}$ can be approximated as $\mathbf{X} \boldsymbol{\beta}$,
+Assume that $\boldsymbol{\mu}$ can be approximated as $\mathbf{X} \boldsymbol{\beta}$,
 i.e. as an element of $\mathcal{M}(\mathbf{X})$.
 
 ## Models
@@ -1241,7 +1243,7 @@ $$
 \mathbf{X}_{\eta} = (\mathbf{x}_{\eta_1} ~ \mathbf{x}_{\eta_2} \cdots \mathbf{x}_{\eta_{|\eta|}})
 $$
 
-Assumes that $\boldsymbol{\mu}$ can be approximated as $\mathbf{X}_{\eta} \boldsymbol{\beta}_{\eta}$,
+Assume that $\boldsymbol{\mu}$ can be approximated as $\mathbf{X}_{\eta} \boldsymbol{\beta}_{\eta}$,
 i.e. as an element of $\mathcal{M}(\mathbf{X}_{\eta})$.
 
 ## Models
@@ -1673,7 +1675,7 @@ $$
 C_p(\hat{\mathbf{y}}_\eta) = \frac{1}{n} \left( \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2 \right)
 $$
 
->* If $\hat{\sigma}^2$ is unbiaised, then:
+>* If $\hat{\sigma}^2$ is unbiased, then:
 $$
 \mathbb{E}[C_p(\hat{\mathbf{y}}_\eta)] 
 = \frac{1}{n}R(\hat{\mathbf{y}}_\eta) + \sigma^2
@@ -1702,7 +1704,7 @@ $$
 = \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta).
 $$
 
-$\to$ Minimizing Mallow's $C_p$ is the same as minimizing an unbiaised estimate of the risk.
+$\to$ Minimizing Mallow's $C_p$ is the same as minimizing an unbiased estimate of the risk.
 
 ## Mallow's $C_p$
 
@@ -2128,7 +2130,7 @@ dropterm(fit6)
 
 >* No theoretical guaranties on the selected model.
 
->* Model selecition is still an active area of research.
+>* Model selection is still an active area of research.
 >   - See e.g: LASSO and other penalized criteria (M2)
 
 <!-- ************************************************************************ -->

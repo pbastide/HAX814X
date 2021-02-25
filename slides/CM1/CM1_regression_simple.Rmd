@@ -407,7 +407,7 @@ and $s_{\mathbf{y},\mathbf{x}}^2 = \frac{1}{n}\sum_{i = 1}^n (x_i - \bar{x})(y_i
 the empirical variance and covariance of $\mathbf{x}$ and $\mathbf{y}$.
 
 <!-- ************************************************************************ -->
-# OLS estimators are unbiaised
+# OLS estimators are unbiased
 <!-- ************************************************************************ -->
 
 ## Simulated dataset - Model
@@ -558,7 +558,7 @@ $$
 $$
 </div>
 
-## The OLS estimators are unbiaised
+## The OLS estimators are unbiased
 
 $$
 \mathbb{E}[\hat{\beta}_0] = \beta_0 \qquad \mathbb{E}[\hat{\beta}_1] = \beta_1
@@ -568,7 +568,7 @@ Valid as long as residuals:
 
 * are **centered** $\to$ (H1): $\mathbb{E}[\epsilon_i] = 0$ 
 
-## OLS is unbiaised - Proof 1/4
+## OLS is unbiased - Proof 1/4
 
 $$
 \mathbb{E}[\hat{\beta}_1] 
@@ -576,7 +576,7 @@ $$
 = \cdots \\
 $$
 
-## OLS is unbiaised - Proof 2/4 {.build}
+## OLS is unbiased - Proof 2/4 {.build}
 
 $$
 \mathbb{E}[\hat{\beta}_1] 
@@ -601,7 +601,7 @@ $$
 = \beta_1
 $$
 
-## OLS is unbiaised - Proof 3/4
+## OLS is unbiased - Proof 3/4
 
 $$
 \begin{aligned}
@@ -611,7 +611,7 @@ $$
 \end{aligned}
 $$
 
-## OLS is unbiaised - Proof 4/4
+## OLS is unbiased - Proof 4/4
 
 $$
 \begin{aligned}
@@ -850,7 +850,7 @@ $$
 $$
 \begin{aligned}
 \mathbb{E}[\tilde{\beta}_1] 
-&= \mathbb{E}\left[\sum_{i = 1}^n q_i y_i\right] = \cdots = \beta_1 & \text{(unbiaised)}
+&= \mathbb{E}\left[\sum_{i = 1}^n q_i y_i\right] = \cdots = \beta_1 & \text{(unbiased)}
 \end{aligned}
 $$
 
@@ -861,7 +861,7 @@ $$
 \mathbb{E}[\tilde{\beta}_1] 
 &= \sum_{i = 1}^n \mathbb{E}[q_i y_i] \\
 &= \sum_{i = 1}^n \mathbb{E}[q_i (\beta_0 + \beta_1 x_i + \epsilon_i)] \\
-\beta_1 &= \beta_0 \sum_{i = 1}^n q_i + \beta_1 \sum_{i = 1}^n q_ix_i  & \text{(unbiaised)}
+\beta_1 &= \beta_0 \sum_{i = 1}^n q_i + \beta_1 \sum_{i = 1}^n q_ix_i  & \text{(unbiased)}
 \end{aligned}
 $$
 
