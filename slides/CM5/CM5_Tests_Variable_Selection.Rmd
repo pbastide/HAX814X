@@ -1972,7 +1972,7 @@ library(here)
 ad <- read.csv(here("data", "Advertising.csv"), row.names = "X")
 
 ## Apply stats to all possible combinations
-all_stats <- get_all_stats(ad)
+all_stats <- get_all_stats(ad[, c(4, 1:3)])
 all_stats
 
 ## Select model
