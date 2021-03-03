@@ -894,7 +894,7 @@ $$
 \end{aligned}
 $$
 
-The associated $F$ statistics is:
+The associated $F$ statistics is ($p_0 = 1$):
 $$
 F = \frac{
 \|\hat{\mathbf{y}} -  \bar{y}\mathbb{1}\|^2 / (p - 1)
@@ -928,10 +928,10 @@ $$
 \end{aligned}
 $$
 
-The associated $F$ statistics is:
+The associated $F$ statistics is ($p_0 = p-1$):
 $$
 F = \frac{
-\|\hat{\mathbf{y}} -  \hat{\mathbf{y}}_{-p}\|^2 / (p - 1)
+\|\hat{\mathbf{y}} -  \hat{\mathbf{y}}_{-p}\|^2
 }{
 \|\mathbf{y} - \hat{\mathbf{y}}\|^2 / (n - p)
 }
@@ -1078,7 +1078,7 @@ $$
 set.seed(1289)
 
 ## Predictors
-n <- 500
+n <- 50
 x_1 <- runif(n, min = -2, max = 2)
 x_2 <- runif(n, min = -2, max = 2)
 
@@ -1094,7 +1094,7 @@ y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
 
 ```{r predrisk2}
 ## Useless predictors
-p_junk <- 100
+p_junk <- 48
 x_junk <- matrix(runif(n * p_junk, min = -2, max = 2),
                  ncol = p_junk)
 
@@ -1154,6 +1154,19 @@ Are the predictions from the bad (bigger) model
 *better or worse*  
 than the predictions from the good (smaller) model,  
 compared to the new data ?
+
+## Simulation - Fit {.smaller}
+
+```{r predrisk51, fig.height=3.8, fig.width=7, fig.align='center'}
+plot(mu_y, y_sim, pch = 3,
+     ylab = "y", xlab = expression(beta[0] + beta[1]*x[1] + beta[2]*x[2]))
+## Bad prediction (big model)
+points(mu_y, pred_bad, col = "firebrick", pch = 4)
+## Good prediction (small model)
+points(mu_y, pred_good, col = "lightblue", pch = 4)
+## New points
+points(mu_y, y_new, col = "darkgreen", pch = 3)
+```
 
 ## Predictive Risk
 
@@ -1681,10 +1694,6 @@ $$
 = \frac{1}{n}R(\hat{\mathbf{y}}_\eta) + \sigma^2
 $$
 
->* Penalize for the number of parameters $|\eta|$.
-
->* The **smaller** the better.
-
 ## Mallow’s $C_p$ {.build}
 
 We have:
@@ -1753,18 +1762,27 @@ Mallow's $C_p$ is **smallest** for the true model.
 Recall:
 $$
 \begin{aligned}
-(\hat{\boldsymbol{\beta}}, \hat{\sigma}^2_{ML}) 
-&= \underset{(\boldsymbol{\beta}, \sigma^2) \in \mathbb{R}^p\times\mathbb{R}_+^*}{\operatorname{argmax}} 
+(\hat{\boldsymbol{\beta}}_\eta, \hat{\sigma}^2_{\eta,ML}) 
+&= \underset{(\boldsymbol{\beta}, \sigma^2) \in \mathbb{R}^{|\eta|}\times\mathbb{R}_+^*}{\operatorname{argmax}} 
 \log L(\boldsymbol{\beta}, \sigma^2 | \mathbf{y})\\
-&= \underset{(\boldsymbol{\beta}, \sigma^2) \in \mathbb{R}^p\times\mathbb{R}_+^*}{\operatorname{argmax}} 
+&= \underset{(\boldsymbol{\beta}, \sigma^2) \in \mathbb{R}^{|\eta|}\times\mathbb{R}_+^*}{\operatorname{argmax}} 
 - \frac{n}{2} \log(2\pi\sigma^2) 
-- \frac{1}{2\sigma^2}\|\mathbf{y} - \mathbf{X}\boldsymbol{\beta} \|^2
+- \frac{1}{2\sigma^2}\|\mathbf{y} - \mathbf{X}_\eta\boldsymbol{\beta} \|^2
 \end{aligned}
 $$
 
 And: 
 $$
-\hat{\sigma}^2_{ML} = \frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2} {n}
+\hat{\sigma}^2_{\eta,ML} = \frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2} {n}
+\quad;\quad
+\hat{\mathbf{y}}_\eta = \mathbf{X}_\eta\hat{\boldsymbol{\beta}}_\eta
+$$
+
+Thus:
+$$
+L(\hat{\boldsymbol{\beta}}_\eta, \hat{\sigma}^2_{ML} | \mathbf{y})
+= 
+\cdots
 $$
 
 ## Maximized Log Likelihood {.build}
