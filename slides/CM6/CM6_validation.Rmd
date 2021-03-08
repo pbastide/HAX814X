@@ -1,0 +1,1707 @@
+---
+title: 'Régression Multiple - Validation'
+author: "Paul Bastide - Benjamin Charlier"
+date: "10/03/2021"
+output:
+  ioslides_presentation:
+  fig_width: 7
+  fig_height: 4
+self_contained: true
+editor_options: 
+  chunk_output_type: console
+---
+  
+<!-- ************************************************************************ -->
+# Model Validation
+<!-- ************************************************************************ -->
+
+## Gaussian Model
+
+### Model:
+$$
+\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}
+$$
+
+* $\mathbf{y}$ **random** vector of $n$ responses
+* $\mathbf{X}$ **non random** $n\times p$ matrix of predictors
+* $\boldsymbol{\epsilon}$ **random** vector of $n$ errors
+* $\boldsymbol{\beta}$ **non random, unknown** vector of $p$ coefficients
+
+### Assumptions:
+* (H1) $rg(\mathbf{X}) = p$
+* (H2) $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I}_n)$ 
+
+## Advertising Data
+
+```{r ad, echo = FALSE, message = FALSE, fig.height=4, fig.width=7, fig.align='center'}
+library(here)
+ad <- read.csv(here("data", "Advertising.csv"), row.names = "X")
+attach(ad)
+plot(TV, sales)
+abline(lm(sales ~ TV, data = ad), lwd = 2, col = "firebrick")
+```
+
+**Question**:  
+Are the residuals independent, identically distributed, with the same variance $\sigma^2$ ?
+
+## Validation
+
+>* **Goal**: Test hypothesis (H2): $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I}_n)$.
+
+>* **Check residuals**:
+>   - Are there outliers ?
+>   - Gaussian assumption ?
+>   - Homoscedasticity ?
+>   - Structure ?
+
+>* **Check fit**:
+>   - Leverage
+>   - Cook distance
+
+<!-- ************************************************************************ -->
+# Studentized Residuals
+<!-- ************************************************************************ -->
+
+## Errors vs Residuals
+
+From (H2), the **errors are iid**:
+$$
+\epsilon_i \sim \mathcal{N}(0, \sigma^2 )
+$$
+
+The **residuals** have distribution:
+$$
+\hat{\boldsymbol{\epsilon}} 
+= \mathbf{y} - \hat{\mathbf{y}}
+= (\mathbf{I}_n - \mathbf{P}^{\mathbf{X}})\mathbf{y}
+\sim \mathcal{N}(\mathbf{0}, \sigma^2 (\mathbf{I}_n - \mathbf{P}^{\mathbf{X}}))
+$$
+
+Writing:
+$$
+\mathbf{H} 
+= \mathbf{P}^{\mathbf{X}}
+= \mathbf{X}(\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}
+$$
+
+The **residuals** have distribution:
+$$
+\hat{\epsilon}_i
+\sim \mathcal{N}(0, \sigma^2 (1 - h_{ii}))
+$$
+
+## Errors vs Residuals
+
+From (H2), the **errors are iid**:
+$$
+\epsilon_i \sim \mathcal{N}(0, \sigma^2 )
+$$
+But the **residuals** variance depends on $i$:
+$$
+\hat{\epsilon}_i
+\sim \mathcal{N}(0, \sigma^2 (1 - h_{ii})).
+$$
+
+**"Studentization"**: try to "uniformize" the residuals so that they are iid.
+
+## Normalisation
+
+Normalized residuals:
+$$
+\frac{\hat{\epsilon}_i}{\sqrt{\sigma^2 (1 - h_{ii})}}
+\sim \mathcal{N}(0, 1).
+$$
+
+Normalized residuals are iid.
+
+**Problem**: $\sigma^2$ is unknown $\to$ replace it by $\hat{\sigma}^2$.
+
+## Standardized  residuals {.build}
+
+What is the distribution of
+$$
+t_i = \frac{\hat{\epsilon}_i}{\sqrt{\hat{\sigma}^2 (1 - h_{ii})}} 
+\sim
+~?
+$$
+
+If $\hat{\sigma}^2 = \frac{1}{n - p} \| \hat{\epsilon} \|^2$ is the standard unbiaised variance estimate,
+the $t_i$ **are not Student** (!)
+
+That is because $\hat{\sigma}^2$ is **not independent** from $\hat{\epsilon}_i$ in general.
+
+**Solution**:
+Replace $\hat{\sigma}^2$ with $\hat{\sigma}^2_{(-i)}$ an estimate of $\sigma^2$ 
+independent of $\hat{\epsilon}_i$.
+
+## Cross Validation
+
+**Leave-one-out** cross validation: for all $i$
+
+1. Remove observation $i$ from the dataset:
+    * $\mathbf{y}_{(-i)} = (y_1, \dotsc, y_{i-1}, y_{i+1}, \dotsc, y_n)^T$ 
+    (remove obs $i$)
+    * $\mathbf{X}_{(-i)} = (\mathbf{x}^1, \dotsc, \mathbf{x}^{i-1}, \mathbf{x}^{i+1}, \dotsc, \mathbf{x}^n)^T$ 
+    (remove line $i$)
+    
+2. Fit the dataset *without observation $i$*.
+    * Get $\hat{\boldsymbol{\beta}}_{(-i)}$ and $\hat{\sigma}^2_{(-i)}$
+    using $\mathbf{y}_{(-i)}$ and $\mathbf{X}_{(-i)}$.
+    
+3. Predict point $i$ using fitted values
+    * $\hat{y}_i^P = \mathbf{x}^i\hat{\boldsymbol{\beta}}_{(-i)}$
+
+## Cross Validation
+
+Then, from CM4, we get:
+$$
+\frac{y_{i} - \hat{y}_{i}^P}
+{\sqrt{\hat{\sigma}^2_{(-i)} \left(1 + 
+\mathbf{x}^{i} (\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}(\mathbf{x}^{i})^T
+\right)}}
+\sim
+\mathcal{T}_{n - p -1}
+$$
+
+The **prediction error** from the leave-one-out cross validation
+follows a Student with $n-p-1$ degrees of freedom.
+
+## Studentized Residuals
+
+If $\mathbf{X}$ and $\mathbf{X}_{(-i)}$ all have rank $p$, then:
+
+$$
+t_i^* 
+= \frac{\hat{\epsilon}_i}{\sqrt{\hat{\sigma}^2_{(-i)} (1 - h_{ii})}} 
+= \frac{y_{i} - \hat{y}_{i}^P}
+{\sqrt{\hat{\sigma}^2_{(-i)} \left(1 + 
+\mathbf{x}^{i} (\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}(\mathbf{x}^{i})^T
+\right)}}
+$$
+
+and:
+$$
+t_i^* 
+\sim
+\mathcal{T}_{n - p -1}.
+$$
+
+The **studentized residuals** are equal to  
+the **normalized predictions** from the leave-one-out cross validation.
+
+## Sherman–Morrison formula
+
+**Sherman–Morrison formula** (also "Woodbury formula"):  
+For any invertible square $q \times q$ matrix $\mathbf{A}$ and
+vectors $\mathbf{u}$ and $\mathbf{v}$ of $\mathbb{R}^q$,
+then $\mathbf{A} + \mathbf{u}\mathbf{v}^T$ is invertible 
+iff
+$1 + \mathbf{v}^T\mathbf{A}^{-1}\mathbf{u} \neq 0$, and:
+$$
+(\mathbf{A} + \mathbf{u}\mathbf{v}^T)^{-1}
+=
+\mathbf{A}^{-1}
+-
+\frac{
+\mathbf{A}^{-1} \mathbf{u}\mathbf{v}^T \mathbf{A}^{-1}
+}{
+1 + \mathbf{v}^T\mathbf{A}^{-1}\mathbf{u}
+}.
+$$
+$~$
+
+**Proof**: exercise ([wikipedia](https://en.wikipedia.org/wiki/Sherman%E2%80%93Morrison_formula) is a great resource).
+
+## Studentized Residuals - Proof {.smaller}
+
+$$
+t_i^* 
+= \frac{\hat{\epsilon}_i}{\sqrt{\hat{\sigma}^2_{(-i)} (1 - h_{ii})}} 
+= \frac{y_{i} - \hat{y}_{i}^P}
+{\sqrt{\hat{\sigma}^2_{(-i)} \left(1 + 
+\mathbf{x}^{i} (\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}(\mathbf{x}^{i})^T
+\right)}}
+$$
+
+**Hints**:
+
+$$
+(\mathbf{A} + \mathbf{u}\mathbf{v}^T)^{-1}
+=
+\mathbf{A}^{-1}
+-
+\frac{
+\mathbf{A}^{-1} \mathbf{u}\mathbf{v}^T \mathbf{A}^{-1}
+}{
+1 + \mathbf{v}^T\mathbf{A}^{-1}\mathbf{u}
+}.
+$$
+
+$$
+\mathbf{X}^T\mathbf{X}
+= \mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)} + (\mathbf{x}^{i})^T\mathbf{x}^i
+$$
+
+$$
+\mathbf{X}^T\mathbf{y}
+= \mathbf{X}_{(-i)}^T\mathbf{y}_{(-i)} + (\mathbf{x}^{i})^Ty_i
+$$
+
+$$
+h_{ii}
+=
+[\mathbf{X}(\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}]_{ii}
+= \mathbf{x}^{i} (\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T
+$$
+
+So:
+$$
+(\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}
+= (\mathbf{X}^T\mathbf{X} - (\mathbf{x}^{i})^T\mathbf{x}^i)^{-1}
+= \cdots
+$$
+
+$$
+\hat{y}_i^P 
+= \mathbf{x}^i\hat{\boldsymbol{\beta}}_{(-i)} 
+= \mathbf{x}^i(\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}\mathbf{X}_{(-i)}^T\mathbf{y}_{(-i)}
+= \cdots
+$$
+
+## Studentized Residuals - Proof - 1/6 {.build}
+
+$$
+(\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}
+= (\mathbf{X}^T\mathbf{X} - (\mathbf{x}^{i})^T\mathbf{x}^i)^{-1}
+= \cdots
+$$
+
+$$
+(\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}
+= (\mathbf{X}^T\mathbf{X})^{-1}
++
+\frac{
+(\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T\mathbf{x}^{i} (\mathbf{X}^T\mathbf{X})^{-1}
+}{
+1 - \mathbf{x}^{i}(\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{x}^{i})^T
+}
+$$
+
+$$
+(\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}
+= (\mathbf{X}^T\mathbf{X})^{-1} + \frac{(\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T\mathbf{x}^{i} (\mathbf{X}^T\mathbf{X})^{-1}}{1 - h_{ii}}
+$$
+
+Hence:
+$$
+1 + \mathbf{x}^{i}(\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}(\mathbf{x}^{i})^T
+= 1 + h_{ii} +\frac{h_{ii}^2}{1 - h_{ii}}
+= \frac{1}{1 - h_{ii}}
+$$
+
+## Studentized Residuals - Proof - 2/6 {.build}
+
+$$
+\hat{y}_i^P 
+= \mathbf{x}^i\hat{\boldsymbol{\beta}}_{(-i)} 
+= \mathbf{x}^i(\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}\mathbf{X}_{(-i)}^T\mathbf{y}_{(-i)}
+$$
+
+But:
+$$
+(\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}
+=
+(\mathbf{X}^T\mathbf{X})^{-1} + 
+\frac{(\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T\mathbf{x}^{i} (\mathbf{X}^T\mathbf{X})^{-1}}{1 - h_{ii}}
+$$
+$$
+\mathbf{X}_{(-i)}^T\mathbf{y}_{(-i)}
+=
+\mathbf{X}^T\mathbf{y} - (\mathbf{x}^{i})^Ty_i
+$$
+
+Hence:
+$$
+\begin{multline}
+\hat{y}_i^P 
+= \mathbf{x}^i\left[
+(\mathbf{X}^T\mathbf{X})^{-1} + \frac{(\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T\mathbf{x}^{i} (\mathbf{X}^T\mathbf{X})^{-1}}{1 - h_{ii}}
+\right]
+\\
+\times
+[\mathbf{X}^T\mathbf{y} - (\mathbf{x}^{i})^Ty_i]
+\end{multline}
+$$
+
+## Studentized Residuals - Proof - 3/6 {.build}
+
+$$
+\begin{multline}
+\hat{y}_i^P 
+= \mathbf{x}^i (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T\mathbf{y}
+- \mathbf{x}^i (\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^Ty_i
+\\
++ \frac{\mathbf{x}^i(\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T}{1 - h_{ii}}\mathbf{x}^{i} (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T\mathbf{y}
+\\
+- \frac{\mathbf{x}^i(\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T\mathbf{x}^{i} (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{x}^{i})^T}{1 - h_{ii}} y_i
+\end{multline}
+$$
+
+$$
+\hat{y}_i^P 
+= \mathbf{x}^i \hat{\boldsymbol{\beta}} 
+- h_{ii}y_i
++ \frac{h_{ii}}{1-h_{ii}}\mathbf{x}^i \hat{\boldsymbol{\beta}}
+- \frac{h_{ii}^2}{1-h_{ii}} y_i
+$$
+
+$$
+\hat{y}_i^P 
+= \left(1 + \frac{h_{ii}}{1-h_{ii}}\right) \hat{y}_i 
+- \left(h_{ii} + \frac{h_{ii}^2}{1-h_{ii}}\right) y_i
+$$
+
+## Studentized Residuals - Proof - 4/6 {.build}
+
+$$
+\hat{y}_i^P 
+= \frac{1}{1-h_{ii}}\hat{y}_i - \frac{h_{ii}}{1-h_{ii}} y_i
+$$
+
+So:
+$$
+y_i - \hat{y}_i^P
+= - \frac{1}{1-h_{ii}}\hat{y}_i + \left(1 + \frac{h_{ii}}{1-h_{ii}}\right) y_i
+$$
+
+And:
+$$
+y_i - \hat{y}_i^P
+= \frac{1}{1-h_{ii}}(y_i - \hat{y}_i)
+= \frac{1}{1-h_{ii}}\hat{\epsilon}_i
+$$
+
+## Studentized Residuals - Proof - 5/6 {.build}
+
+We have:
+$$
+1 + \mathbf{x}^{i}(\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}(\mathbf{x}^{i})^T
+= \frac{1}{1 - h_{ii}}
+$$
+$$
+y_i - \hat{y}_i^P
+= \frac{1}{1-h_{ii}}\hat{\epsilon}_i
+$$
+
+Hence:
+$$
+\begin{aligned}
+t_i^* 
+&= \frac{y_{i} - \hat{y}_{i}^P}
+{\sqrt{\hat{\sigma}^2_{(-i)} \left(1 + 
+\mathbf{x}^{i} (\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}(\mathbf{x}^{i})^T
+\right)}}\\
+&= \frac{\hat{\epsilon}_i/(1-h_{ii})}{\sqrt{\hat{\sigma}^2_{(-i)} /(1-h_{ii})}} \\
+\end{aligned}
+$$
+
+## Studentized Residuals - Proof - 6/6
+
+Hence:
+$$
+\begin{aligned}
+t_i^* 
+&= \frac{y_{i} - \hat{y}_{i}^P}
+{\sqrt{\hat{\sigma}^2_{(-i)} \left(1 + 
+\mathbf{x}^{i} (\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}(\mathbf{x}^{i})^T
+\right)}}\\
+&= \frac{\hat{\epsilon}_i}{\sqrt{\hat{\sigma}^2_{(-i)} (1 - h_{ii})}} \\
+&\sim \mathcal{T}_{n - p -1}.
+\end{aligned}
+$$
+
+## Standardized vs Studentized Residuals
+
+**Studentized Residuals**: Student iid
+$$
+t_i^* 
+= \frac{\hat{\epsilon}_i}{\sqrt{\hat{\sigma}^2_{(-i)} (1 - h_{ii})}} 
+\sim \mathcal{T}_{n - p -1}.
+$$
+
+Also called 
+"externally studentized residuals",
+"deleted residuals",
+"jackknifed residuals",
+"leave-one-out residuals".
+Function `rstudent`.
+
+**Standardized Residuals**: *not* Student in general
+$$
+t_i = \frac{\hat{\epsilon}_i}{\sqrt{\hat{\sigma}^2 (1 - h_{ii})}}
+$$
+
+Also called "internally studentized residuals" (although they are **not** Student).
+Function `rstandard`.
+
+## Standardized vs Studentized Residuals
+
+It can be shown that:
+$$
+t_i^* 
+= t_i \sqrt{\frac{n-p-1}{n-p-t_i^2}}
+$$
+
+So that the Studentized residuals are cheap to compute.
+
+<!-- ************************************************************************ -->
+# Outliers
+<!-- ************************************************************************ -->
+
+## Studentized Residuals
+
+Studentized Residuals
+$$
+t_i^* 
+= \frac{\hat{\epsilon}_i}{\sqrt{\hat{\sigma}^2_{(-i)} (1 - h_{ii})}} 
+\sim \mathcal{T}_{n - p -1}.
+$$
+
+With probability $1 - \alpha$:
+$$
+|t_i^*| \leq t_{n-p-1}(1-\alpha/2) \quad \forall i
+$$
+
+**Note**: if $n$ is large, $t_{n-p-1}(1-\alpha/2) \approx 1.96$.
+
+## Simulation
+
+```{r sim1}
+set.seed(1289)
+
+## Predictors
+n <- 500
+x_1 <- runif(n, min = -2, max = 2)
+x_2 <- runif(n, min = -2, max = 2)
+
+## Model
+beta_0 <- -1; beta_1 <- 3; beta_2 <- -1
+
+## sim
+eps <- rnorm(n, mean = 0, sd = 2)
+y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+
+## Fit
+p <- 3
+fit <- lm(y_sim ~ x_1 + x_2)
+```
+
+## Simulation
+
+```{r sim2}
+## 5% threshold
+alp <- 0.05
+t_student <- qt(1 - alp/2, n-p-1)
+
+## Studentized residuals
+res_student <- rstudent(fit)
+
+## How many above the threshold ?
+mean(abs(res_student) >= t_student)
+```
+
+## Simulation
+
+```{r sim3, fig.height=4, fig.width=7, fig.align='center'}
+## Plot
+plot(res_student)
+lines(rep(t_student, n), col = "firebrick", lwd = 2)
+lines(rep(-t_student, n), col = "firebrick", lwd = 2)
+```
+
+## Outliers
+
+An **Outlier** is a point such that
+$$
+t_i^* \gg t_{n-p-1}(1-\alpha/2)
+$$
+
+i.e. a point that we do not believe was issued from a Student distribution.
+
+"Very much higher" does not have a formal definition...
+
+## Simulation - Outlier
+
+```{r simout1}
+## Generate an outlier
+y_sim[100] <- 1.3 * max(y_sim)
+
+## Fit
+fit <- lm(y_sim ~ x_1 + x_2)
+```
+
+## Simulation - Outlier
+
+```{r simout2, fig.height=4, fig.width=7, fig.align='center'}
+## Plot
+plot(rstudent(fit))
+lines(rep(t_student, n), col = "firebrick", lwd = 2)
+lines(rep(-t_student, n), col = "firebrick", lwd = 2)
+```
+
+<!-- ************************************************************************ -->
+# Gaussian Hypothesis
+<!-- ************************************************************************ -->
+
+## Studentized Residuals
+
+Studentized Residuals
+$$
+t_i^* 
+= \frac{\hat{\epsilon}_i}{\sqrt{\hat{\sigma}^2_{(-i)} (1 - h_{ii})}} 
+\sim \mathcal{T}_{n - p -1}.
+$$
+
+If $n$ is large, then $\mathcal{T}_{n - p -1} \approx \mathcal{N}(0,1)$.
+
+$\to$ QQ-plot on the Studentized residuals.
+
+## Simulation - Gaussian
+
+```{r gauss1, fig.height=3.5, fig.width=3.5, fig.align='center'}
+## Gaussian sim
+eps <- rnorm(n, mean = 0, sd = 2)
+
+## QQ norm
+qqnorm(eps)
+qqline(eps, col = "lightblue", lwd = 2)
+```
+
+## Simulation - Gaussian
+
+```{r gauss2, fig.height=3.5, fig.width=3.5, fig.align='center'}
+## Sim
+y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+## Fit
+fit <- lm(y_sim ~ x_1 + x_2)
+## Studentized residuals
+qqnorm(rstudent(fit)); qqline(rstudent(fit), col = "lightblue", lwd = 2)
+```
+
+## Simulation - Not Gaussian
+
+```{r nogauss1, fig.height=3.5, fig.width=3.5, fig.align='center'}
+## Gaussian sim
+eps <- rt(n, 3)
+
+## QQ norm
+qqnorm(eps)
+qqline(eps, col = "lightblue", lwd = 2)
+```
+
+## Simulation - Not Gaussian
+
+```{r nogauss2, fig.height=3.5, fig.width=3.5, fig.align='center'}
+## Sim
+y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+## Fit
+fit <- lm(y_sim ~ x_1 + x_2)
+## Studentized residuals
+qqnorm(rstudent(fit)); qqline(rstudent(fit), col = "lightblue", lwd = 2)
+```
+
+## Non Gaussian case - Coefficients {.build}
+
+What about the distribution of $\hat{\beta}_2$ ?
+
+If $\epsilon_i \sim \mathcal{N}(0, \sigma^2 )$ iid, then
+$$
+\hat{\beta}_2 \sim \mathcal{N}(\beta_2, \sigma^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{22})
+$$
+
+If the $\epsilon_i$ are not Gaussian, this is **not true** anymore.
+
+Is it *approximatelly* true ?
+
+## Simulation - Not Gaussian
+
+What about the distribution of $\hat{\beta}_2$ ?
+
+```{r nogauss3, fig.height=3.5, fig.width=3.5, fig.align='center'}
+set.seed(1289)
+Nsim <- 1000
+beta_hat_2 <- vector("numeric", Nsim)
+for (i in 1:Nsim) {
+  ## error
+  eps <- rt(n, 3)
+  ## Sim
+  y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+  ## Fit
+  fit <- lm(y_sim ~ x_1 + x_2)
+  ## Get beta_1
+  beta_hat_2[i] <- coef(fit)[3]
+}
+```
+
+## Simulation - Not Gaussian
+
+What about the distribution of $\hat{\beta}_2$ ?
+
+```{r nogauss4, fig.height=3.5, fig.width=3.5, fig.align='center'}
+## Empirical distribution
+qqnorm(beta_hat_2); qqline(beta_hat_2, col = "lightblue", lwd = 2)
+```
+
+## Simulation - Non-finite variance
+
+```{r nogauss5, fig.height=3.5, fig.width=3.5, fig.align='center'}
+set.seed(1289)
+Nsim <- 1000
+beta_hat_2 <- vector("numeric", Nsim)
+for (i in 1:Nsim) {
+  ## error
+  eps <- rt(n, 1)
+  ## Sim
+  y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+  ## Fit
+  fit <- lm(y_sim ~ x_1 + x_2)
+  ## Get beta_1
+  beta_hat_2[i] <- coef(fit)[3]
+}
+```
+
+## Simulation - Non-finite variance
+
+```{r nogauss6, fig.height=3.5, fig.width=3.5, fig.align='center'}
+## Empirical distribution
+qqnorm(beta_hat_2); qqline(beta_hat_2, col = "lightblue", lwd = 2)
+```
+
+## Simulation - Not Gaussian
+
+* If $\epsilon$ has **finite** variance:
+    - The coefficients will be *approximately* Gaussian (empirically).
+    - The confidence intervals **won't be exact**.
+    - CI tend to be **too narrow** (for a heavy tail distribution)
+
+>* If $\epsilon$ has **non-finite** variance:
+>    - The Gaussian approximation for the coefficients becomes bad.
+>    - CIs won't be good.
+>    - Extra care must be taken (robust regression).
+>    - Ex for $\epsilon$: Student with $1$ or $2$ df, Cauchy,
+
+<!-- ************************************************************************ -->
+# Homoscedasticity
+<!-- ************************************************************************ -->
+
+## Homoscedasticity
+
+* No rigorous test
+
+* Useful to plot $t^*_i$ against $\hat{y}_i$
+
+* Detect increasing variance, or changing expectation
+
+## Increasing variance - Simulation
+
+```{r simincreasing}
+set.seed(1289)
+
+## Predictors
+n <- 200
+x_1 <- sort(runif(n, min = 0, max = 2))
+x_2 <- sort(runif(n, min = 0, max = 2))
+
+## Model
+beta_0 <- 1; beta_1 <- 3; beta_2 <- 1
+
+## sim
+sd_het <- abs(rnorm(n, sqrt(1:n)/2, 0.1))
+eps <- rnorm(n, mean = 0, sd = sd_het)
+y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+
+## Fit
+fit <- lm(y_sim ~ x_1 + x_2)
+```
+
+## Increasing variance - Student residuals
+
+```{r simincreasing2, fig.height=3.5, fig.width=5, fig.align='center'}
+## Studentized residuals vs pred
+plot(predict(fit), rstudent(fit),
+     xlab = expression(hat(y)[i]), ylab = expression(paste(t[i],"*")))
+```
+
+## Increasing variance - Student residuals
+
+```{r simincreasing3, fig.height=3.5, fig.width=5, fig.align='center'}
+## Abs Studentized residuals vs pred
+plot(predict(fit), abs(rstudent(fit)),
+     xlab = expression(hat(y)[i]),
+     ylab = expression(abs(paste(t[i],"*"))))
+lines(lowess(predict(fit), abs(rstudent(fit))), col = "firebrick")
+```
+
+## Increasing variance - Weighting
+
+Weight observations:
+
+```{r simincreasing4, fig.height=3.5, fig.width=5, fig.align='center'}
+## Weighting
+y_weight <- y_sim / sqrt(1:n)
+
+## Fit
+fit <- lm(y_weight ~ x_1 + x_2)
+```
+
+## Increasing variance - Weighting
+
+```{r simincreasing5, fig.height=3.5, fig.width=5, fig.align='center'}
+## Studentized residuals vs pred
+plot(predict(fit), rstudent(fit),
+     xlab = expression(hat(y)[i]), ylab = expression(t[i]^"*"))
+```
+
+## Increasing variance - Weighting
+
+```{r simincreasing6, fig.height=3.5, fig.width=5, fig.align='center'}
+## Abs Studentized residuals vs pred
+plot(predict(fit), abs(rstudent(fit)),
+     xlab = expression(hat(y)[i]),
+     ylab = expression(abs(paste(t[i],"*"))))
+lines(lowess(predict(fit), abs(rstudent(fit))), col = "firebrick")
+```
+
+<!-- ************************************************************************ -->
+# Structure
+<!-- ************************************************************************ -->
+
+## Structure
+
+* Spacial or temporal structure
+
+* "Forgotten" predictor
+
+* No rigorous test or method
+
+## Structure - Simulation
+
+```{r structure}
+set.seed(1289)
+
+## Predictors
+n <- 200
+x_1 <- sort(runif(n, min = 0, max = 2))
+x_2 <- sin(sort(3 * runif(n, min = 0, max = 2)))
+
+## sim
+eps <- rnorm(n, mean = 0, sd = 0.2)
+y_sim <- 1 + 2 * x_1 +  0.5 * x_2 + eps
+
+## Fit
+fit <- lm(y_sim ~ x_1)
+```
+
+## Structure - Studentized residuals
+
+```{r structure1, fig.height=3.5, fig.width=5, fig.align='center'}
+## Studentized residuals vs pred
+plot(predict(fit), rstudent(fit),
+     xlab = expression(hat(y)[i]), ylab = expression(paste(t[i],"*")))
+lines(lowess(predict(fit), rstudent(fit)), col = "firebrick")
+```
+
+## Structure - Studentized residuals
+
+```{r structure2, fig.height=3.5, fig.width=5, fig.align='center'}
+## Fit
+fit <- lm(y_sim ~ x_1 + x_2)
+
+## Studentized residuals vs pred
+plot(predict(fit), rstudent(fit),
+     xlab = expression(hat(y)[i]), ylab = expression(paste(t[i],"*")))
+lines(lowess(predict(fit), rstudent(fit)), col = "firebrick")
+```
+
+<!-- ************************************************************************ -->
+# Advertising data
+<!-- ************************************************************************ -->
+
+## Advertising data - Fit
+
+```{r ad2, message = FALSE}
+## Advertising data
+library(here)
+ad <- read.csv(here("data", "Advertising.csv"), row.names = "X")
+
+## linear model
+fit <- lm(sales ~ TV + radio, data = ad)
+```
+
+## Advertising data - Plots
+
+```{r ad3, fig.height=5.5, fig.width=7, fig.align='center', echo = FALSE}
+par(mfrow = c(2, 2), mar = c(5, 4, 1, 2) + 0.1)
+
+## Studentized residuals
+qqnorm(rstudent(fit), main = "Studentized residuals")
+qqline(rstudent(fit), col = "lightblue", lwd = 2)
+
+## Studentized residuals vs index
+t_student <- qt(1 - alp/2, n-p-1)
+plot(1:nrow(ad), rstudent(fit),
+     xlab = "index", ylab = expression(paste(t[i],"*")), ylim = c(-6, 6))
+lines(rep(t_student, n), col = "firebrick", lwd = 2)
+lines(rep(-t_student, n), col = "firebrick", lwd = 2)
+
+## Studentized residuals vs pred
+plot(predict(fit), rstudent(fit),
+     xlab = expression(hat(y)[i]), ylab = expression(paste(t[i],"*")))
+lines(lowess(predict(fit), rstudent(fit)), col = "firebrick")
+
+## Abs Studentized residuals vs pred
+plot(predict(fit), abs(rstudent(fit)),
+     xlab = expression(hat(y)[i]),
+     ylab = expression(abs(paste(t[i],"*"))))
+lines(lowess(predict(fit), abs(rstudent(fit))), col = "firebrick")
+```
+
+## Transform the data {.build}
+
+What if `sales` depends on $f$(`TV`) instead of just `TV`, with $f$ known ?
+
+I.e. take *non-linear* effects into account.
+
+E.g. $f(\cdot)$ is $\sqrt{\cdot}$, $\log(\cdot)$, ...
+
+No rigourous way to fing $f$ (in this class).
+
+Look at the data.
+
+## Advertising data - Plots
+
+```{r ad4, fig.height=4, fig.width=7, fig.align='center', message = FALSE}
+attach(ad)
+par(mfrow = c(1, 2))
+plot(TV, sales); plot(sqrt(TV), sales);
+```
+
+## Advertising data - Fit - Transform {.smaller}
+
+```{r ad5}
+## linear model
+fit <- lm(sales ~ sqrt(TV) + radio, data = ad)
+```
+
+```{r ad6, fig.height=5, fig.width=7, fig.align='center', echo = FALSE}
+par(mfrow = c(2, 2), mar = c(5, 4, 1, 2) + 0.1)
+
+## Studentized residuals
+qqnorm(rstudent(fit), main = "Studentized residuals")
+qqline(rstudent(fit), col = "lightblue", lwd = 2)
+
+## Studentized residuals vs index
+t_student <- qt(1 - alp/2, n-p-1)
+plot(1:nrow(ad), rstudent(fit),
+     xlab = "index", ylab = expression(paste(t[i],"*")))
+lines(rep(t_student, n), col = "firebrick", lwd = 2)
+lines(rep(-t_student, n), col = "firebrick", lwd = 2)
+
+## Studentized residuals vs pred
+plot(predict(fit), rstudent(fit),
+     xlab = expression(hat(y)[i]), ylab = expression(paste(t[i],"*")))
+lines(lowess(predict(fit), rstudent(fit)), col = "firebrick")
+
+## Abs Studentized residuals vs pred
+plot(predict(fit), abs(rstudent(fit)),
+     xlab = expression(hat(y)[i]),
+     ylab = expression(abs(paste(t[i],"*"))))
+lines(lowess(predict(fit), abs(rstudent(fit))), col = "firebrick")
+```
+
+## Interacting effects {.build}
+
+What if `TV` and `radio` are not independent ?
+
+I.e. are there *synergy* effects ?
+
+If I spend some money on `radio`, is it increasing the effect of `TV`?
+
+If I have $100\$$, is it better to spend all on either `TV` or `radio`, or $50\$$ on each ?
+
+## Interacting effects {.build}
+
+We can fit the model:
+$$
+\texttt{sales} = \beta_0 + \beta_1 \texttt{TV} + \beta_2 \texttt{radio} + \beta_3 \texttt{TV} \times \texttt{radio} + \epsilon
+$$
+
+i.e
+$$
+\texttt{sales} = \beta_0 + (\beta_1 + \beta_3 \texttt{radio}) \texttt{TV} + \beta_2 \texttt{radio} + \epsilon
+$$
+
+$\beta_3$: increase in the effectiveness of `TV` advertising
+for a one unit increase in `radio` advertising (or vice-versa)
+
+## Advertising data - Fit - Interactions {.smaller}
+
+```{r ad7}
+## linear model
+fit <- lm(sales ~ sqrt(TV) + radio + radio * TV, data = ad)
+```
+
+```{r ad8, fig.height=5, fig.width=7, fig.align='center', echo = FALSE}
+par(mfrow = c(2, 2), mar = c(5, 4, 1, 2) + 0.1)
+
+## Studentized residuals
+qqnorm(rstudent(fit), main = "Studentized residuals")
+qqline(rstudent(fit), col = "lightblue", lwd = 2)
+
+## Studentized residuals vs index
+t_student <- qt(1 - alp/2, n-p-1)
+plot(1:nrow(ad), rstudent(fit),
+     xlab = "index", ylab = expression(paste(t[i],"*")))
+lines(rep(t_student, n), col = "firebrick", lwd = 2)
+lines(rep(-t_student, n), col = "firebrick", lwd = 2)
+
+## Studentized residuals vs pred
+plot(predict(fit), rstudent(fit),
+     xlab = expression(hat(y)[i]), ylab = expression(paste(t[i],"*")))
+lines(lowess(predict(fit), rstudent(fit)), col = "firebrick")
+
+## Abs Studentized residuals vs pred
+plot(predict(fit), abs(rstudent(fit)),
+     xlab = expression(hat(y)[i]),
+     ylab = expression(abs(paste(t[i],"*"))))
+lines(lowess(predict(fit), abs(rstudent(fit))), col = "firebrick")
+```
+
+
+## Advertising data - Fit - Interactions {.smaller}
+
+```{r ad9}
+summary(fit)
+```
+
+<!-- ## Box-Cox Transform -->
+
+<!-- Box-Cox Transform: -->
+<!-- $$ -->
+<!-- y^{(\lambda)}_i =  -->
+<!-- \begin{cases} -->
+<!-- \frac{y_i^\lambda - 1}{\lambda} & \text{if } \lambda \neq 0 \\ -->
+<!-- \log(y_i) & \text{if } \lambda = 0 -->
+<!-- \end{cases} -->
+<!-- $$ -->
+
+<!-- Find $\lambda$ such that $\mathbf{y}^{(\lambda)}$ is "as Gaussian as possible". -->
+
+<!-- Maximize a "profiled likelihood". -->
+
+<!-- ## Advertising data - Box-Cox Transform -->
+
+<!-- ```{r ad7} -->
+<!-- ## Box-Cox transform -->
+<!-- MASS::boxcox(fit) -->
+<!-- ``` -->
+
+<!-- ```{r ad8} -->
+<!-- ## Box Cox Transform -->
+<!-- lam <- 0.6 -->
+<!-- sales_bc <- (sales^lam - 1) / lam -->
+<!-- ## linear model -->
+<!-- fit <- lm(sales_bc ~ sqrt(TV) + radio) -->
+<!-- ``` -->
+
+<!-- ## Advertising data - Box-Cox Transform -->
+
+<!-- ```{r ad9, fig.height=5, fig.width=7, fig.align='center', echo = FALSE} -->
+<!-- par(mfrow = c(2, 2), mar = c(5, 4, 1, 2) + 0.1) -->
+
+<!-- ## Studentized residuals -->
+<!-- qqnorm(rstudent(fit)); qqline(rstudent(fit), col = "lightblue", lwd = 2) -->
+
+<!-- ## Studentized residuals vs index -->
+<!-- t_student <- qt(1 - alp/2, n-p-1) -->
+<!-- plot(1:nrow(ad), rstudent(fit), -->
+<!--      xlab = "index", ylab = expression(paste(t[i],"*"))) -->
+<!-- lines(rep(t_student, n), col = "firebrick", lwd = 2) -->
+<!-- lines(rep(-t_student, n), col = "firebrick", lwd = 2) -->
+
+<!-- ## Studentized residuals vs pred -->
+<!-- plot(predict(fit), rstudent(fit), -->
+<!--      xlab = expression(hat(y)[i]), ylab = expression(paste(t[i],"*"))) -->
+<!-- lines(lowess(predict(fit), rstudent(fit)), col = "firebrick") -->
+
+<!-- ## Abs Studentized residuals vs pred -->
+<!-- plot(predict(fit), abs(rstudent(fit)), -->
+<!--      xlab = expression(hat(y)[i]), -->
+<!--      ylab = expression(abs(paste(t[i],"*")))) -->
+<!-- lines(lowess(predict(fit), abs(rstudent(fit))), col = "firebrick") -->
+<!-- ``` -->
+
+<!-- ************************************************************************ -->
+# Outliers and Leverage
+<!-- ************************************************************************ -->
+
+## Outliers and Leverage
+
+**Question**: Are my estimates *robust* ?
+
+i.e. if I remove one observation, do they change a lot ?
+
+e.g. outiliers can have a strong leverage.
+
+## Outliers and Leverage - Simulation
+
+```{r lev1}
+set.seed(1289)
+
+## sim
+n <- 20
+x_1 <- runif(n-1, min = -2, max = 2)
+eps <- rnorm(n-1, mean = 0, sd = 1)
+y_sim <- 1 - 2 * x_1 + eps
+
+## Outlier
+x_1[n] <- 4
+y_sim[n] <- 10 * max(y_sim)
+```
+
+## Outliers and Leverage - Simulation
+
+```{r lev2, fig.height=4, fig.width=7, fig.align='center'}
+## Plot
+plot(x_1, y_sim)
+abline(a = 1, b = -2, col = "firebrick", lwd = 2)
+```
+
+## Outliers and Leverage - Simulation {.smaller}
+
+```{r lev3}
+## Fit
+fit <- lm(y_sim ~ x_1)
+summary(fit)
+```
+
+## Outliers and Leverage - Simulation
+
+```{r lev4, fig.height=4, fig.width=7, fig.align='center'}
+## Plot
+plot(x_1, y_sim)
+abline(a = 1, b = -2, col = "firebrick", lwd = 2) ## True
+abline(reg = fit, col = "lightblue", lwd = 2) ## Fitted
+```
+
+## Outliers and Leverage - Simulation {.smaller}
+
+```{r lev5}
+## Fit without outlier
+fit_no <- lm(y_sim[-n] ~ x_1[-n])
+summary(fit_no)
+```
+
+## Outliers and Leverage - Simulation
+
+```{r lev6, fig.height=4, fig.width=7, fig.align='center'}
+## Plot
+plot(x_1, y_sim)
+abline(a = 1, b = -2, col = "firebrick", lwd = 2) ## True
+abline(reg = fit, col = "lightblue", lwd = 2) ## Fitted
+abline(reg = fit_no, col = "darkgreen", lwd = 2) ## Fitted - no outlier
+```
+
+## Outliers and Leverage {.build}
+
+Removing one point has a dramatic effect.
+
+Can we compute a *weight* for the importance of one observation?
+
+Look at the **projection** matrix $\to$ **leverage**.
+
+<!-- ************************************************************************ -->
+# Orthogonal Projection Matrix
+<!-- ************************************************************************ -->
+
+## Orthogonal Projection Matrix {.build}
+
+The prevision is computed from:
+$$
+\hat{\mathbf{y}} = \mathbf{H} \mathbf{y}
+$$
+with
+$$
+\mathbf{H} 
+= \mathbf{P}^{\mathbf{X}}
+= \mathbf{X}(\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}
+$$
+
+i.e.
+$$
+\hat{y}_i 
+= \sum_{j = 1}^n h_{ij} y_j
+= h_{ii}y_i + \sum_{j\neq i} h_{ij} y_j
+$$
+
+$h_ii$ gives the "weight" of each observation on its own prevision.
+
+Properties of $\mathbf{H}$ ?
+
+## Properties of $\mathbf{H}$
+
+$$
+\mathbf{H} 
+= \mathbf{P}^{\mathbf{X}}
+= \mathbf{X}(\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}
+$$
+
+We have:
+
+1. $\text{tr}(\mathbf{H}) = \sum_{i = 1}^n h_{ii} = p$.
+2. $\sum_{i = 1}^n\sum_{j = 1}^n h_{ij}^2 = p$.
+3. $0 \leq h_{ii} \leq 1$ for all $i \in \{1, \dotsc, n\}$.
+4. If $h_{ii} = 0$ or $h_{ii} = 1$, then $h_{ij} = 0$ for all $j \neq i$.
+5. $-0.5 \leq h_{ij} \leq 0.5$ for all $i \neq j$.
+
+**Reminder**:
+$$
+\mathbf{H} = \mathbf{H}^2
+\quad
+\text{and}
+\quad
+\mathbf{H}^T = \mathbf{H}
+$$
+
+## Properties of $\mathbf{H}$ - Proof - 1/4 {.build}
+
+1- 
+$$
+\text{tr}(\mathbf{H}) = \text{rg}(\mathbf{X}) = p
+$$
+
+2-
+$$
+p = \text{tr}(\mathbf{H})
+= \text{tr}(\mathbf{H}^2)
+= \text{tr}(\mathbf{H}^T\mathbf{H})
+= \sum_{i = 1}^n\sum_{j = 1}^n h_{ij}^2
+$$
+
+## Properties of $\mathbf{H}$ - Proof - 2/4 {.build}
+
+3- 
+$$
+\mathbf{H}_{ii} = (\mathbf{H}^2)_{ii}
+$$
+
+hence:
+$$
+h_{ii} 
+= \sum_{j = 1}^n h_{ij}h_{ji}
+= \sum_{j = 1}^n h_{ij}^2
+= h_{ii}^2 + \sum_{j \neq i} h_{ij}^2
+$$
+
+$$
+h_{ii}(1 - h_{ii})
+= \sum_{j \neq i} h_{ij}^2
+\geq 0
+$$
+
+and
+$$
+0 \leq h_{ii} \leq 1
+$$
+
+## Properties of $\mathbf{H}$ - Proof - 3/4 {.build}
+
+4-
+$$
+h_{ii}(1 - h_{ii})
+= \sum_{j \neq i} h_{ij}^2
+$$
+
+If $h_{ii} = 0$ or $h_{ii} = 1$, then $h_{ij} = 0$ for all $j \neq i$.
+
+## Properties of $\mathbf{H}$ - Proof - 4/4 {.build}
+
+5-
+$$
+h_{ii}(1 - h_{ii})
+= h_{ij}^2 + \sum_{k \neq i,j} h_{ik}^2
+$$
+
+$h_{ii}(1 - h_{ii})$ is maximal in $h_{ii} = 0.5$, so:
+$$
+0 \leq 
+h_{ij}^2 + \sum_{k \neq i,j} h_{ik}^2
+\leq 0.25
+$$
+$$
+0 \leq 
+h_{ij}^2
+\leq 0.25
+$$
+and:
+$$
+-0.5 \leq 
+h_{ij}
+\leq 0.5
+$$
+
+## Leverage
+
+$$
+\hat{y}_i 
+= \sum_{j = 1}^n h_{ij} y_j
+= h_{ii}y_i + \sum_{j\neq i} h_{ij} y_j
+$$
+
+>* If $h_{ii} = 1$, then $h_{ij} = 0$ for all $j \neq i$, and
+$\hat{y}_i = h_{ii}y_i$  
+$\to$ $\hat{y}_i$ is completely determined by $y_i$.
+
+>* If $h_{ii} = 0$, then $h_{ij} = 0$ for all $j \neq i$, and
+$\hat{y}_i = 0$  
+$\to$ $y_i$ does not have any effect on $\hat{y}_i$.
+
+>* If $h_{ii}$ is *"large"*  
+$\to$ $\hat{y}_i$ has a strong impact on $y_i$.
+
+>* What is *"large"* ?
+
+## Leverage {.build}
+
+As $\text{tr}(\mathbf{H}) = \text{rg}(\mathbf{X}) = p$, if the $h_{ii}$ are perfectly ballanced,
+(all equal to $h$), then
+$h = p/n$.
+
+**Leverage Point**
+$i$ is a leverage point if:
+
+* $h_{ii} > 2p/n$ *[Hoaglin & Welsch, 1978]*
+* $h_{ii} > 3p/n$, $p > 6$ et $n − p > 12$ *[Velleman & Welsch, 1981]*
+* $h_{ii} > 0.5$ *[Huber, 1981]*
+
+## Leverage - Simulation
+
+```{r lev7, fig.height=4, fig.width=7, fig.align='center'}
+## Plot
+plot(x_1, y_sim)
+abline(a = 1, b = -2, col = "firebrick", lwd = 2) ## True
+abline(reg = fit, col = "lightblue", lwd = 2) ## Fitted
+abline(reg = fit_no, col = "darkgreen", lwd = 2) ## Fitted - no outlier
+```
+
+## Leverage - Simulation
+
+```{r lev8, fig.height=3.5, fig.width=6, fig.align='center'}
+## Leverage
+h_val <- hatvalues(fit)
+## Plot
+barplot(h_val)
+abline(h = 2 * 2 / n, lty = 2)
+abline(h = 3 * 2 / n, lty = 3)
+```
+
+## Leverage - Simulation - bis
+
+```{r lev9}
+set.seed(1289)
+
+## sim
+n <- 20
+x_1 <- runif(n-1, min = -2, max = 2)
+eps <- rnorm(n-1, mean = 0, sd = 1)
+y_sim <- 1 - 2 * x_1 + eps
+
+## Outlier
+x_1[n] <- 4
+y_sim[n] <- 1 - 2 * x_1[n]
+```
+
+## Leverage - Simulation - bis
+
+```{r lev19, fig.height=4, fig.width=7, fig.align='center', echo = FALSE}
+par(mfrow = c(1, 2))
+## x y
+plot(x_1, y_sim)
+abline(a = 1, b = -2, col = "firebrick", lwd = 2) ## True
+abline(reg = lm(y_sim ~ x_1), col = "lightblue", lwd = 2) ## Fitted
+# leverage
+barplot(hatvalues(lm(y_sim ~ x_1)))
+abline(h = 2 * 2 / n, lty = 2)
+abline(h = 3 * 2 / n, lty = 3)
+```
+
+Last point is consistent with the other observations.
+
+But its $x$ value is high $\to$ high leverage point.
+
+## Outilier vs Hight Leverage {.smaller}
+
+<div class="columns-2">
+
+* **Outlier**:  
+Very different from other points ($y$).  
+Not necessarily high leverage.  
+$~$
+
+```{r lev20, fig.height=4.5, fig.width=3, fig.align='center', echo = FALSE}
+set.seed(12890926)
+## sim
+n <- 20
+x_1 <- runif(n-1, min = -2, max = 2)
+eps <- rnorm(n-1, mean = 0, sd = 2)
+y_sim <- 1 - 2 * x_1 + eps
+## Outlier
+x_1[n] <- 0
+y_sim[n] <- 20
+par(mfrow = c(2, 1), mar = c(5, 4, 1, 2) + 0.1)
+## x y
+plot(x_1, y_sim)
+abline(a = 1, b = -2, col = "firebrick", lwd = 2) ## True
+abline(reg = lm(y_sim ~ x_1), col = "lightblue", lwd = 2) ## Fitted
+points(x_1[n], y_sim[n], col = "firebrick", pch = 20)
+# leverage
+barplot(hatvalues(lm(y_sim ~ x_1)), col = c(rep("gray", n-1), "firebrick"))
+abline(h = 2 * 2 / n, lty = 2)
+abline(h = 3 * 2 / n, lty = 3)
+```
+
+* **High leverage point**:  
+Strong impact on the estimation  
+Very different predictor ($x$).  
+Not necessarily an outlier.  
+
+```{r lev21, fig.height=4.5, fig.width=3, fig.align='center', echo = FALSE}
+set.seed(1289)
+## sim
+n <- 20
+x_1 <- runif(n-1, min = -2, max = 2)
+eps <- rnorm(n-1, mean = 0, sd = 1)
+y_sim <- 1 - 2 * x_1 + eps
+## Outlier
+x_1[n] <- 4
+y_sim[n] <- 1 - 2 * x_1[n]
+par(mfrow = c(2, 1), mar = c(5, 4, 1, 2) + 0.1)
+## x y
+plot(x_1, y_sim)
+abline(a = 1, b = -2, col = "firebrick", lwd = 2) ## True
+abline(reg = lm(y_sim ~ x_1), col = "lightblue", lwd = 2) ## Fitted
+points(x_1[n], y_sim[n], col = "firebrick", pch = 20)
+# leverage
+barplot(hatvalues(lm(y_sim ~ x_1)), col = c(rep("gray", n-1), "firebrick"))
+abline(h = 2 * 2 / n, lty = 2)
+abline(h = 3 * 2 / n, lty = 3)
+```
+
+</div>
+
+<!-- ************************************************************************ -->
+# Cook Distance
+<!-- ************************************************************************ -->
+
+## Outilier vs Hight Leverage 
+
+* **Outlier**:  
+    - Very different from other points ($y$).  
+    - Not necessarily high leverage.
+
+* **High leverage point**:  
+    - Strong impact on the estimation  
+    - Very different predictor ($x$).  
+    - Effect of $y_i$ on $\hat{y}_i$.
+    - Not necessarily an outlier.  
+
+* **Cook Distance**:
+    - "Compromise" between outliers and high leverage points.
+    - Effect of $y_i$ on $\hat{\boldsymbol{\beta}}$ directly.
+
+
+## Cook Distance
+
+**Recall**:
+$$
+\frac{1}{p\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
+\sim
+\mathcal{F}^p_{n-p}
+$$
+
+**Confidence Region**:
+with a probability of $1-\alpha$:
+$$
+\frac{1}{p\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
+\leq
+f^p_{n-p}(1 - \alpha)
+$$
+
+**Cook Distance**:
+$$
+C_i = 
+\frac{1}{p\hat{\sigma}^2}
+\left(\hat{\boldsymbol{\beta}}_{(-i)} - \hat{\boldsymbol{\beta}}\right)^T (\mathbf{X}^T\mathbf{X})
+\left(\hat{\boldsymbol{\beta}}_{(-i)}  - \hat{\boldsymbol{\beta}}\right)
+$$
+
+## Cross Validation
+
+**Leave-one-out** cross validation: for all $i$
+
+1. Remove observation $i$ from the dataset:
+    * $\mathbf{y}_{(-i)} = (y_1, \dotsc, y_{i-1}, y_{i+1}, \dotsc, y_n)^T$ 
+    (remove obs $i$)
+    * $\mathbf{X}_{(-i)} = (\mathbf{x}^1, \dotsc, \mathbf{x}^{i-1}, \mathbf{x}^{i+1}, \dotsc, \mathbf{x}^n)^T$ 
+    (remove line $i$)
+    
+2. Fit the dataset *without observation $i$*.
+    * Get $\hat{\boldsymbol{\beta}}_{(-i)}$ and $\hat{\sigma}^2_{(-i)}$
+    using $\mathbf{y}_{(-i)}$ and $\mathbf{X}_{(-i)}$.
+    
+3. Predict point $i$ using fitted values
+    * $\hat{y}_i^P = \mathbf{x}^i\hat{\boldsymbol{\beta}}_{(-i)}$
+
+## Cook Distance {.build}
+
+**Cook Distance**:
+$$
+C_i = 
+\frac{1}{p\hat{\sigma}^2}
+\left(\hat{\boldsymbol{\beta}}_{(-i)} - \hat{\boldsymbol{\beta}}\right)^T (\mathbf{X}^T\mathbf{X})
+\left(\hat{\boldsymbol{\beta}}_{(-i)}  - \hat{\boldsymbol{\beta}}\right)
+$$
+
+We have:
+$$
+C_i
+= \frac{h_{ii}(y_{i} - \hat{y}_{i}^P)^2}{p\hat{\sigma}^2}
+= \frac{h_{ii}}{p(1-h_{ii})^2}\frac{\hat{\epsilon}_i}{\hat{\sigma}^2}
+= \frac{h_{ii}}{p(1-h_{ii})}t_i^2
+$$
+
+**Note**:  
+Cook "distance" is actually the square of a distance.
+
+**Proof**: Exercise.
+
+## Cook Distance
+
+$$
+C_i = 
+\frac{1}{p\hat{\sigma}^2}
+\left(\hat{\boldsymbol{\beta}}_{(-i)} - \hat{\boldsymbol{\beta}}\right)^T (\mathbf{X}^T\mathbf{X})
+\left(\hat{\boldsymbol{\beta}}_{(-i)}  - \hat{\boldsymbol{\beta}}\right)
+$$
+
+* If $C_i$ is "high", then the point has a strong influence on the estimation.
+
+* According to *Cook (1977)*:
+    - $C_i \leq f^p_{n-p}(0.1)$ : "desirable" 
+    - $C_i > f^p_{n-p}(0.5) \approx 1$ : "concerning" 
+    
+    
+## Cook Distance
+
+$$
+C_i
+= \frac{1}{p}\frac{h_{ii}}{(1-h_{ii})}t_i^2
+$$
+
+
+
+* If $C_i$ is "high", then the point has a strong influence on the estimation.
+
+* $C_i$ is the product of two contributions:
+    - $\frac{h_{ii}}{(1-h_{ii})}$ high if $i$ has *high leverage*
+    - $t_i^2$ high if $i$ is an *outlier*.
+
+## Cook Distance - Outlier - 1
+
+```{r cook1, fig.height=5.5, fig.width=8, fig.align='center', echo = FALSE}
+set.seed(12890926)
+## sim
+n <- 20
+x_1 <- runif(n-1, min = -2, max = 2)
+eps <- rnorm(n-1, mean = 0, sd = 2)
+y_sim <- 1 - 2 * x_1 + eps
+## Outlier
+x_1[n] <- 0
+y_sim[n] <- 30
+## Fit
+fit <- lm(y_sim ~ x_1)
+## Plot
+par(mfrow = c(2, 2))
+## x y
+plot(x_1, y_sim)
+abline(reg = lm(y_sim ~ x_1), col = "lightblue", lwd = 2) ## Fitted
+points(x_1[n], y_sim[n], col = "firebrick", pch = 20)
+## Studentized residuals vs pred
+plot(predict(fit), rstudent(fit),
+     xlab = expression(hat(y)[i]), ylab = expression(paste(t[i],"*")))
+# leverage
+barplot(hatvalues(fit), col = c(rep("gray", n-1), "firebrick"), xlab = "Indices", ylab = "Leverage")
+abline(h = 2 * 2 / n, lty = 2)
+abline(h = 3 * 2 / n, lty = 3)
+# leverage vs residuals
+plot(fit, 5)
+```
+
+## Cook Distance - Outlier - 2
+
+```{r cook2, fig.height=5.5, fig.width=8, fig.align='center', echo = FALSE}
+set.seed(12890926)
+## sim
+n <- 20
+x_1 <- runif(n-1, min = -2, max = 2)
+eps <- rnorm(n-1, mean = 0, sd = 2)
+y_sim <- 1 - 2 * x_1 + eps
+## Outlier
+x_1[n] <- 1.5
+y_sim[n] <- 30
+## Fit
+fit <- lm(y_sim ~ x_1)
+## Plot
+par(mfrow = c(2, 2))
+## x y
+plot(x_1, y_sim)
+abline(reg = lm(y_sim ~ x_1), col = "lightblue", lwd = 2) ## Fitted
+points(x_1[n], y_sim[n], col = "firebrick", pch = 20)
+## Studentized residuals vs pred
+plot(predict(fit), rstudent(fit),
+     xlab = expression(hat(y)[i]), ylab = expression(paste(t[i],"*")))
+# leverage
+barplot(hatvalues(fit), col = c(rep("gray", n-1), "firebrick"), xlab = "Indices", ylab = "Leverage")
+abline(h = 2 * 2 / n, lty = 2)
+abline(h = 3 * 2 / n, lty = 3)
+# leverage vs residuals
+plot(fit, 5)
+```
+
+## Cook Distance - High Leverage - 1
+
+```{r cook3, fig.height=5.5, fig.width=8, fig.align='center', echo = FALSE}
+set.seed(1289)
+## sim
+n <- 20
+x_1 <- runif(n-1, min = -2, max = 2)
+eps <- rnorm(n-1, mean = 0, sd = 1)
+y_sim <- 1 - 2 * x_1 + eps
+## Outlier
+x_1[n] <- 4
+y_sim[n] <- 1 - 2 * x_1[n]
+par(mfrow = c(2, 1), mar = c(5, 4, 1, 2) + 0.1)
+## Fit
+fit <- lm(y_sim ~ x_1)
+## Plot
+par(mfrow = c(2, 2))
+## x y
+plot(x_1, y_sim)
+abline(reg = lm(y_sim ~ x_1), col = "lightblue", lwd = 2) ## Fitted
+points(x_1[n], y_sim[n], col = "firebrick", pch = 20)
+## Studentized residuals vs pred
+plot(predict(fit), rstudent(fit),
+     xlab = expression(hat(y)[i]), ylab = expression(paste(t[i],"*")))
+# leverage
+barplot(hatvalues(fit), col = c(rep("gray", n-1), "firebrick"), xlab = "Indices", ylab = "Leverage")
+abline(h = 2 * 2 / n, lty = 2)
+abline(h = 3 * 2 / n, lty = 3)
+# leverage vs residuals
+plot(fit, 5)
+```
+
+## Cook Distance - High Leverage - 2
+
+```{r cook4, fig.height=5.5, fig.width=8, fig.align='center', echo = FALSE}
+set.seed(1289)
+## sim
+n <- 20
+x_1 <- runif(n-1, min = -2, max = 2)
+eps <- rnorm(n-1, mean = 0, sd = 1)
+y_sim <- 1 - 2 * x_1 + eps
+## Outlier
+x_1[n] <- 10
+y_sim[n] <- 1 - 2 * x_1[n]
+par(mfrow = c(2, 1), mar = c(5, 4, 1, 2) + 0.1)
+## Fit
+fit <- lm(y_sim ~ x_1)
+## Plot
+par(mfrow = c(2, 2))
+## x y
+plot(x_1, y_sim)
+abline(reg = lm(y_sim ~ x_1), col = "lightblue", lwd = 2) ## Fitted
+points(x_1[n], y_sim[n], col = "firebrick", pch = 20)
+## Studentized residuals vs pred
+plot(predict(fit), rstudent(fit),
+     xlab = expression(hat(y)[i]), ylab = expression(paste(t[i],"*")))
+# leverage
+barplot(hatvalues(fit), col = c(rep("gray", n-1), "firebrick"), xlab = "Indices", ylab = "Leverage")
+abline(h = 2 * 2 / n, lty = 2)
+abline(h = 3 * 2 / n, lty = 3)
+# leverage vs residuals
+plot(fit, 5)
+```
+
+## Cook Distance - Outlier and Leverage
+
+```{r cook5, fig.height=5.5, fig.width=8, fig.align='center', echo = FALSE}
+set.seed(1289)
+## sim
+n <- 20
+x_1 <- runif(n-1, min = -2, max = 2)
+eps <- rnorm(n-1, mean = 0, sd = 1)
+y_sim <- 1 - 2 * x_1 + eps
+## Outlier
+x_1[n] <- 3
+y_sim[n] <- 1 + 20 * x_1[n]
+par(mfrow = c(2, 1), mar = c(5, 4, 1, 2) + 0.1)
+## Fit
+fit <- lm(y_sim ~ x_1)
+## Plot
+par(mfrow = c(2, 2))
+## x y
+plot(x_1, y_sim)
+abline(reg = lm(y_sim ~ x_1), col = "lightblue", lwd = 2) ## Fitted
+points(x_1[n], y_sim[n], col = "firebrick", pch = 20)
+## Studentized residuals vs pred
+plot(predict(fit), rstudent(fit),
+     xlab = expression(hat(y)[i]), ylab = expression(paste(t[i],"*")))
+# leverage
+barplot(hatvalues(fit), col = c(rep("gray", n-1), "firebrick"), xlab = "Indices", ylab = "Leverage")
+abline(h = 2 * 2 / n, lty = 2)
+abline(h = 3 * 2 / n, lty = 3)
+# leverage vs residuals
+plot(fit, 5)
+```
+
+<!-- ************************************************************************ -->
+# Advertising data
+<!-- ************************************************************************ -->
+
+## Advertising data - Fit with interactions {.smaller}
+
+```{r ad27}
+## linear model
+fit <- lm(sales ~ sqrt(TV) + radio + radio * TV, data = ad)
+```
+
+```{r ad28, fig.height=5, fig.width=7, fig.align='center', echo = FALSE}
+par(mfrow = c(2, 2), mar = c(5, 4, 1, 2) + 0.1)
+
+## Studentized residuals
+qqnorm(rstudent(fit), main = "Studentized residuals")
+qqline(rstudent(fit), col = "lightblue", lwd = 2)
+
+## Studentized residuals vs pred
+plot(predict(fit), rstudent(fit),
+     xlab = expression(hat(y)[i]), ylab = expression(paste(t[i],"*")))
+lines(lowess(predict(fit), rstudent(fit)), col = "firebrick")
+
+# leverage
+barplot(hatvalues(fit), col = c(rep("gray", n-1), "firebrick"), xlab = "Indices", ylab = "Leverage")
+abline(h = 2 * 2 / n, lty = 2)
+abline(h = 3 * 2 / n, lty = 3)
+
+# leverage vs residuals
+plot(fit, 5)
+```
