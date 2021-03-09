@@ -134,21 +134,38 @@ That is because $\hat{\sigma}^2$ is **not independent** from $\hat{\epsilon}_i$ 
 Replace $\hat{\sigma}^2$ with $\hat{\sigma}^2_{(-i)}$ an estimate of $\sigma^2$ 
 independent of $\hat{\epsilon}_i$.
 
-## Cross Validation
+## Cross Validation {.smaller}
 
-**Leave-one-out** cross validation: for all $i$
+**Leave-one-out** cross validation: for all $i$:
 
 1. Remove observation $i$ from the dataset:
-    * $\mathbf{y}_{(-i)} = (y_1, \dotsc, y_{i-1}, y_{i+1}, \dotsc, y_n)^T$ 
-    (remove obs $i$)
-    * $\mathbf{X}_{(-i)} = (\mathbf{x}^1, \dotsc, \mathbf{x}^{i-1}, \mathbf{x}^{i+1}, \dotsc, \mathbf{x}^n)^T$ 
-    (remove line $i$)
+$$
+\mathbf{y}_{(-i)} 
+= \begin{pmatrix}
+y_1\\
+\vdots\\
+y_{i-1}\\
+y_{i+1}\\
+\vdots\\
+y_n
+\end{pmatrix}
+\qquad\qquad
+\mathbf{X}_{(-i)}
+= \begin{pmatrix}
+\mathbf{x}^1\\
+\vdots\\
+\mathbf{x}^{i-1}\\
+\mathbf{x}^{i+1}\\
+\vdots\\
+\mathbf{x}^{n}
+\end{pmatrix}
+$$
     
-2. Fit the dataset *without observation $i$*.
+2. Fit the dataset *without observation $i$*:
     * Get $\hat{\boldsymbol{\beta}}_{(-i)}$ and $\hat{\sigma}^2_{(-i)}$
     using $\mathbf{y}_{(-i)}$ and $\mathbf{X}_{(-i)}$.
     
-3. Predict point $i$ using fitted values
+3. Predict point $i$ using fitted values:
     * $\hat{y}_i^P = \mathbf{x}^i\hat{\boldsymbol{\beta}}_{(-i)}$
 
 ## Cross Validation
