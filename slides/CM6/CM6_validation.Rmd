@@ -489,7 +489,7 @@ $$
 |t_i^*| \leq t_{n-p-1}(1-\alpha/2) \quad \forall i
 $$
 
-**Note**: if $n$ is large, $t_{n-p-1}(1-\alpha/2) \approx 1.96$.
+**Note**: if $n$ is large and $\alpha=0.05$, $t_{n-p-1}(1-\alpha/2) \approx 1.96$.
 
 ## Simulation
 
