@@ -1,0 +1,79 @@
+\documentclass{td_um}
+\input{../../TD/header_td.tex}
+
+%\def\version{eno}
+\def\version{cor}
+
+\usepackage{minted}
+
+\usepackage{hyperref}
+\ue{HMMA201}
+
+\providecommand{\T}{\mathbb{T}}
+\providecommand{\1}{\mathds{1}}
+\title{TP II: Regression linéaire multiple}
+
+
+\newcommand{\miniscule}{\@setfontsize\miniscule{5}{6}}
+%-----------------------------------------------------------------------------
+\begin{document}
+\maketitle
+
+\bigskip
+\bigskip
+
+\noindent Nous utiliserons le langage \texttt{R} pour ce TP. Le corrigé sera à faire sous forme de \texttt{.Rmd}.
+
+
+\bigskip
+\bigskip
+
+Les données \texttt{Cars.txt} décrivent les caractéristiques de 38 véhicules des Etats-Unis. L'objectif est de prédire la consommation des véhicules (\texttt{MPG}: plus le chiffre est élevé, moins la voiture consomme) à partir de leurs caractéristiques (poids, rapport de pont, puissance...). Descriptif des variables du jeu de données:
+\begin{itemize}
+    \item \texttt{Country}: Pays du constructeur
+    \item \texttt{Car}: Marque et modèle
+    \item \texttt{MPG}: Miles par gallon, mesure du kilométrage gazeux
+    \item \texttt{Weight}: Poids
+    \item \texttt{DriveRatio}: Rapport de pont du véhicule
+    \item \texttt{Horsepower}: Puissance
+    \item \texttt{Displacement}: Déplacement du véhicule en pouces cubes
+    \item \texttt{Cylinders}: Nombre de cylindrées du véhicule
+\end{itemize}
+
+\exo{Etude exploratoire}
+        \begin{enumerate}
+            \item  Créer dans \texttt{R} un objet nommé \texttt{cars} à partir du fichier de données \texttt{Cars.txt}. En tirer un objet nommé \texttt{cars.quantitative.vars} ne contenant que les variables quantitatives de \texttt{cars}.
+        \item  Faire une étude exploratoire des variables de \texttt{cars.quantitative.vars}. Calculer les corrélations entre les variables continues. Que peut-on en conclure?
+        \item  Créer un sous-objet de \texttt{cars.quantitative.vars} nommé \texttt{carsntyp} dans lequel le véhicule \texttt{Buick Estate Wagon} est supprimé. Refaire la question précédente. Que se passe t-il? Pourquoi a-t-on enlevé ce véhicule?
+\end{enumerate}
+\exo{Influence d'un point atypique sur la modélisation}
+    \begin{enumerate}
+        \item  Estimer le modèle complet expliquant la variable \texttt{MPG} en fonction de toutes les autres variables de l'objet \texttt{cars.quantitative.vars}. Interpréter les résultats obtenus. Ce modèle vous semble-il satisfaisant? Quelles sont, à $5 \%$, les variables significatives?
+        \item  Estimer le modèle complet expliquant la variable \texttt{MPG} en fonction de toutes les autres variables de l'objet \texttt{carsntyp}. Interpréter les résultats obtenus. Ce modèle vous semble-il satisfaisant? Quelles sont, à $5 \%$, les variables significatives?
+\end{enumerate}
+\exo{Sélection de variables}
+    \begin{enumerate}
+        \item  Voici une procédure de choix de modèle à la main par élimination. On partira du modèle complet:
+        \begin{itemize}
+             \item Identifier la variable explicative pour laquelle le test de Student est le moins significatif (i.e. plus grande $p$-value).
+            \item  La retirer du modèle et relancer l'estimation.
+        \end{itemize}
+On itérera ces 2 étapes jusqu'à ce que tous les coefficients soient significatifs à $5 \% .$ Attention! La variable constante est généralement conservée dans tous les modèles.
+\item La procédure \texttt{step} permet également de chercher le meilleur modèle de régression. Tester les différentes options et comparer avec le modèle obtenu "à la main".
+\item Ici, le nombre de variables explicatives n'étant pas trop important, on peut également faire une recherche exhaustive parmi tous les modèles possibles. Tester cela en choisissant différents critères de sélection.
+\end{enumerate}
+\exo{Prédiction} A partir du modèle complet, puis du meilleur modèle obtenu selon le critère BIC, prédire le \texttt{MPG} des véhicules dont les caractéristiques sont les suivantes :
+\small{
+    \begin{center}
+        \begin{tabular}{cccccccc}
+            \hline \texttt{Country} & \texttt{Car} & \texttt{Weight} & \texttt{DriveRatio} & \texttt{Horsepower} & \texttt{Displacement} & \texttt{Cylinders} & \texttt{MPG} \\
+            \hline\hline US & Pontiac & 3.654 & 3.044 & 95 & 120 & 8 & $?$ \\
+            France & CitroenC3 & 2.99 & 3.101 & 102 & 192 & 5 & $?$ \\
+            Germany & AudiA3 & 3.22 & 2.885 & 65 & 136 & 8 & $?$ \\
+            Japan & ToyotaCorona & 4.001 & 3.965 & 128 & 145 & 7 & $?$ \\
+            \hline
+        \end{tabular}
+    \end{center}
+}
+\end{document}
+
