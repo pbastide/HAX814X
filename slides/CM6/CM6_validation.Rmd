@@ -965,7 +965,7 @@ for a one unit increase in `radio` advertising (or vice-versa)
 
 ```{r ad7}
 ## linear model
-fit <- lm(sales ~ sqrt(TV) + radio + radio * TV, data = ad)
+fit <- lm(sales ~ sqrt(TV) + radio + radio * sqrt(TV), data = ad)
 ```
 
 ```{r ad8, fig.height=5, fig.width=7, fig.align='center', echo = FALSE}
@@ -1161,7 +1161,7 @@ $$
 = h_{ii}y_i + \sum_{j\neq i} h_{ij} y_j
 $$
 
-$h_ii$ gives the "weight" of each observation on its own prevision.
+$h_{ii}$ gives the "weight" of each observation on its own prevision.
 
 Properties of $\mathbf{H}$ ?
 
@@ -1333,7 +1333,7 @@ x_1 <- runif(n-1, min = -2, max = 2)
 eps <- rnorm(n-1, mean = 0, sd = 1)
 y_sim <- 1 - 2 * x_1 + eps
 
-## Outlier
+## (Not an) Outlier
 x_1[n] <- 4
 y_sim[n] <- 1 - 2 * x_1[n]
 ```
@@ -1699,7 +1699,7 @@ plot(fit, 5)
 
 ```{r ad27}
 ## linear model
-fit <- lm(sales ~ sqrt(TV) + radio + radio * TV, data = ad)
+fit <- lm(sales ~ sqrt(TV) + radio + radio * sqrt(TV), data = ad)
 ```
 
 ```{r ad28, fig.height=5, fig.width=7, fig.align='center', echo = FALSE}
