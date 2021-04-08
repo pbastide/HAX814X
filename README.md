@@ -14,6 +14,8 @@ Dépôt `git` en support du cours [HMMA201](https://moodle.umontpellier.fr/cours
 
 * [An Introduction to Statistical Learning](https://statlearning.com/), G. James, D. Witten, T. Hastie and R. Tibshirani
 
+* [Le modèle linéaire et ses extensions](https://www6.inrae.fr/mia-paris/content/download/4281/40718/version/1/file/ModeleLineaireEt_Extensions.pdf), L. Bel, JJ. Daudin, M. Etienne, E. Lebarbier, T. Mary-Huard, S. Robin, C. Vuillet
+
 ## Contributions
 
 * Créer une "pull request" (PR) à partir d'une branche séparée.

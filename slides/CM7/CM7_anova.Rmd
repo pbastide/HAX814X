@@ -758,7 +758,7 @@ is the same as a
 $\to$ what happens when there are more than two groups ?
 
 <!-- ************************************************************************ -->
-# One factor ANOVA
+# One-way ANOVA
 <!-- ************************************************************************ -->
 
 ## Species {.smaller}
@@ -811,7 +811,7 @@ for any pair $(s_1,s_2)$ of species.
 
 $\mathcal{H}_0$: $\mu_a = \mu_c = \mu_g$ vs $\mathcal{H}_1$: $\exists s_1, s_2 \in S ~|~ \mu_{s_1} \neq \mu_{s_2}$ ?
 
-## One factor ANOVA
+## One-way ANOVA
 
 >* $S$ a set of $|S| = K$ groups;
 >* $\mathbf{y}$ the vector of all data, length $n = \sum_{k=1}^K n_k$;
@@ -824,7 +824,7 @@ $\mathcal{H}_0$: $\mu_a = \mu_c = \mu_g$ vs $\mathcal{H}_1$: $\exists s_1, s_2 \
 >   * $\beta_k = \mu_k - \mu_1$
 >* **the first group is the reference**
 
-## One factor ANOVA
+## One-way ANOVA
 $$
 \begin{pmatrix}
 y^1_1 \\
@@ -872,7 +872,7 @@ y^K_{n_K} \\
 \end{pmatrix}
 $$
 
-## One factor ANOVA
+## One-way ANOVA
 
 **Model**:
 
@@ -909,7 +909,7 @@ model.matrix(fit)[c(1, 2, 101, 102, 151, 152), ]
 summary(fit)
 ```
 
-## One factor ANOVA - Coefficients
+## One-way ANOVA - Coefficients
 
 It is easy to show that:
 
@@ -922,7 +922,7 @@ Hence:
 * $\hat{\beta}_1$ is the estimator of the mean of the first group;
 * $\hat{\beta}_k$ is the estimator of the **difference** between the mean of group $k$ and the first group ($k > 1$).
 
-## One factor ANOVA - Coefficients
+## One-way ANOVA - Coefficients
 
 We have:
 $$
@@ -957,7 +957,7 @@ $$
 \mathcal{H}^{1,k}_0: \mu_{1} = \mu_{k} \quad{ vs } \quad \mathcal{H}^{1,k}_1: \mu_{1} \neq \mu_{k}
 $$
 
-## One factor ANOVA - Global Test
+## One-way ANOVA - Global Test
 
 We have:
 $$
@@ -1000,7 +1000,7 @@ summary(fit)
 ```
 
 <!-- ************************************************************************ -->
-# One factor ANOVA - Parametrization
+# One-way ANOVA - Parametrization
 <!-- ************************************************************************ -->
 
 ## General Model
@@ -1105,10 +1105,10 @@ $$
 * estimators of $\mu$, $\beta_k$ are changed, but not the estimator of $\sigma^2$, nor the fitted values.
 
 <!-- ************************************************************************ -->
-# One factor ANOVA table
+# One-way ANOVA table
 <!-- ************************************************************************ -->
 
-## One factor ANOVA - $F$ test {.build}
+## One-way ANOVA - $F$ test {.build}
 
 $$
 y_{i,k} = \mu + \beta_k + \epsilon_i
@@ -1138,7 +1138,7 @@ $\to$ Global $F$ test on the coefficients of the linear regression.
 
 ANOVA = "ANalyse Of VAriance"
 
-## One factor ANOVA - Global $F$ Test
+## One-way ANOVA - Global $F$ Test
 
 With `R` parametrization:
 $$
@@ -1180,7 +1180,7 @@ fit <- lm(body_mass_g ~ species, data = females)
 summary(fit)
 ```
 
-## One factor ANOVA - Table
+## One-way ANOVA - Table
 
 $$
 F = \frac{
@@ -1214,7 +1214,7 @@ anova(fit)
 ```
 
 <!-- ************************************************************************ -->
-# Two factors ANOVA
+# Two-way ANOVA
 <!-- ************************************************************************ -->
 
 ## Species {.smaller}
@@ -1536,7 +1536,7 @@ F
 \end{aligned}
 $$
 
-## Two factor ANOVA - Type I Table {.smaller}
+## Two-way ANOVA - Type I Table {.smaller}
 
 **"Type I"** Anova table:
 
@@ -1562,7 +1562,7 @@ fit <- lm(body_mass_g ~  sex * species, data = penguins_nona)
 anova(fit)
 ```
 
-## Two factor ANOVA - Type I Table {.smaller}
+## Two-way ANOVA - Type I Table {.smaller}
 
 **"Type I"** Anova table:
 
@@ -1575,7 +1575,7 @@ residuals     | $n - KL$ | $RSS$  | $\hat{\sigma}^2 = RSS / (n - KL)$ |         
 
 **Attention**: The order of factors matters !
 
-## Two factor ANOVA - Type II Table {.smaller}
+## Two-way ANOVA - Type II Table {.smaller}
 
 **"Type II"** Anova table:
 
@@ -1803,6 +1803,17 @@ $$
 >* No normal assumption
 >   - $\mathbf{y}$ qualitative, counts, positive, ...  
 >   $\to$ **Generalized Linear Models** (GLM)
+
+## Ressources
+
+* [An Introduction to Statistical Learning](https://statlearning.com/)  
+G. James, D. Witten, T. Hastie and R. Tibshirani
+
+* [Le modèle linéaire et ses extensions](https://www6.inrae.fr/mia-paris/content/download/4281/40718/version/1/file/ModeleLineaireEt_Extensions.pdf)  
+L. Bel, JJ. Daudin, M. Etienne, E. Lebarbier, T. Mary-Huard, S. Robin, C. Vuillet
+
+* [The Elements of Statistical Learning](https://web.stanford.edu/~hastie/ElemStatLearn/)  
+T. Hastie, R. Tibshirani, J. Friedman
 
 ## Conclusion {.smaller}
 
