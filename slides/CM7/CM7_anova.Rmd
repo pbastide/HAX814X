@@ -148,7 +148,7 @@ in other words:
 * $y^f_{i} = \mu_f + \epsilon_i^f$, with $\epsilon^f_i \sim \mathcal{N}(0, \sigma^2)$ iid
 * $y^m_{j} = \mu_m + \epsilon_j^m$, with $\epsilon^m_j \sim \mathcal{N}(0, \sigma^2)$ iid
 
-Can we write this as a linear model ?
+Can we write this as a linear model: "$\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}$" ?
 
 ## Model {.build}
 
@@ -185,6 +185,115 @@ $$
 Regression matrix $\mathbf{X}$ ?
 
 ## Linear Model {.build .smaller}
+
+$$
+\text{Write:}
+\qquad
+\mathbf{X} = 
+\begin{pmatrix}
+1 & 0 \\
+\vdots & \vdots \\
+1 & 0 \\
+0 & 1 \\
+\vdots & \vdots\\
+0 & 1 \\
+\end{pmatrix}
+\begin{matrix}
+ \\
+n_f\\
+ \\
+ \\
+n_m\\
+\\
+\end{matrix}
+\qquad
+\text{and}
+\qquad
+\boldsymbol{\beta} = 
+\begin{pmatrix}
+\mu_f \\
+\mu_m \\
+\end{pmatrix}
+$$
+
+$$
+\text{Then:}
+\qquad
+\mathbf{X}\boldsymbol{\beta} 
+=
+\begin{pmatrix}
+\mu_f + 0\\
+\vdots \\
+\mu_f + 0\\
+0 + \mu_m\\
+\vdots\\
+0 + \mu_m \\
+\end{pmatrix}
+=
+\begin{pmatrix}
+\mu_f \\
+\vdots \\
+\mu_f \\
+\mu_m \\
+\vdots\\
+\mu_m \\
+\end{pmatrix}
+\begin{matrix}
+ \\
+n_f\\
+ \\
+ \\
+n_m\\
+\\
+\end{matrix}
+$$
+
+## Linear Model {.build}
+
+Hence, the model can be written as:
+$$
+\begin{pmatrix}
+y^f_1 \\
+\vdots\\
+y^f_{n_f} \\
+y^m_{1} \\
+\vdots\\
+y^m_{n_m} \\
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & 0 \\
+\vdots & \vdots \\
+1 & 0 \\
+0 & 1 \\
+\vdots & \vdots\\
+0 & 1 \\
+\end{pmatrix}
+\begin{pmatrix}
+\mu_f \\
+\mu_m \\
+\end{pmatrix}
++
+\begin{pmatrix}
+\epsilon^f_1 \\
+\vdots\\
+\epsilon^f_{n_f} \\
+\epsilon^m_{1} \\
+\vdots\\
+\epsilon^m_{n_m} \\
+\end{pmatrix}
+$$
+
+i.e:
+$$
+\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon} 
+\quad \text{with} \quad \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I}_n)
+$$
+
+$\to$ classical linear model with Gaussian assumption !
+
+
+## Linear Model - With Intercept {.build .smaller}
 
 $$
 \text{Write:}
@@ -248,9 +357,9 @@ n_m\\
 \end{matrix}
 $$
 
-## Linear Model {.build}
+## Linear Model - With Intercept
 
-Hence, the model can be written as:
+The model can also be written as:
 $$
 \begin{pmatrix}
 y^f_1 \\
@@ -290,7 +399,7 @@ $$
 \quad \text{with} \quad \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I}_n)
 $$
 
-$\to$ classical linear model with Gaussian assumption !
+$\to$ parametrization used in `R`
 
 ## Linear Model - $t$ test {.build}
 
@@ -299,10 +408,20 @@ $$
 \quad \text{with} \quad \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I}_n)
 $$
 
-As $\boldsymbol{\beta} = (\mu_f, \mu_m - \mu_f)^T$, the test
+As 
+$$
+\boldsymbol{\beta} =
+\begin{pmatrix}
+\mu_f \\
+\mu_m - \mu_f \\
+\end{pmatrix},
+$$
+
+the test
 $$
 \mathcal{H}_0: \mu_f = \mu_m \quad \text{vs} \quad \mathcal{H}_1: \mu_f \neq \mu_m
 $$
+
 becomes:
 $$
 \mathcal{H}_0: \beta_2 = 0 \quad \text{vs} \quad \mathcal{H}_1: \beta_2 \neq 0
@@ -364,7 +483,6 @@ i.e.
 $$
 \frac{\hat{\beta}_2}{\sqrt{\hat{\sigma}^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{22}}}
 \underset{\mathcal{H}_0}{\sim} \mathcal{T}_{n_f + n_m - 2}
-\mathcal{T}_{n_f + n_m - 2}.
 $$
 
 ## Test statistics {.smaller}
@@ -372,18 +490,9 @@ $$
 Let's show that:
 $$
 \frac{\hat{\beta}_2}{\sqrt{\hat{\sigma}^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{22}}}
-$$
-
-is equal to 
-$$
-\frac{\bar{\mathbf{y}}^f - \bar{\mathbf{y}}^m}{s_p \sqrt{\frac{1}{n_f} + \frac{1}{n_m}}}
 \quad
 \text{with}
 \quad
-s_p = \sqrt{\frac{(n_f-1)s^2_{\mathbf{y}^f} + (n_m-1)s^2_{\mathbf{y}^m}}{n_f + n_m - 2}}
-$$
-
-$$
 \mathbf{X} = 
 \begin{pmatrix}
 1 & 0 \\
@@ -410,6 +519,16 @@ n_m\\
 \mu_m - \mu_f \\
 \end{pmatrix}
 $$
+
+is equal to 
+$$
+\frac{\bar{\mathbf{y}}^f - \bar{\mathbf{y}}^m}{s_p \sqrt{\frac{1}{n_f} + \frac{1}{n_m}}}
+\quad
+\text{with}
+\quad
+s_p = \sqrt{\frac{(n_f-1)s^2_{\mathbf{y}^f} + (n_m-1)s^2_{\mathbf{y}^m}}{n_f + n_m - 2}}
+$$
+
 
 ## Test statistics - Proof - 1/5 {.smaller .build}
 
@@ -498,10 +617,16 @@ n_m & -n_m \\
 \sum_{j = 1}^{n_m} y^m_j
 \end{pmatrix} \\
 &=
+%\frac{1}{n_fn_m}
+%\begin{pmatrix}
+%n_m\sum_{i = 1}^n y_i - n_m\sum_{j = 1}^{n_m} y^m_j\\
+%- n_m\sum_{i = 1}^{n} y_i + n\sum_{j = 1}^{n_m} y^m_j\\
+%\end{pmatrix}
+%=
 \frac{1}{n_fn_m}
 \begin{pmatrix}
 n_m\sum_{i = 1}^n y_i - n_m\sum_{j = 1}^{n_m} y^m_j\\
-- n_m\sum_{i = 1}^{n} y_i + n\sum_{j = 1}^{n_m} y^m_j\\
+- n_m\sum_{i = 1}^{n} y_i + n_m\sum_{j = 1}^{n_m} y^m_j + n_f\sum_{j = 1}^{n_m} y^m_j\\
 \end{pmatrix} \\
 &=
 \frac{1}{n_fn_m}
@@ -537,18 +662,30 @@ n_m \sum_{i = 1}^{n_f} y^f_i\\
 $$
 
 *Note*:
-since 
 $$
+\text{since }
+\quad
 \boldsymbol{\beta} = 
 \begin{pmatrix}
 \mu_f \\
 \mu_m - \mu_f \\
 \end{pmatrix}
+\quad
+\text{this result is coherent.}
 $$
-this result is coherent.
 
-We also get:
+*Note*:
 $$
+\text{As}
+\quad
+\mathbf{x}^{i} =
+\begin{cases}
+(1~0) & \text{ if  $i$ female} \\
+(1~1) & \text{ if  $i$ male} \\
+\end{cases}
+\quad
+\text{we get:}
+\quad
 \hat{y}_i = \mathbf{x}^{i}\hat{\boldsymbol{\beta}} =
 \begin{cases}
 \bar{\mathbf{y}}^f & \text{ if  $i$ female} \\
@@ -650,8 +787,11 @@ boxplot(body_mass_g ~ species, data = females)       ## box plot
 Pairwise $t$ tests:
 
 ```{r, fig.height=4, fig.width=6, fig.align='center'}
-pairwise.t.test(females$body_mass_g, females$species)
+pairwise.t.test(females$body_mass_g, females$species,
+                p.adjust.method = "none")
 ```
+
+$\to$ ${K \choose 2}$ tests : Multiple testing problems.
 
 ## $t$ tests - Model {.build}
 
@@ -664,11 +804,12 @@ pairwise.t.test(females$body_mass_g, females$species)
 **Pairwise Tests**:
 
 $\mathcal{H}^{s_1,s_2}_0$: $\mu_{s_1} = \mu_{s_2}$ vs $\mathcal{H}^{s_1,s_2}_1$: $\mu_{s_1} \neq \mu_{s_2}$  
-for any pair $(s_1,s_2)$ of species $\to$ ${|S| \choose 2 }$ tests.
+for any pair $(s_1,s_2)$ of species.
+<!-- $\to$ ${|S| \choose 2 }$ tests. -->
 
 **Global Tests** can we do:
 
-$\mathcal{H}_0$: $\mu_a = \mu_c = \mu_G$ vs $\mathcal{H}_1$: $\exists s_1, s_2 \in S ~|~ \mu_{s_1} \neq \mu_{s_2}$ ?
+$\mathcal{H}_0$: $\mu_a = \mu_c = \mu_g$ vs $\mathcal{H}_1$: $\exists s_1, s_2 \in S ~|~ \mu_{s_1} \neq \mu_{s_2}$ ?
 
 ## One factor ANOVA
 
@@ -816,7 +957,7 @@ $$
 \mathcal{H}^{1,k}_0: \mu_{1} = \mu_{k} \quad{ vs } \quad \mathcal{H}^{1,k}_1: \mu_{1} \neq \mu_{k}
 $$
 
-## One factor ANOVA - Coefficients
+## One factor ANOVA - Global Test
 
 We have:
 $$
@@ -891,6 +1032,7 @@ $\mathbb{1} = \sum_{k=1}^K \mathbb{1}(S_k)$.
 ## Exemple with two groups {.build}
 
 $$
+\mathbf{X} =
 \begin{pmatrix}
 1 & 1 & 0 \\
 \vdots & \vdots  & \vdots \\
@@ -962,6 +1104,10 @@ $$
 * $\mathbf{X} = (\mathbb{1}, \mathbb{1}(S_1) - \frac{n_1}{n_K}\mathbb{1}(S_K), \dotsc, \mathbb{1}(S_{K-1}) - \frac{n_{K-1}}{n_K}\mathbb{1}(S_K))$ is full rank.
 * estimators of $\mu$, $\beta_k$ are changed, but not the estimator of $\sigma^2$, nor the fitted values.
 
+<!-- ************************************************************************ -->
+# One factor ANOVA table
+<!-- ************************************************************************ -->
+
 ## One factor ANOVA - $F$ test {.build}
 
 $$
@@ -991,6 +1137,41 @@ $$
 $\to$ Global $F$ test on the coefficients of the linear regression.
 
 ANOVA = "ANalyse Of VAriance"
+
+## One factor ANOVA - Global $F$ Test
+
+With `R` parametrization:
+$$
+\boldsymbol{\beta} =
+\begin{pmatrix}
+\mu_{s_1}\\
+\mu_{s_2} - \mu_{s_1}\\
+\vdots\\
+\mu_{s_K} - \mu_{s_1}\\
+\end{pmatrix}
+\quad
+\text{and}
+\quad
+\hat{\boldsymbol{\beta}} =
+\begin{pmatrix}
+\bar{\mathbf{y}}^{s_1}\\
+\bar{\mathbf{y}}^{s_2} - \bar{\mathbf{y}}^{s_1}\\
+\vdots\\
+\bar{\mathbf{y}}^{s_K} - \bar{\mathbf{y}}^{s_1}\\
+\end{pmatrix}
+$$
+
+* The global $F$ test on the coefficients $\beta_2, \dotsc, \beta_K$ is:
+
+$$
+\mathcal{H}_0: \beta_{2} = \beta_3 = \cdots = \beta_{K} = 0 \quad{ vs } \quad \mathcal{H}_1: \exists k | \beta_{k} \neq 0
+$$
+
+and is the same as the global test of mean equality of all groups:
+
+$$
+\mathcal{H}_0: \mu_{1} = \mu_2 = \cdots = \mu_{K} \quad{ vs } \quad \mathcal{H}_1: \exists k, k' | \mu_{k} \neq \mu_{k'}
+$$
 
 ## Species {.smaller}
 
@@ -1434,7 +1615,7 @@ car::Anova(fit)
 
 ## Penguins {.smaller}
 
-**Question**: what is the relationship between bill length abd depth, controlling for the species ?
+**Question**: what is the relationship between bill length and depth, controlling for the species ?
 
 ```{r, echo=FALSE, fig.height=5, fig.width=7, fig.align='center'}
 plot(females$bill_depth_mm, females$bill_length_mm, col = as.numeric(females$species) + 1, pch = 16)
@@ -1574,3 +1755,60 @@ par(mfrow = c(2,2))
 plot(fit_species)
 ```
 
+
+<!-- ************************************************************************ -->
+# Perspectives
+<!-- ************************************************************************ -->
+
+## Hasty Summary
+
+$$
+\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}
+$$
+
+>* $\mathbf{y}$ **quantitative** response
+>* $\mathbf{X}$ matrix of predictors (quantitative or qualitative)
+>* $\boldsymbol{\beta}$ deterministic coefficient
+>* $\boldsymbol{\epsilon}$ random, centered, null covariance (Gaussian)
+
+## Hasty Summary
+
+>* **Fit**
+>   - OLS estimates of $\hat{\boldsymbol{\beta}}$ and $\hat{\sigma}^2$
+>   - ML estimates and CI when Gaussian
+>* **Model Selection**
+>   - $t$ test the hypothesis "$\boldsymbol{\beta}_k = 0$" (when Gaussian)
+>   - $F$ test of nested models (when Gaussian)
+>   - Penalized criteria (AIC, BIC, Mallow's C_p, ...)
+>* **Prediction**
+>   - New points $\hat{y}_{i}$, with CI (when Gaussian)
+>* **Diagnostics**
+>   - Analysis of the residuals (outliers, Gaussian, ...)
+>   - Analysis of the projection matrix (Leverage, Cook, ...)
+
+## Perspectives and key words
+
+>* Model Selection
+>    - hard to do when there are many predictors (see CM 5)  
+>    $\to$ **regularized models** (lasso, ...), **Bayesian Statistics**
+>
+>* No independence assumption
+>   - Observations are correlated (e.g. geography)  
+>   $\to$ **linear mixed models**
+>
+>* $\mathbf{y}$ is qualitative: classification
+>   - e.g. $\mathbf{y} = 0/1$ is the response to a treatment (dose, ...)  
+>   $\to$ **logistic regression**
+>
+>* No normal assumption
+>   - $\mathbf{y}$ qualitative, counts, positive, ...  
+>   $\to$ **Generalized Linear Models** (GLM)
+
+## Conclusion {.smaller}
+
+<center><img src="IJALM.png" height="450px" /></center>
+
+$~$
+
+If it's printed on a [t-shirt](https://www.redbubble.com/i/t-shirt/Machine-Learning-Meme-Linear-Regression-Data-Science-by-teemixer/55989750.IJ6L0)
+then it must be true.
