@@ -339,7 +339,7 @@ f(\mathbf{x})
 = \frac{1}{\sqrt{(2\pi)^n|\mathbf{\Sigma}|}}
 \exp\left(-\frac{1}{2} (\mathbf{x} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{x} - \boldsymbol{\mu})\right)
 \quad
-\forall x \in \mathbb{R}.
+\forall\ \mathbf{x} \in \mathbb{R}^n.
 $$
 
 Any linear combination of its coordinates is Gaussian.
