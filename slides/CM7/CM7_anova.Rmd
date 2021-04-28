@@ -887,10 +887,10 @@ This is equivalent to the following model:
 $$
 \begin{aligned}
 y_i &= \beta_1 + \epsilon_i = \mu_1 + \epsilon_i 
-& \text{ if } i \text{ is in group } 1\\
+& \text{ if } &i \text{ is in group } 1\\
 y_i &= \beta_1 + \beta_k + \epsilon_i 
 = \mu_k + \epsilon_i
-& \text{ if } i \text{ is in group } 1\\
+& \text{ if } &i \text{ is in group } k,\ k>1 \\
 \end{aligned}
 $$
 
