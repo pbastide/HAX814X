@@ -1434,7 +1434,7 @@ $$
 \begin{aligned}
 F 
 &= \frac{
-\|\hat{\mathbf{y}}_{\eta_2} -  \hat{\mathbf{y}}_{\eta_2}\|^2 / (|\eta_2| - |\eta_1|)
+\|\hat{\mathbf{y}}_{\eta_2} -  \hat{\mathbf{y}}_{\eta_1}\|^2 / (|\eta_2| - |\eta_1|)
 }{
 \|\mathbf{y} - \hat{\mathbf{y}}\|^2 / (n - p)
 }\\
