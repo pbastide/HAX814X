@@ -1008,7 +1008,7 @@ $$
 &= \sum_{i = 1}^n  y_i - \hat{y}_i\\
 &= \sum_{i = 1}^n y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i 
 & [\hat{\beta}_0 = \bar{y} - \hat{\beta}_1\bar{x}]\\
-&= \sum_{i = 1}^n (y_i - \bar{y}) + \hat{\beta}_1(x_i - \bar{x}) \\
+&= \sum_{i = 1}^n (y_i - \bar{y}) - \hat{\beta}_1(x_i - \bar{x}) \\
 &= 0
 \end{aligned}
 $$
