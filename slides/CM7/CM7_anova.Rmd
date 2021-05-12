@@ -1673,7 +1673,7 @@ car::Anova(fit_species)
 ## Interactions {.smaller}
 
 ```{r}
-fit_int <- lm(bill_length_mm ~ bill_depth_mm + species + bill_depth_mm*species,
+fit_int <- lm(bill_length_mm ~ bill_depth_mm + species + bill_depth_mm:species,
               data = females)
 fit_int
 ```
@@ -1705,7 +1705,7 @@ abline(coef(fit_int)[1] + coef(fit_int)[4], coef(fit_int)[2] + coef(fit_int)[6],
 ## Interactions {.smaller}
 
 ```{r}
-fit_int <- lm(bill_length_mm ~ bill_depth_mm + species + bill_depth_mm*species,
+fit_int <- lm(bill_length_mm ~ bill_depth_mm + species + bill_depth_mm:species,
               data = females)
 car::Anova(fit_int)
 ```
