@@ -1,7 +1,7 @@
 ---
 title: 'Régression Multiple - Moindres Carrés'
 author: "Paul Bastide - Benjamin Charlier"
-date: "03/02/2021"
+date: "01/02/2022"
 output:
   ioslides_presentation:
     fig_width: 7
