@@ -17,5 +17,5 @@ jobs:
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: blogdown
-          repo: pbastide/HMMA201_site
+          repo: pbastide/HAX814X_site
           token: ${{ secrets.PERSONAL_TOKEN }}
