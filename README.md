@@ -1,6 +1,6 @@
 # HAX814X - Régression Linéaire
 
-Dépôt `git` en support du cours [HAX814X]https://moodle.umontpellier.fr/course/view.php?id=25368)
+Dépôt `git` en support du cours [HAX814X](https://moodle.umontpellier.fr/course/view.php?id=25368)
 
 ## Supports de cours
 
