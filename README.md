@@ -10,7 +10,7 @@ Dépôt `git` en support du cours [HAX814X](https://moodle.umontpellier.fr/cours
 
 ## Déploiement
 
-Les supports sont disponibles à l'adresse : [hax814x.netlify.app/](https://hax814x.netlify.app/).
+Les supports sont disponibles à l'adresse : [hax814x.netlify.app](https://hax814x.netlify.app/).
 
 Les sources sont automatiquement compilées et déployées sur ce site, qui a donc
 toujours la dernière version des supports de cours disponibles.
