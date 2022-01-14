@@ -1,12 +1,19 @@
 # HAX814X - Régression Linéaire
 
-Dépôt `git` en support du cours [HAX814X](https://moodle.umontpellier.fr/course/view.php?id=25368)
+Dépôt `git` en support du cours [HAX814X](https://moodle.umontpellier.fr/course/view.php?id=25368).
 
 ## Supports de cours
 
 * Les diapositives utilisées en classe sont dans le dossier `slides`.
 
 * Les fiches synthétiques doivent être placées dans le dossier `cheatsheets`.
+
+## Déploiement
+
+Les supports sont disponibles à l'adresse : [hax814x.netlify.app/](https://hax814x.netlify.app/).
+
+Les sources sont automatiquement compilées et déployées sur ce site, qui a donc
+toujours la dernière version des supports de cours disponibles.
 
 ## Ressources
 
