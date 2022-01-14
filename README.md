@@ -31,8 +31,6 @@ Dépôt `git` en support du cours [HAX814X](https://moodle.umontpellier.fr/cours
 ## Evaluations
 
 * 1/2 contrôle continu
-	* 1/4 comptes-rendus de TP
-	* 3/4 évaluation partielle
 
 * 1/2 Examen final
 
