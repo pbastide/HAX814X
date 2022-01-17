@@ -312,9 +312,9 @@ segments(x0 = xobs, y0 = dnorm(xobs, mu, sqrt(sigma2)), x1 = -10, y1 = dnorm(xob
 axis(side = 2, at = dnorm(xobs, mu, sqrt(sigma2)), labels = expression(paste(L(mu == -1*"|"*x[obs]))), las = 1, hadj = 1.2, lwd = 0.5)
 ```
 
-## Likelihood of $\mathbf{y}$
+## Likelihood of $\mathbf{y}$ {.build}
 
-* Distribution of $y_i$:
+Distribution of $y_i$:
 $$
 y_i 
 \underset{\text{iid}}{\operatorname{\sim}}
@@ -325,7 +325,8 @@ y_i
 1 \leq i \leq n
 $$
 
-* Likelihood of $\mathbf{y} = (y_1, \dotsc, y_n)^T$:
+Likelihood of $\mathbf{y} = (y_1, \dotsc, y_n)^T$:
+
 $$
 \begin{aligned}
 &L(\beta_0, \beta_1, \sigma^2 | y_1, \dotsc, y_n)
@@ -334,7 +335,6 @@ $$
 $$
 
 and
-
 $$
 \begin{aligned}
 L(\beta_0, \beta_1, \sigma^2 | y_i)
@@ -344,7 +344,7 @@ $$
 
 ## Likelihood of $\mathbf{y}$
 
-* Distribution of $y_i$:
+Distribution of $y_i$:
 $$
 y_i 
 \underset{\text{iid}}{\operatorname{\sim}}
@@ -355,7 +355,8 @@ y_i
 1 \leq i \leq n
 $$
 
-* Likelihood of $\mathbf{y} = (y_1, \dotsc, y_n)^T$:
+Likelihood of $\mathbf{y} = (y_1, \dotsc, y_n)^T$:
+
 $$
 \begin{aligned}
 &L(\beta_0, \beta_1, \sigma^2 | y_1, \dotsc, y_n)
@@ -364,7 +365,6 @@ $$
 $$
 
 and
-
 $$
 \begin{aligned}
 L(\beta_0, \beta_1, \sigma^2 | y_i)
