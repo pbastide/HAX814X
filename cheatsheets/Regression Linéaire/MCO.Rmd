@@ -1,0 +1,360 @@
+---
+title: "Méthode des moindres carrés"
+author: "Alexandre Capel & Anne Bernard"
+date:
+output: 
+  prettydoc::html_pretty:
+    theme: cayman
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## I. Hypothèses sur le modèle
+
+### 1) Cas général
+
+Un modèle de régression linéaire est défini par :
+$Y=X\beta + \varepsilon$ où
+
+-   $Y$ est un vecteur aléatoire de dimension $n$ appelé variable à
+    expliquer
+-   $X$ est une matrice (non-aléatoire) de taille $n\times p$ appelée
+    matrice du plan d'expérience
+-   $\beta$ est le vecteur de dimension $p$ des paramètres inconnus du
+    modèle
+-   $\varepsilon$ est le vecteur aléatoire de dimension $n$ des erreurs
+    (ou bruits)
+
+**Remarque** : Les colonnes de $X$ sont aussi appelées variables
+explicatives du modèle.
+
+De plus, il y a des hypothèses additionnelles au modèle : 
+$$
+\begin{cases}
+\text{rg}(X)=p \\
+\mathbb{E}[\varepsilon]=0 \\
+\mathbb{V}(\varepsilon)=\sigma ^2I_n\\
+\end{cases}
+$$
+Si le rang de $X$ est inférieur à $p$ alors il y a des vecteurs de la matrice qui sont combinaisons linéaires des autres et donc il y a une redondance de l'information. On peut expliquer un vecteur avec les autres.
+Les erreurs respectent la propriété d'homoscédasticité : $\forall i \;\; \mathbb{V}(\varepsilon_i)=\sigma^2$ et elles sont également centrées.
+
+### 2) Cas où $p=2$
+
+Supposons que l'intercepte est dans le modèle. Alors la matrice $X$ et
+$\beta$ s'écrivent :
+
+$$
+\left(\begin{matrix}
+1 & x_1 \\
+1 & x_2 \\
+. & . \\
+. & . \\
+1 & x_n \\
+\end{matrix}\right) \;\;\; \text{et} \;\;\; \left(\begin{matrix} \beta_1 \\ \beta_2 \\ \end{matrix}\right)
+$$ 
+Et pour tout $i$ on a $y_i= \beta_1 +\beta_2 x_i + \varepsilon_i$.
+
+**Remarque** : Comme rg$(X)=2$, la variable explicative n'est pas
+constante.
+
+### 3) Exemple
+
+```{r fig.align='center'}
+n <- 100
+beta_1 <- 4
+beta_2 <- 8
+X <- runif(n, -4, 4)
+eps <- rnorm(n, 0, 5)
+y <- beta_1 + beta_2*X + eps
+plot(X, y, type='p', main='Exemple')
+```
+
+Dans cet exemple, $\beta_1=4$ et $\beta_2=8$. La variable $X$
+explicative est de taille $100$ et est modélisée par une loi uniforme
+$\mathcal{U}[-4,4]$. Les erreurs, `eps`, sont modélisées par une loi
+normale de moyenne $0$ et de variance $25$. Ensuite, on trace
+$Y=\beta_1 + \beta_2X+\varepsilon$.
+
+## II. Estimateurs OLS
+
+### 1) Définition et expression
+
+On définit l'estimateur des moindres carrés ordinaires (OLS = Ordinary
+Least Squared) comme :
+$$\hat{\beta}=\underset{\beta \in \mathbb{R}^p}{\text{argmin}} ||Y-X\beta||^2$$
+Si on note $\mathcal{M}(X)$ l'espace engendré par les colonnes de $X$,
+$X\hat{\beta}$ est la projection orthogonale de $Y$ sur $\mathcal{M}(X)$
+et on note $\hat{Y}=X\hat{\beta}$. Donc, $Y-X\hat{\beta}$ est orthogonal
+à $\mathcal{M}(X)$ et on a :
+
+$$
+<Y-X\hat{\beta},X>=0 \Leftrightarrow X'(Y-X\hat{\beta})=0 \Leftrightarrow X'Y=X'X\hat{\beta} \Leftrightarrow (X'X)^{-1}X'Y=\hat{\beta}
+$$
+
+On obtient alors l'expression suivante : $$\hat{\beta}= (X'X)^{-1}X'Y$$ On remarque bien que cet estimateur est linéaire en $Y$ car de la forme $AY$ avec $A$ une matrice.
+
+**Rappel** : On note la matrice de projection orthogonale sur $\mathcal{M}(X)$ : $$P_X=X(X'X)^{-1}X'$$
+Et on a alors que $\hat{Y}=P_XY$
+
+### 2) Moments
+
+L'espérance et la matrice de variance de $\hat{\beta}$ sont :
+
+$$
+\mathbb{E}[\hat{\beta}]=\beta \;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \mathbb{V}[\hat{\beta}]=\sigma^2(X'X)^{-1}
+$$
+
+De plus, l'estimateur OLS est de variance minimale parmi les estimateurs
+sans biais, linéaires en $Y$ (Théorème de Gauss-Markov).
+
+**Note** : Il existe un ordre partiel dans l'ensemble des matrices
+symétriques $\mathcal{S}_n(\mathbb{R})$ défini par :
+$$
+\forall S_1, S_2 \in \mathcal{S}_n(\mathbb{R}), \;\;S_1\le S_2 \Leftrightarrow S=S_2-S_1 \;\; \text{semi-définie positive}
+$$
+Cet ordre est utilisé dans le théorème de Gauss-Markov.
+
+### 3) Expressions pour le cas $p=2$
+
+En utilisant les formules précédentes, on retrouve facilement le cas de
+la régression linéaire simple :
+
+$$
+\hat{\beta}_1=\bar{y}-\hat{\beta}_2\bar{x} \;\;\;\;\; \text{et} \;\;\;\;\; \hat{\beta}_2=\frac{s_{X,Y}^{2}}{s_X^2} 
+$$
+où
+$s_{X,Y}^{2}=\frac{1}{n}\underset{i=1}{\overset{n}{\sum}}(x_i-\bar{x})(y_i-\bar{y})$
+et $s_X^2=\frac{1}{n}\underset{i=1}{\overset{n}{\sum}}(x_i-\bar{x})^2$
+
+De plus, $\hat{\beta}_1$ et $\hat{\beta}_2$ sont des estimateurs sans
+biais de $\beta_1$ et $\beta_2$ respectivement. Donc : 
+$$
+\mathbb{E}[\hat{\beta}_1]=\beta_1 \;\;\;\; \text{et} \;\;\;\; \mathbb{E}[\hat{\beta}_2]=\beta_2
+$$ 
+On retrouve également les résultats des variances :
+$$
+\mathbb{V}[\hat{\beta}_1]=\sigma^2\bigg(\frac{1}{n}+\frac{\bar{x}^2}{\underset{i=1}{\overset{n}{\sum}}(x_i-\bar{x})^2}\bigg) \;\;\;\;\; \text{et} \;\;\;\;\; \mathbb{V}[\hat{\beta}_2]=\frac{\sigma^2}{\underset{i=1}{\overset{n}{\sum}}(x_i-\bar{x})^2}
+$$ 
+Puis la covariance : 
+$$
+\mathbb{C}ov(\hat{\beta}_1,\hat{\beta}_2)=\frac{-\sigma^2\bar{x}}{\underset{i=1}{\overset{n}{\sum}}(x_i-\bar{x})^2}
+$$
+
+### 4) Exemple
+
+```{r fig.align='center'}
+# On utilise pour cet exemple les données de la partie précédente
+S_X <- sum((X-mean(X))^2)
+S_XY <- sum((X-mean(X))*y)
+h_beta2 <- S_XY/S_X
+h_beta1 <- mean(y)-h_beta2*mean(X)
+plot(X,y, main ="Régression linéaire")
+points(X,h_beta1+h_beta2*X,type='l',col='red')
+legend("topleft",legend = c("Droite de régression", "y"), col = c("red", "black"),
+       lty = c(1,0), pch = c(-1,1))
+```
+
+Sous `R`, il y a la fonction `lm()` qui donne plusieurs informations sur
+la régression, permettant notamment de tracer la droite :
+
+```{r, fig.align='center'}
+model <- lm(y~X)
+plot(X,y, main='Regression linéaire avec lm')
+abline(model, col='blue')
+legend("topleft",legend = c("Droite de régression", "y"), col = c("blue", "black"),
+       lty = c(1,0), pch = c(-1,1))
+```
+De plus, on voit que les coefficients correspondent :
+
+
+```{r}
+print(c(h_beta1,model$coefficients[1]))
+print(c(h_beta2,model$coefficients[2]))
+```
+
+## III. Résidus et prédictions
+
+### 1) Résidus et propriétés
+
+Les résidus sont définis par :
+$$
+\hat{\varepsilon}=\left(\begin{matrix} \hat{\varepsilon}_1\\
+\hat{\varepsilon}_2\\
+...\\
+\hat{\varepsilon}_n\\
+\end{matrix}\right) = Y-\hat{Y} = P_{X^\perp}Y=P_{X^\perp}\varepsilon
+$$ 
+Les résidus ne sont donc rien d'autres que la projection du vecteur
+d'erreur $\varepsilon$ sur l'orthogonal de $\mathcal{M}(X)$.
+
+$\hat{\varepsilon}$ et $\hat{Y}$ possèdent les propriétés suivantes :
+
+-   $\mathbb{E}[\hat{\varepsilon}]=0$, en moyenne l'erreur est nulle.
+-   $\mathbb{V}[\hat{\varepsilon}]=\sigma^2P_{X^\perp}$
+-   $\mathbb{E}[\hat{Y}]=X\beta$
+-   $\mathbb{V}[\hat{Y}]=\sigma^2P_X$
+-   $\mathbb{C}ov(\hat{\varepsilon},\hat{Y})=0$
+
+### 2) Estimation de $\sigma ^2$
+
+On peut donner un estimateur non biaisé naturel de la variance
+$\sigma ^2$ qui s'exprime :
+
+$$
+\hat{\sigma}^2 = \frac{1}{n-p}||\hat{\varepsilon}||^2 = \frac{1}{n-p} \sum_{i=1}^n \hat{\varepsilon}_i^2=\frac{RSS}{n-p}
+$$
+où $RSS=$ Residual Sum of Squares.
+
+### 3) Prévision
+
+Si on se donne une nouvelle observation $x^{n+1}$, il est possible
+d'utiliser le modèle de régression dans le but de faire une prédiction
+sur la valeur de la variable $y$ correspondante. Si on note $y_{n+1}$ la
+vraie valeur de cette variable, et $\hat{y}_{n+1} = x^{n+1} \hat{\beta}$
+la valeur approchée prédite par le modèle, on peut définir alors
+l'erreur de prévision :
+
+$$
+\hat{\varepsilon}_{n+1}= y_{n+1} - \hat{y}_{n+1}
+$$ 
+Si on peut écrire le modèle : 
+$$
+y_{n+1} = x^{n+1}\beta+ \varepsilon_{n+1}
+$$ 
+avec $\mathbb{E}[\varepsilon_{n+1}] = 0$,
+$\mathbb{V}[\varepsilon_{n+1}] =\sigma^2$ et pour tout
+$j \in \{1,...,n\}, \mathbb{C}ov(\varepsilon_j,\varepsilon_{n+1})=0$, la
+variable aléatoire $\hat{\varepsilon}_{n+1}$ possède les propriétés
+suivantes :
+
+-   $\mathbb{E}[\hat{\varepsilon}_{n+1}] = 0$
+-   $\mathbb{V}[\hat{\varepsilon}_{n+1}] = \sigma^2(1+x^{n+1}(X'X)^{-1}(x^{n+1})')$
+
+Lorsque $p=2$, on en déduit la formule suivante :
+
+$$
+\mathbb{V}[\hat{\varepsilon}_{n+1}] = \sigma^2\bigg(1+ \frac{1}{n} + \frac{(x_{n+1} - \bar{x})^2}{\underset{i=1}{\overset{n}{\sum}}(x_i-\bar{x})^2}\bigg)
+$$
+Illustrons cela en utilisant notre exemple précédent : 
+```{r, fig.align='center'}
+new <- data.frame(X = 3)
+P <- predict(model, new, interval='none')
+print(P)
+plot(X,y)
+points(new$X,P,col='red')
+```
+
+### 4) Interprétation géométrique : vers le $R^2$
+
+Si la constante fait partie du modèle, en utilisant le théorème de
+Pythagore sur la figure suivante on obtient : 
+$$
+||Y-\bar{Y}\mathbb{1}||^2=||\hat{Y}-\bar{Y}\mathbb{1}||^2+||\hat{\varepsilon}||^2
+$$ 
+$$
+\Leftrightarrow TSS = ESS + RSS
+$$ 
+où $TSS=$ Total Sum of Squares, $ESS=$ Explained Sum of Squares et
+$RSS=$ Residual Sum of Squares.
+
+```{r proj3, echo=FALSE, fig.height=4, fig.width=4, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.5, 0.4)
+yv <- c(0.8, 1.0)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.8, 0.3)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "red", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "red", pos = 2)
+# X
+arrows(x0 = or[1], y0 = or[2], x1 = xv[1], y1 = xv[2],
+       length = 0.1, col = "black", lwd = 2)
+text(xv[1], xv[2], labels = expression(bold(x)), col = "black", pos = 1)
+# one
+arrows(x0 = or[1], y0 = or[2], x1 = onev[1], y1 = onev[2],
+       length = 0.1, col = "black", lwd = 2)
+text(onev[1], onev[2], labels = expression(bold("1")), col = "black", pos = 4)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "blue", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))),
+     col = "blue", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "black", lwd = 1, lty = 2)
+st <- 0.03
+segments(x0 = yhatv[1], y0 = yhatv[2] + st,
+         x1 = yhatv[1] - st*5/sqrt(26), y1 = yhatv[2] + st - st/sqrt(26),
+         col = "black", lwd = 1)
+segments(x0 = yhatv[1] - st*5/sqrt(26), y0 = yhatv[2] - st/sqrt(26),
+         x1 = yhatv[1] - st*5/sqrt(26), y1 = yhatv[2] + st - st/sqrt(26),
+         col = "black", lwd = 1)
+# hat epsilon
+text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+     labels = expression(hat(bold(epsilon))), col = "blue", pos = 4)
+# beta x
+# segments(x0 = betaonev[1], y0 = betaonev[2], x1 = yhatv[1], y1 = yhatv[2],
+         # col = "blue", lwd = 1)
+# text((betaonev[1] + yhatv[1])/2, (betaonev[2] + yhatv[2])/2,
+     # labels = expression(paste(hat(beta)[1], bold(x))), col = "blue", pos = 3)
+# beta one
+arrows(x0 = or[1], y0 = or[2], x1 = ybaronev[1], y1 = ybaronev[2],
+       length = 0.1, col = "blue", lwd = 2)
+text(ybaronev[1], ybaronev[2],
+     labels = expression(paste(bar(y), bold("1"))), col = "blue", pos = 2)
+# theta
+segments(x0 = yv[1], y0 = yv[2], x1 = ybaronev[1], y1 = ybaronev[2],
+         col = "darkblue", lwd = 3, lty = 3)
+segments(x0 = ybaronev[1], y0 = ybaronev[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "darkblue", lwd = 3, lty = 3)
+segments(x0 = ybaronev[1] + (xv[1] - or[1])/5, y0 = ybaronev[2] + (xv[2] - or[2])/5,
+         x1 =  ybaronev[1] + (yv[1] - ybaronev[1])/5, y1 = ybaronev[2] + (yv[2] - ybaronev[2])/5,
+         col = "darkblue", lwd = 3, lty = 3)
+text(0.61, 0.43,
+     labels = expression(bold(theta)), col = "darkblue", pos = 2)
+```
+
+De cette remarque nous pouvons en déduire le coefficient de
+détermination, noté $R^2$, défini par :
+
+$$
+R^2 = cos^2(\theta) = \frac{||\hat{Y}-\bar{Y}\mathbb{1}||^2}{||Y-\bar{Y}\mathbb{1}||^2} = \frac{ESS}{TSS} = 1 - \frac{RSS}{TSS}
+$$
+
+-   Si le $R^2=1$, alors $Y$ est dans $\mathcal{M}(X))$ c'est-à-dire $y_i=\beta_1+\beta_2x_i \;\; \forall i$
+
+-   Si le $R^2=0$, cela veut dire que $\hat{y}_i=\bar{y} \;\; \forall i$, par conséquent le modèle de régression linéaire est alors inadapté. 
+
+Ce coefficient peut être ajusté à l'aide du coefficient de détermination
+ajusté, noté $R_{a}^2$, défini par :
+
+$$
+R_{a}^2 = 1-\frac{RSS/(n-p)}{TSS/(n-1)} =1-\frac{n-1}{n-p}(1-R^2)
+$$ 
+Le $R^2$ augmente lorsqu'on ajoute des variables ne décrivant pas le modèle c'est pourquoi on utilise le $R^2_a$ qui, lui, pénalise les points de données qui ne correspondent pas au modèle de régression et n'augmente donc pas. 
+
+On regardera donc principalement le $R_{a}^2$. Sous `R`, il
+suffit d'utiliser la fonction `summary` sur notre modèle pour avoir
+accès à cette quantité :
+
+```{r}
+summary(model)
+```
+
+Ici, le $R_{a}^2$ est représenté par la valeur de "Adjusted R-squared".
