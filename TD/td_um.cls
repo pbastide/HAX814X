@@ -20,7 +20,7 @@
 \RequirePackage{fancyhdr}
 \lhead{Universit\'{e} de Montpellier}
 \providecommand{\ue}[1]{\chead{#1}} 
-\rhead{Ann\'e{}e 2020-2021} 
+\rhead{Ann\'e{}e 2021-2022} 
 \pagestyle{fancy} 
 \setlength{\headheight}{15pt}
 
