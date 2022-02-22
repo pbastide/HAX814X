@@ -31,38 +31,18 @@
 \exo{Estimateurs des moindres carrés}
 Nous allons traiter les $n=50$ données journalières de la concentration en ozone en fonction de la température. Les données se trouvent dans le fichier \mintinline{R}{ozone.txt}. La variable à expliquer est la concentration en ozone, notée \mintinline{R}{maxO3}, et la variable explicative est la température à midi, notée \mintinline{R}{T12}.
 \begin{enumerate}
-\item Commencer par représenter les données à l'aide des commandes suivantes :
-\begin{minted}[bgcolor=blue!4,fontsize=\footnotesize,mathescape,tabsize=4,escapeinside=||, linenos, breaklines]{R}
-> ozone <- read.table("ozone.txt", header=T)
-> plot(maxO3~T12, data=ozone)
-\end{minted}
-Une regression linéaire simple semble-t-elle justifiée graphiquement?
-\item Effectuer la régression linéaire à l'aide de la commande
-\begin{minted}[bgcolor=blue!4,fontsize=\footnotesize,mathescape,tabsize=4,escapeinside=||, linenos, breaklines]{R}
-reg <- lm(maxO3~T12,data=ozone)
-\end{minted}
-et consulter les résultats à l'aide de la commande
-\begin{minted}[bgcolor=blue!4,fontsize=\footnotesize,mathescape,tabsize=4,escapeinside=||, linenos, breaklines]{R}
-> resume <- summary(reg)
-\end{minted}
-Que représentent les coefficients de la matrice coefficients?
-\item Tracer l'estimation de la droite de régression, ainsi qu'un intervalle de confiance à $95 \%$ de celle-ci grâce aux commandes suivantes :
+    \item Commencer par représenter les données. On tracera \mintinline{R}{maxO3} en fonction de \mintinline{R}{T12}. Une regression linéaire simple semble-t-elle justifiée graphiquement?
+    \item Effectuer la régression linéaire à l'aide de la commande \mintinline{R}{lm()} dont on stockera la sortie dans une variable \mintinline{R}{reg}. Consulter alors les résultats à l'aide de la commande \mintinline{R}{summary()}. Que représentent les coefficients de la matrice coefficients?
+\item Tracer l'estimation de la droite de régression, ainsi qu'un intervalle de confiance à $95 \%$ de celle-ci grâce aux commandes suivantes:
 \begin{minted}[bgcolor=blue!4,fontsize=\footnotesize,mathescape,tabsize=4,escapeinside=||, linenos, breaklines]{R}
 > plot(maxO3~T12,data=ozone)
-> T12 <- seq(min(ozone[,"T12"]),max(ozone[,"T12"]),length=100)
-> grille <- data.frame(T12)
-> ICdte <- predict(reg, new=grille, interval="confidence", level=0.95)
-> matlines(grille$T12,cbind(ICdte),lty=c(1,2,2),col=1)
-\end{minted}
-Ce graphique permet de vérifier visuellement l'ajustement des données au modèle de régression proposé. Que remarquez-vous?
-\item On s'intéresse à présent à la qualité de prévision du modèle. Pour cela, on va tracer un intervalle de confiance des prévisions de la manière suivante :
-\begin{minted}[bgcolor=blue!4, fontsize=\footnotesize, mathescape, tabsize=4, escapeinside=||, linenos, breaklines]{R}
-> plot(maxO3~T12, data=ozone)
 > T12 <- seq(min(ozone[,"T12"]), max(ozone[,"T12"]), length=100)
 > grille <- data.frame(T12)
-> ICprev <- predict(reg, new=grille, interval="pred", level=0.95)
-> matlines(grille$T12, cbind(ICprev), lty=c(1,2,2), col=1)
+> ICdte <- predict(reg, new=grille, interval="confidence", level=0.95)
+> matlines(grille$T12, cbind(ICdte), lty=c(1,2,2),col=1)
 \end{minted}
+Décrire précisément ce que font chaque ligne de code. Ce graphique permet de vérifier visuellement l'ajustement des données au modèle de régression proposé. Que remarquez-vous?
+\item On s'intéresse à présent à la qualité de prévision du modèle. Pour cela, il faut tracer un intervalle de confiance des prévisions en adaptant le code de la question précédente.
 \item On va maintenant calculer les intervalles de confiance des coefficients du modèle de régression. Pour cela, on utilise la fonction \mintinline{R}{coef()} qui permet d'extraire les estimateurs et leurs écarts types empiriques.
 \begin{minted}[bgcolor=blue!4,fontsize=\footnotesize,mathescape,tabsize=4,escapeinside=||, linenos, breaklines]{R}
 > seuil<-qt(0.975, df =reg$df.res)
@@ -75,8 +55,8 @@ Retrouver ces valeurs à l'aide de la fonction \mintinline{R}{confint}. Que rema
 \item Pour être plus précis et tenir compte de la dépendance entre les deux coefficients, on peut aussi construire une région de confiance. Les commandes suivantes permettent de visualiser la différence entre le rectangle de confiance, simple juxtaposition des deux intervalles de confiance, et la région de confiance. Elles nécessitent l'installation du package \mintinline{R}{ellipse}.
     \begin{minted}[bgcolor=blue!4,fontsize=\footnotesize,mathescape,tabsize=4,escapeinside=||, linenos, breaklines]{R}
 > library(ellipse)
-> plot(ellipse(reg,level=0.95),type="l",xlab="beta1",ylab="beta2")
-> points(coef(reg)[1],coef(reg)[2],pch=3)
+> plot(ellipse(reg, level=0.95), type="l", xlab="beta1", ylab="beta2")
+> points(coef(reg)[1], coef(reg)[2], pch=3)
 > lines(c(beta1min, beta1min, beta1max, beta1max, beta1min), c(beta2min, beta2max, beta2max, beta2min, beta2min), lty=2)
 \end{minted}
 \item Au vu de la représentation de la concentration d'ozone en fonction de la température, nous souhaitons maintenant modéliser l'ozone par la température au carré. Estimer les paramètres de ce modèle quadratique et le comparer au modèle initial.
