@@ -94,7 +94,7 @@ et on note $\hat{Y}=X\hat{\beta}$. Donc, $Y-X\hat{\beta}$ est orthogonal
 à $\mathcal{M}(X)$ et on a :
 
 $$
-<Y-X\hat{\beta},X>=0 \Leftrightarrow X'(Y-X\hat{\beta})=0 \Leftrightarrow X'Y=X'X\hat{\beta} \Leftrightarrow (X'X)^{-1}X'Y=\hat{\beta}
+\forall i \in \{1,..,p\},~~<Y-X\hat{\beta},X_i>=0 \\ \Leftrightarrow  \forall i \in \{1,..,p\},~~ X_i'(Y-X\hat{\beta})=0 \\ \Leftrightarrow X'Y=X'X\hat{\beta} \\ \Leftrightarrow (X'X)^{-1}X'Y=\hat{\beta}
 $$
 
 On obtient alors l'expression suivante : $$\hat{\beta}= (X'X)^{-1}X'Y$$ On remarque bien que cet estimateur est linéaire en $Y$ car de la forme $AY$ avec $A$ une matrice.
@@ -242,12 +242,33 @@ $$
 \mathbb{V}[\hat{\varepsilon}_{n+1}] = \sigma^2\bigg(1+ \frac{1}{n} + \frac{(x_{n+1} - \bar{x})^2}{\underset{i=1}{\overset{n}{\sum}}(x_i-\bar{x})^2}\bigg)
 $$
 Illustrons cela en utilisant notre exemple précédent : 
-```{r, fig.align='center'}
+```{r fig.align='center', message=FALSE, warning=FALSE}
 new <- data.frame(X = 3)
 P <- predict(model, new, interval='none')
 print(P)
 plot(X,y)
-points(new$X,P,col='red')
+points(new$X,P,pch = 7, col='red')
+```
+
+Il est aussi possible (en faisant une hypothèse gaussienne sur le modèle), de pouvoir construire des intervalles de prédiction !
+
+```{r fig.align='center', message=FALSE, warning=FALSE}
+new <- data.frame(X = 3)
+P <- predict(model, new, interval='prediction', level = 0.95)
+print(P)
+
+library(ggplot2)
+data <- data.frame(y=y, x=X)
+
+ggplot(data=data,aes(x=x, y=y))+
+  geom_point()+
+  geom_point(aes(x=3, y=P[1]), shape=7, col='red')+
+  geom_smooth(method='lm', se=F)+
+  geom_segment(aes(x=3, y=P[2], xend=3, yend=P[3]), 
+               color='red', linetype="twodash", show.legend=TRUE)+
+  labs(title="Régression avec intervalle de prédiction pour x=3")+
+  scale_linetype_manual("", values=c("Intervalle de prédiction"=2))+
+  theme(plot.title=element_text(hjust=0.5, face="bold"))
 ```
 
 ### 4) Interprétation géométrique : vers le $R^2$
