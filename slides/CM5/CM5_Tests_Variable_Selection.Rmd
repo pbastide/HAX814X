@@ -1595,7 +1595,7 @@ $$
 
 We would like:
 $$
-\eta_0 = \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} R(\hat{\mathbf{y}}_\eta)
+\eta_0 = \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} R(\hat{\mathbf{y}}_\eta)
 $$
 
 >* Minimize the risk over all possible models.
@@ -1604,7 +1604,7 @@ $$
 
 >* **Idea**: Minimize an *estimator* $\hat{R}(\hat{\mathbf{y}}_\eta)$ of $R(\hat{\mathbf{y}}_\eta)$:
 $$
-\hat{\eta} = \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta).
+\hat{\eta} = \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta).
 $$
 
 ## Expectation of the RSS
@@ -1709,8 +1709,8 @@ $$
 Hence:
 $$
 \hat{\eta} 
-= \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} C_p(\hat{\mathbf{y}}_\eta)
-= \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta).
+= \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} C_p(\hat{\mathbf{y}}_\eta)
+= \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta).
 $$
 
 $\to$ Minimizing Mallow's $C_p$ is the same as minimizing an unbiased estimate of the risk.
