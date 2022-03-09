@@ -630,7 +630,7 @@ $$
 \begin{aligned}
 \hat{\beta}_1
 &= \frac{1}{n s_{\mathbf{x}}^2}\sum_{i = 1}^n (x_i - \bar{x})(y_i - \bar{y})\\
-&= \frac{1}{n s_{\mathbf{x}}^2}\sum_{i = 1}^n (x_i - \bar{x})(\beta_0 + \beta_1x_i + \epsilon_i - [\beta_0 + \beta_1\bar{x}])\\
+&= \frac{1}{n s_{\mathbf{x}}^2}\sum_{i = 1}^n (x_i - \bar{x})(\beta_0 + \beta_1x_i + \epsilon_i - [\beta_0 + \beta_1\bar{x}+\overline{\epsilon}])\\
 &= \beta_1 + \frac{1}{n s_{\mathbf{x}}^2} \sum_{i = 1}^n (x_i - \bar{x})\epsilon_i
 \end{aligned}
 $$
