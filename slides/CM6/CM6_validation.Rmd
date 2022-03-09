@@ -699,7 +699,7 @@ qqnorm(beta_hat_2); qqline(beta_hat_2, col = "lightblue", lwd = 2)
 * If $\epsilon$ has **finite** variance:
     - The coefficients will be *approximately* Gaussian (empirically).
     - The confidence intervals **won't be exact**.
-    - CI tend to be **too narrow** (for a heavy tail distribution)
+    - CI tend to be **too narrow** (for a heavy tail distribution).
 
 >* If $\epsilon$ has **non-finite** variance:
 >    - The Gaussian approximation for the coefficients becomes bad.
