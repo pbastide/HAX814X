@@ -640,6 +640,36 @@ If the $\epsilon_i$ are not Gaussian, this is **not true** anymore.
 
 Is it *approximatelly* true ?
 
+
+## Simulation - Gaussian
+
+What about the distribution of $\hat{\beta}_2$ ?
+
+```{r gauss3, fig.height=3.5, fig.width=3.5, fig.align='center'}
+set.seed(1289)
+Nsim <- 1000
+beta_hat_2 <- vector("numeric", Nsim)
+for (i in 1:Nsim) {
+  ## error
+  eps <- rnorm(n, 0, 1)
+  ## Sim
+  y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+  ## Fit
+  fit <- lm(y_sim ~ x_1 + x_2)
+  ## Get beta_1
+  beta_hat_2[i] <- coef(fit)[3]
+}
+```
+
+## Simulation - Gaussian
+
+What about the distribution of $\hat{\beta}_2$ ?
+
+```{r gauss4, fig.height=3.5, fig.width=3.5, fig.align='center'}
+## Empirical distribution
+qqnorm(beta_hat_2); qqline(beta_hat_2, col = "lightblue", lwd = 2)
+```
+
 ## Simulation - Not Gaussian
 
 What about the distribution of $\hat{\beta}_2$ ?
@@ -1068,7 +1098,7 @@ summary(fit)
 
 i.e. if I remove one observation, do they change a lot ?
 
-e.g. outiliers can have a strong leverage.
+e.g. Outliers can have a strong leverage.
 
 ## Outliers and Leverage - Simulation
 
@@ -1284,7 +1314,7 @@ $\hat{y}_i = 0$
 $\to$ $y_i$ does not have any effect on $\hat{y}_i$.
 
 >* If $h_{ii}$ is *"large"*  
-$\to$ $\hat{y}_i$ has a strong impact on $y_i$.
+$\to$ $y_i$ has a strong impact on $\hat{y}_i$.
 
 >* What is *"large"* ?
 
@@ -1356,7 +1386,7 @@ Last point is consistent with the other observations.
 
 But its $x$ value is high $\to$ high leverage point.
 
-## Outilier vs Hight Leverage {.smaller}
+## Outlier vs Hight Leverage {.smaller}
 
 <div class="columns-2">
 
@@ -1420,7 +1450,7 @@ abline(h = 3 * 2 / n, lty = 3)
 # Cook Distance
 <!-- ************************************************************************ -->
 
-## Outilier vs Hight Leverage 
+## Outlier vs Hight Leverage 
 
 * **Outlier**:  
     - Very different from other points ($y$).  
