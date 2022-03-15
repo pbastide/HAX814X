@@ -1729,7 +1729,7 @@ h_{ii}
 \end{aligned}
 $$
 
-## Studentized Residuals - Proof - 6/6
+## Cook Distance - Proof - 6/6
 
 $$
 C_i = 
