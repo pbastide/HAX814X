@@ -1,0 +1,227 @@
+---
+title: "Fiche_ML_loi"
+author: "Fanny Chery et Adrien Simon"
+date: "28/03/2022"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Rappel sur les lois utiles pour la compréhension
+
+### Loi Gaussienne
+
+soit $X$ une variable aléatoire de loi Gaussienne, ou normale,
+d'espérance $\mu$ et de variance $\sigma^2$ : $$
+X \sim \mathcal{N}(\mu, \sigma^2).
+$$
+
+X admet une fonction de densité de probabilité : $$
+f(x) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)
+\quad
+\forall x \in \mathbb{R}
+$$
+
+Et une fonction caractéristique :
+
+$$
+\phi_{X}(t) = \mathbb{E}[e^{itX}] = e^{i\mu t - \frac{\sigma^2 t^2}{2}}
+\quad
+\forall t \in \mathbb{R}
+$$
+
+Graphe de la distribution d'une loi Gaussienne :
+
+```{r gaussian, echo=FALSE, fig.height=5.5, fig.width=8}
+x <- -1500:1500 / 100
+ccc <- hcl.colors(4)
+# Normal
+mu <- 0; sigma2 <- 1
+plot(x, dnorm(x, mu, sqrt(sigma2)), type = "l", ylab = "f(x)", col = ccc[1], lwd = 2)
+segments(x0 = 0, y0 = 0, x1 = 0, y1 = dnorm(mu, mu, sqrt(sigma2)), lty = 2, col = ccc[1])
+# mean
+mu <- 10; sigma2 <- 1
+lines(x, dnorm(x, mu, sqrt(sigma2)), col = ccc[2], lwd = 2)
+segments(x0 = mu, y0 = 0, x1 = mu, y1 = dnorm(mu, mu, sqrt(sigma2)), lty = 2, col = ccc[2])
+# variance
+mu <- 0; sigma2 <- 25
+lines(x, dnorm(x, mu, sqrt(sigma2)), col = ccc[3], lwd = 2)
+segments(x0 = mu, y0 = 0, x1 = mu, y1 = dnorm(mu, mu, sqrt(sigma2)), lty = 2, col = ccc[3])
+# legend
+legend("topleft",
+       c(expression(paste(mu == 0, "   ; ", sigma^2 == 1)),
+         expression(paste(mu == 10, " ; ", sigma^2 == 1)),
+         expression(paste(mu == 0, "   ; ", sigma^2 == 25))),
+       col = ccc,
+       lwd = 2, lty = 1)
+```
+
+On observe que selon la valeur de $\mu$ la densité est translatée, et
+selon la valeur de $\sigma^2$ la densité est plus ou moins aplatie.
+
+### Loi du $\chi^2$
+
+Soient $X_1, \dotsc, X_p$, $p$ variables aléatoires de loi normale
+centrée-réduite iid : $X_i \sim \mathcal{N}(0, 1)$. Alors $$
+X = \sum_{i = 1}^p X_i^2 \sim \chi^2_p
+$$
+
+suit une loi du $\chi^2$ à $p$ degrés de liberté, notée $\chi^2_p$.
+
+On a : $$
+\mathbb{E}[X] = p
+\quad
+\mathbb{Var}[X] = 2p.
+$$
+
+X converge en distribution vers une loi Gaussienne d'espérance $p$ et de
+variance $2p$.
+
+Graphe de la distribution d'une loi du $\chi^2$ à $p$ degrés de liberté,
+avec $p$ petit :
+
+```{r chisq, echo=FALSE, fig.height=5.5, fig.width=8}
+x <- 0:800 / 100
+ccc <- hcl.colors(6)
+# 1
+p <- 1
+plot(x, dchisq(x, p), type = "l", ylab = "f(x)", ylim = c(0, 0.5), col = ccc[1], lwd = 2)
+segments(x0 = p, y0 = -1, x1 = p, y1 = dchisq(p, p), lty = 2, col = ccc[1])
+# 2 - 5
+for (p in 2:5) {
+  lines(x, dchisq(x, p), col = ccc[p], lwd = 2)
+  segments(x0 = p, y0 = -1, x1 = p, y1 = dchisq(p, p), lty = 2, col = ccc[p])
+}
+# legend
+legend("topright",
+       c(expression(p == 1), expression(p == 2), expression(p == 3), expression(p == 4), expression(p == 5)),
+       col = ccc,
+       lwd = 2, lty = 1)
+```
+
+Graphe de la distribution d'une loi du $\chi^2$ à $p$ degrés de liberté,
+avec $p$ grand, et celle d'une normale de même espérance et variance :
+
+```{r chisq2, echo=FALSE, fig.height=5.5, fig.width=8}
+x <- 0:10000 / 100
+# 50
+p <- 50
+plot(x, dchisq(x, p), type = "l", ylab = "f(x)", ylim = c(0, 0.05), col = ccc[1], lwd = 2)
+segments(x0 = p, y0 = -1, x1 = p, y1 = dchisq(p, p), lty = 2, col = ccc[1])
+# normal
+mu <- p; sigma2 <- 2*p
+lines(x, dnorm(x, mu, sqrt(sigma2)), col = ccc[4])
+# legend
+legend("topright",
+       c(expression(p == 50),
+         expression(paste(mu == 50, "   ; ", sigma^2 == 100))),
+       col = ccc[c(1, 4)],
+       lwd = c(2, 1), lty = 1)
+```
+
+On voit bien la convergence avec $p$ de la loi du $\chi^2$ vers une loi
+normale de même espérance et variance.
+
+### Loi de Student
+
+Soit $Z$ une variable aléatoire de loi normale centrée-réduite :
+$Z \sim \mathcal{N}(0, 1)$, et $X$ une variable aléatoire qui suit une
+loi du $\chi^2$ à $p$ degrés de liberté: $X \sim \chi^2_p$, $Z$ et $X$
+indépendant. Alors $$
+T = \frac{Z}{\sqrt{X/p}} \sim \mathcal{T}_p
+$$
+
+suit une loi de Student à $p$ degrés de liberté.
+
+On a pour $p > 2$ : $$
+\mathbb{E}[T] = 0
+\quad
+\mathbb{Var}[T] = \frac{p}{p-2}
+$$
+
+T converge en distribution vers une loi normale centrée-réduite.
+
+Graphe de la distribution d'un loi de Student selon le degrés de liberté
+de $p$, et de celle d'une loi normale centrée-réduite (en vert) :
+
+```{r student, echo=FALSE, fig.height=5.5, fig.width=8}
+x <- -600:600 / 100
+ccc <- hcl.colors(6)
+# 1
+p <- 1
+plot(x, dt(x, p), type = "l", ylab = "f(x)", ylim = c(0, 0.4), col = ccc[1], lwd = 2)
+segments(x0 = 0, y0 = -1, x1 = 0, y1 = dt(0, p), lty = 2, col = ccc[1])
+# 2 - 5
+k <- 1
+for (p in c(3, 10)) {
+  k <- k + 1
+  lines(x, dt(x, p), col = ccc[k], lwd = 2)
+}
+# normal
+mu <- 0; sigma2 <- 1
+lines(x, dnorm(x, mu, sqrt(sigma2)), col = ccc[5], lwd = 2)
+# legend
+legend("topright",
+       c(expression(p == 1), expression(p == 3), expression(p == 10),
+         expression(paste(mu == 0, "   ; ", sigma^2 == 1))),
+       col = ccc[c(1:k, 5)],
+       lwd = 2, lty = 1)
+```
+
+On voit bien sur ce graphique que plus $p$ augmente, plus la
+distribution de la loi de Student à $p$ degrés de liberté tend vers une
+loi normale centrée-réduite.
+
+### Loi de Fisher
+
+Soit $U_1 \sim \chi^2_{p_1}$ et $U_2 \sim \chi^2_{p_2}$, tel que $U_1$
+et $U_2$ soit indépendants. Alors $$
+F = \frac{U_1/p_1}{U_2/p_2} \sim \mathcal{F}^{p_1}_{p_2}
+$$
+
+suit une loi de Fisher à $(p_1, p_2)$ degrés de liberté.
+
+On a pour $p_2 > 2$ : $$
+\mathbb{E}[F] =  \frac{p_2}{p_2 - 2}
+$$
+
+Lorsque $p_2$ tends vers l'infini, $\mathcal{F}^{p_1}_{p_2}$ converge en
+distribution vers $\frac{1}{p_1}\chi^2_{p_1}$.
+
+Graphe de la distribution d'un loi de Fisher selon le degrés de liberté
+de $(p_1, p_2)$, et celle de la loi du $\frac{\chi^2_p}{p}$ avec $p=2$ :
+
+```{r fisher, echo=FALSE, fig.height=5.5, fig.width=8}
+x <- 0:600 / 100
+ccc <- hcl.colors(6)
+# 1
+p1 <- 2
+p <- 3
+plot(x, df(x, p1, p), type = "l", ylab = "f(x)", ylim = c(0, 1), col = ccc[1], lwd = 2)
+segments(x0 = p/(p-2), y0 = -1, x1 = p/(p-2), y1 = df(p/(p-2), p1, p), lty = 2, col = ccc[1])
+# 2 - 5
+k <- 1
+for (p in c(5, 10)) {
+  k <- k + 1
+  lines(x, df(x, p1, p), col = ccc[k], lwd = 2)
+  segments(x0 = p/(p-2), y0 = -1, x1 = p/(p-2), y1 = df(p/(p-2), p1, p), lty = 2, col = ccc[k])
+}
+# normal
+lines(x, 2 * dchisq(2 * x, p1), col = ccc[5], lwd = 2)
+# legend
+legend("topright",
+       c(expression(paste(p[1] == 2, "   ; ", p[2] == 3)),
+         expression(paste(p[1] == 2, "   ; ", p[2] == 5)),
+         expression(paste(p[1] == 2, "   ; ", p[2] == 10)),
+         expression(paste(p == 2, " [", chi[p]^2 / p, "]"))),
+       col = ccc[c(1:k, 5)],
+       lwd = 2, lty = 1)
+```
+
+On voit clairement sur ce graphe que la distribution de la loi de Fisher
+tend avec $p_2$ vers une loi du $\frac{\chi^2_p}{p}$.
