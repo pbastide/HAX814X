@@ -1,0 +1,178 @@
+---
+title: "Fiche_ML_2"
+author: 'Fanny Chery et Adrien Simon '
+date: "28/03/2022"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Régression simple Gaussienne - II
+
+## Rappel
+
+$\bullet$ Soit X une variable aléatoire tel que $X \sim\mathcal{N}(\mu, \sigma^2)$ de densité : $$f(x)=\frac{1}{\sqrt{2\pi\sigma^2}}\text{exp}\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$$
+
+Alors $\forall (a,b)\in \mathbb{R}^2$ on a : $$Y=aX+b \sim \mathcal{N}(a\mu+b, a^2\sigma^2)$$
+
+## Maximum de vraisemblance
+
+### Fonction du maximum de vraisemblance
+
+Soit X une va qui admet $f_\theta$ pour densité. Alors la fonction fonction maximum de vraisemblance est la densité $$\theta \mapsto L(\theta|x)=f_\theta(x)$$
+
+Notre modèle est $y_i =\beta_0+\beta_1x_i+\epsilon_i$, avec $\epsilon_i \sim \mathcal{N}(0, \sigma^2)$ Donc $y_i\underset{iid}{\sim}\mathcal{N}(\beta_0+\beta_1x_i,\sigma^2),~\forall i \in \{1,..,n\}$
+
+La fonction de vraisemblance de $\mathbf{y}=(y_1, .., y_n)^T$ est donc : $$L(\beta_0, \beta_1,\sigma^2 | y_1, \dotsc, y_n)= \prod_{i = 1}^n L(\beta_0, \beta_1, \sigma^2 | y_i) = \frac{1}{\left(\sqrt{2\pi\sigma^2}\right)^n}\exp\left(-\frac{1}{2\sigma^2}\sum_{i = 1}^n (y_i - \beta_0 - \beta_1 x_i)^2\right)$$ avec $L(\beta_0, \beta_1, \sigma^2|y_i)=\frac{1}{\sqrt{2\pi\sigma^2}}\text{exp}\left(-\frac{(y_i - \beta_0 - \beta_1x_i)^2}{2\sigma^2}\right)$
+
+On a aussi la log-vraisemblance de $\mathbf{y}$ : $$
+\text{log} L(\beta_0, \beta_1,\sigma^2 | y_1, \dotsc, y_n)=
+\frac{-n}{2}\text{log}(2\pi\sigma^2)-\frac{1}{2\sigma^2}\left(\sum_{i = 1}^n (y_i-\beta_0 -\beta_1 x_i)^2\right)
+$$
+
+### Estimateur du maximum de vraisemblance
+
+L'estimateur de vraisemblance (ML) de $\theta$, noté $\hat\theta$, est celui qui maximise la fonction de vraisemblance à une observation $x$ donné.
+
+Il est donné par : $$\hat\theta=\underset{\theta}{\text{argmax}}~L(\theta|x)$$
+
+On a vu que : $$
+\log L(\beta_0, \beta_1, \sigma^2 | \mathbf{y}) =
+-\frac{n}{2} \log(2\pi\sigma^2) - \frac{1}{2\sigma^2}\underbrace{\sum_{i = 1}^n (y_i - \beta_0 - \beta_1 x_i)^2}_{\text{Sum of Squares } SS(\beta_0, \beta_1)}
+$$ Donc $\forall \sigma^2>0$, on a $(\hat{\beta}_0^{ML}, \hat{\beta}_1^{ML})=\underset{(\beta_0, \beta_1) \in \mathbb{R}^2}{\operatorname{argmax}} \log L(\beta_0, \beta_1, \sigma^2 | \mathbf{y})= \underset{(\beta_0, \beta_1) \in \mathbb{R}^2}{\operatorname{argmin}} SS(\beta_0, \beta_1)=(\hat{\beta}_0^{OLS}, \hat{\beta}_1^{OLS})$
+
+Donc l'estimateur du maximum de vraisemblance et l'estimateur des moindres carrées sont les mêmes.
+
+On a aussi l'estimateur du maximum de vraisemblance pour $\sigma^2$ :$\hat{\sigma}^2_{ML} = \frac{1}{n}\sum_{i = 1}^n \hat{\epsilon}_i^2$ De plus, celui ci est baisé : $\mathbb{E}[\hat{\sigma}^2_{ML}] = \frac{n - 2}{n}\sigma^2 \neq \sigma^2$
+
+## Distribution des coefficients et estimateur de la variance
+
+### Distribution des coefficients avec $\sigma^2$ connu
+
+Nous savons que l'espérance et la variance du vecteur $\begin{pmatrix} \hat\beta_0 \\ \hat\beta_1 \end{pmatrix}$ sont :$$\mathbb{E}\begin{bmatrix}\begin{pmatrix} \hat\beta_0 \\ \hat\beta_1 \end{pmatrix}\end{bmatrix}=\begin{pmatrix}\beta_0\\\beta_1 \end{pmatrix}
+~~~\text{et}~~~ \mathbb{V}\begin{bmatrix}\begin{pmatrix}\hat\beta_0\\\hat\beta_1 \end{pmatrix}\end{bmatrix}=\frac{\sigma^2}{n}\begin{pmatrix}1+\frac{\bar{x}^2}{s_\mathbf{x}^2} & -\frac{\bar{x}^2}{s_\mathbf{x}^2} \\ -\frac{\bar{x}^2}{s_\mathbf{x}^2} & \frac{1}{s_\mathbf{x}^2}\end{pmatrix}=\sigma^2 \mathbf{V}_n$$
+
+Lorsque le paramètre $\sigma^2$ est connu, le vecteur $\begin{pmatrix} \hat\beta_0 & \hat\beta_1 \end{pmatrix}$ est **gaussien**. Donc avec l'espérance et la variance explicitées plus haut, on a $$\begin{pmatrix}\hat{\beta}_0 \\ \hat{\beta}_1\end{pmatrix}
+\sim\mathcal{N}\left(\begin{pmatrix}\beta_0\\\beta_1\end{pmatrix};\sigma^2\mathbf{V}_n\right)
+~~\text{avec}~~\hat{\beta}_0 \sim \mathcal{N}\left(\beta_0, \frac{\sigma^2}{n}\left(1 + \frac{\bar{x}^2}{s_{\mathbf{x}}^2}\right)\right)~~\text{et}~~\hat{\beta}_1 \sim \mathcal{N}\left(\beta_1, \frac{\sigma^2}{n}\frac{1}{s_{\mathbf{x}}^2}\right)$$
+
+### Estimateur sans biais de la variance
+
+On rappelle les relations suivantes : $$\hat\sigma^2=\frac{1}{n-2}\sum^n_{i=1}\hat\epsilon^2_i\quad\text{et}\quad \mathbb{E}[\hat\sigma^2]=\sigma^2$$
+
+On a donc $\hat\sigma^2 \sim \chi^2_{n-2}$ c'est à dire que $\hat\sigma^2$ suit une loi du $\chi^2$ à $n-2$ degrés de liberté.
+
+### Distribution des coefficients avec $\sigma^2$ inconnu
+
+En général, $\sigma^2$ est inconnu, on va donc le remplacer par son estimateur sans biais, c'est à dire $\hat\sigma^2$. Cela modifie la distribution des coefficients et par le théorème central limite :
+
+-   Quand $\sigma^2$ est connu : $$
+    \frac{\hat{\beta}_0 - \beta_0}{\sqrt{\frac{\sigma^2 \left(1+\frac{\bar{x}^2}{s_{\mathbf{x}}^2}\right)}{n}}}\sim\mathcal{N}(0, 1)
+    \qquad\text{et}\qquad
+    \frac{\hat{\beta}_1 - \beta_1}{\sqrt{\frac{\sigma^2 \left(\frac{1}{s_{\mathbf{x}}^2}\right)}{n}}}\sim\mathcal{N}(0, 1)
+    $$
+
+-   Quand $\sigma^2$ est inconnu : $$\frac{\hat{\beta}_0-\beta_0}{\sqrt{\frac{\sigma^2 \left(1+\frac{\bar{x}^2}{s_{\mathbf{x}}^2}\right)}{n}}}\sim\mathcal{T}_{n-2}
+    \qquad\text{et}\qquad
+    \frac{\hat{\beta}_1 - \beta_1}{\sqrt{\frac{\sigma^2 \left(\frac{1}{s_{\mathbf{x}}^2}\right)}{n}}}\sim\mathcal{T}_{n-2}
+    $$
+
+Les lois normales sont remplacées par des lois de Student à $n-2$ degrés de liberté.
+
+## Intervalle de confiance et erreur de prédiction
+
+### Intervalle de confiance
+
+Nous avons donc
+
+-   $\frac{\hat\beta_0 - \beta_0}{\sqrt{\hat\sigma_0^2}}\sim\mathcal{T}_{n-2}$
+
+-   $\frac{\hat\beta_1 - \beta_1}{\sqrt{\hat\sigma_1^2}}\sim\mathcal{T}_{n-2}$
+
+On obtient alors les intervalles de confiance suivants avec probabilité $1-\alpha$ :
+
+-   $\beta_0 \in \begin{bmatrix}\hat\beta_0\pm t_{n-2}(1-\frac{\alpha}{2})\sqrt{\hat\sigma_0^2}\end{bmatrix}$
+
+-   $\beta_1 \in \begin{bmatrix}\hat\beta_1\pm t_{n-2}(1-\frac{\alpha}{2})\sqrt{\hat\sigma_1^2}\end{bmatrix}$
+
+-   $\sigma^2 \in \begin{bmatrix} \frac{(n-2)\hat\sigma^2}{c_{n-2}(1-\frac{\alpha}{2})}; \frac{(n-2)\hat\sigma^2}{c_{n-2}(\frac{\alpha}{2})}\end{bmatrix}$
+
+
+
+### Erreur de prédiction
+
+Rappelons que l'erreur de prédiction s'écrit : $\hat\epsilon_{n+1}=y_{n+1}-\hat y_{n+1}$ avec : $\mathbb{E}[\hat\epsilon_{n+1}]=0\quad\text{et}\quad\mathbb{Var}[\hat{\epsilon}_{n+1}]= \sigma^2 \left (1 + \frac{1}{n} + \frac{1}{ns_{\mathbf{x}}^2} (x_{n+1} - \bar{x})^2\right)$
+
+d'où la relation à variance connue : $y_{n+1}-\hat y_{n+1}\sim\mathcal{N}\left(0;\left(1 + \frac{1}{n} + \frac{1}{ns_{\mathbf{x}}^2} (x_{n+1} - \bar{x})^2\right)\right)$
+
+et à variance inconnue : $\frac{y_{n+1}-\hat y_{n+1}}{\sqrt{\hat\sigma^2\left(1 + \frac{1}{n} + \frac{1}{ns_{\mathbf{x}}^2} (x_{n+1} - \bar{x})^2\right)}}\sim\mathcal{T}_{n-2}$
+
+## Distribution jointe et région de confiance
+
+### Distribution jointe de $(\hat\beta_0,\hat\beta_1)$ avec $\sigma^2$ inconnu
+
+Quand $\sigma^2$ est **inconnu**: $$
+\frac{1}{2\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T \mathbf{V}_n^{-1}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
+\sim
+\mathcal{F}^2_{n-2}
+$$
+
+-   avec $\mathcal{F}^2_{n-2}$ la loi de **Fisher**.
+
+### Région de confiance
+
+La distribution jointe nous donne la région de confiance : $$
+\frac{1}{2\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T \mathbf{V}_n^{-1}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right) \leq f^2_{n-2}(1-\alpha)
+$$ Etant donné que $\mathbf{V}_n^{-1}$ est défini positive, c'est l'équation d'une région de confiance élliptique.
+
+$$\mathbf{y} = -2 \cdot \mathbb{1} + 3 \cdot \mathbf{x} + \boldsymbol{\epsilon}$$
+
+```{r simcr, echo = FALSE}
+## Set the seed (Quia Sapientia)
+set.seed(12890926)
+## Number of samples
+n <- 100
+## vector of x
+x_test <- runif(n, -2, 2)
+## coefficients
+beta_0 <- -2; beta_1 <- 3
+## epsilon
+error_test <- rnorm(n, mean = 0, sd = 1)
+## y = 2 + 3 * x + epsilon
+y_test <- beta_0 + beta_1 * x_test + error_test
+```
+
+```{r simcrplot, echo=FALSE, message=FALSE, fig.height=3, fig.width=8}
+## lm fit
+fit_lm <- lm(y_test ~ x_test)
+## Plot
+par(mfrow = c(1, 2), mar = c(5, 5, 1, 1))
+### Data and line plot
+## Dataset
+plot(x_test, y_test, pch = 16, cex = 0.7, ylab = "y_test")
+## Regression line
+abline(fit_lm, col = "deepskyblue2", lwd = 2)
+### Confidence region
+ccc <- hcl.colors(5)
+library(ellipse)
+cr <- ellipse(fit_lm, level = 0.95)
+plot(cr, type = 'l',
+     xlab = expression(hat(beta)[0]),
+     ylab = expression(hat(beta)[1]),
+     col = ccc[1], lwd = 2)
+points(fit_lm$coefficients[1], fit_lm$coefficients[2])
+### Confidence intervals
+ci <- confint(fit_lm, level = 0.95)
+lines(ci[1,], rep(fit_lm$coefficients[2], 2), col = ccc[4], lwd = 2)
+lines(rep(fit_lm$coefficients[1], 2), ci[2,], col = ccc[4], lwd = 2)
+polygon(ci[1, c(1, 2, 2, 1)], ci[2, c(1, 1, 2, 2)], border = ccc[4])
+```
+
+Difference between:
+
+-   **confidence intervals** (green) and the
+-   **confidence region** (purple).
