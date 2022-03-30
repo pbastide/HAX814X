@@ -1,0 +1,195 @@
+---
+title: "Regression Multiple - Moindre carrés"
+author: "LUCEA Lenny"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Dans le cadre de la régression linéaire multiple est une généralisation du modèle de régression simple lorsque les variables explicatives sont en nombre quelconque.
+
+Nous supposons alors que les données suivent le modèle suivant:
+
+$$
+y_i = \beta_1x_{i1}+\beta_2x_{i2}+...+\beta_px_{ip}+\varepsilon_i \qquad
+i=1,...,n 
+$$
+
+Où :
+
+-   les $x_{ij}$ sont des nombres connus, non aléatoires, la variable $x_{i1}$ valant souvent 1 pour tout $i$;
+
+-   les paramètres $\beta_j$ du modèle sont inconnus, mais non aléatoires;
+
+-   les $\varepsilon_i$ sont des variables aléatoires inconnues.
+
+Un modèle de régression linéaire est défini par une équation de la forme :
+
+$$
+Y = X\beta + \varepsilon
+$$
+
+Où :
+
+-   $Y$ est un vecteur aléatoire de dimension n,
+
+-   $X$ est une matrice de taille $n\times p$ connue, appelée matrice du plan d'expérience,
+
+-   $\beta$ est le vecteur de dimension p des paramètres inconnus du modèle,
+
+-   $\varepsilon$ est le vecteur de dimension n des erreurs.
+
+Les hypothèses concernant le modèle sont :
+
+$$
+(H) \left\{
+\begin{array}{l}(H_1) : rg(X) = p \\
+(H_2) : \mathbb{E}[\varepsilon] = 0 , Var(\varepsilon) = \sigma^2I_n 
+\end{array}
+\right.
+$$
+
+Selon $(H_2)$ les erreurs sont centrées, de même variance (homoscédasticité) et non corrélées entre elles.
+
+L'estimateur des moindres carrés $\hat{\beta}$ est défini comme suit :
+
+$$
+\hat\beta = arg~{min}_{\beta \in \mathbb{R}^p}\sum_{i=1}^n
+\left(y_i - \sum_{j=1}^p \beta_jx_{ij}\right)= arg~{min}_{\beta \in \mathbb{R}^p} ||Y - X\beta||^2
+$$
+
+[N.B :]{.underline}
+
+La dénomination Moindre Carrés Ordinaires (MCO) vient du fait que nous considérons ici une fonction de coût quadratique de la même façon que pour la régression linéaire simple.
+
+L'estimateur $\hat{\beta}$ des Moindre Carrés Ordinaires a pour expression:
+
+$$
+\hat\beta = (X'X)^{-1}X'Y
+$$
+
+Et la matrice $P_X$ de projection orthogonale sur $\mathcal{M}(X)$ s'écrit :
+
+$$
+P_X = (X'X)^{-1}X'
+$$
+
+Selon $(H_1)$ on conclut que la matrice $X'X$ est assurément inversible.
+
+De plus $X'X$ est symétrique définie positive.
+
+Soient :
+
+$$
+P_X = X(X'X)^{-1}X'
+$$
+
+La matrice de projection orthogonale sur $\mathcal{M}(X)$ et
+
+$$
+P_{X^\bot} = (I - P_X) 
+$$
+
+La matrice de projection orthogonale sur $\mathcal{M}^\bot(X)$.
+
+On en conclut que la décomposition:
+
+$$
+Y= \hat{Y} + (Y-\hat{Y}) = P_XY + (I-P_x)Y= P_XY + P_{X^\bot}Y
+$$
+
+n'est rien d'autre qu'une décomposition orthogonale de $Y$ sur $\mathcal{M}(X)$ et $\mathcal{M}^\bot(X)$ avec :
+
+$$
+\hat{Y}=X\hat{\beta} =\hat{\beta}_1X_1+...+\hat{\beta}_pX_p
+$$
+
+ce qui signifie que les $\hat{\beta}_i$ sont les coordonnées de $\hat{Y}$ dans la base $(X_1,…,X_p)$ de $\mathcal{M}(X)$. Ceci ne veut pas non plus dire que les $\hat{\beta}_i$ sont les coordonnées des projections de $Y$ sur les $X_i$ (c'est rarement le cas).
+
+Ce point étant fait passons à quelques propriétés sur $\hat{\beta}$ :
+
+L'estimateur obtenu est sans biais. On obtient de plus une expression très simple pour sa matrice de covariance $Var(\hat{\beta})$.
+
+$$
+Var(\hat{\beta}) = \mathbb{E}[(\hat{\beta}- \mathbb{E}[\hat{\beta}])(\hat{\beta} - \mathbb{E}[\hat{\beta}])']=\mathbb{E}[\hat{\beta}\hat{\beta}'] - \mathbb{E}[\hat{\beta}]\mathbb{E}[ \hat{\beta}]'= \sigma^2(X'X)^{-1}
+$$
+
+D'après le résultat précédent qui n'est autre qu'une généralisation de celui vu en régression linéaire simple, on observe que l'estimateur des MCO est optimal en un certain sens.
+
+Comme $\beta$ est de taille $p$, elle est de dimension $p\times p$ . Pour toute matrice A de taille $m\times p$ et tout vecteur $B$ de dimension $m$ déterministes, on a $\mathbb{E}[A\hat{\beta}+B]=A\mathbb{E}[\hat{\beta}]+B$ et $Var(A\hat{\beta}+B)=AVar(\hat{\beta})A'$.
+
+D'après le théorème de Gauss-Markov l'estimateur $\hat{\beta}$ des MCO est de variance minimale parmi les estimateurs linéaires sans biais de $\beta$.
+
+Passons maintenant à l'analyse des résidus.
+
+les résidus sont définis par :
+
+$$
+\hat\varepsilon=[\hat\varepsilon_1,...,\hat\varepsilon_n]' = Y - \hat{Y} = (I - P_x)Y= P_{X^\bot}Y = P_{X^\bot}\varepsilon
+$$
+
+car $Y=X\beta+\varepsilon$ et $X\beta \in \mathcal{M}(X)$. On peut alors énoncer les résultats suivants:
+
+1.  $\mathbb{E}[\hat\varepsilon]=0$.
+
+2.  $Var(\hat\varepsilon)=\sigma^2P_{X^\bot}$.
+
+3.  $\mathbb{E}[\hat{Y}]=X\beta$.
+
+4.  $Var(\hat{Y})=\sigma^2P_X$
+
+5.  $Cov(\hat\varepsilon,\hat{Y})=0$
+
+La statistique $\sigma^2=\frac{||\varepsilon||^2}{n-p}=\frac{SCR}{n-p}$ est un estimateur sans biais de $\sigma^2$
+
+L'erreur de prévision $\hat\varepsilon_{n+1}=(y_{n+1}-\hat{y}_{n+1})$ satisfait les propriétés suivantes:
+
+$$
+\left\{
+\begin{array}{l}\mathbb{E}[\hat\varepsilon_{n+1}]=0\\
+Var(\hat\varepsilon_{n+1}]= \sigma^2(1+x_{n+1}'(X'X)^{-1}x_{n+1}
+\end{array}
+\right.
+$$
+
+Le coefficient de détermination $R^2$ est donc défini par:
+
+$$
+R^2= cos^2\theta_0=\frac{||\hat{Y}||^2}{||Y||^2}=1-\frac{||\hat\varepsilon||^2}{||Y-\hat{y}||^2}=1-\frac{SCR}{SCT}=\frac{Variation~expliquée~par~le~modèle}{Variation~ totale}
+$$
+
+Ce coefficient mesure le cosinus carré de l'angle entre les vecteurs $Y$ et $\hat{Y}$ pris à l'origine ou pris en $\overline{y}\mathbb{I}$ . Il n'est cependant pas infaillible car il ne tient pas compte de la dimension de l'espace de projection $\mathcal{M}(X)$, d'où la définition du coefficient de détermination ajusté $R_\alpha^2$ .
+
+$$
+R_\alpha^2=1-\frac{n}{n-p}\frac{||\hat\varepsilon||^2}{||\hat{Y}||^2}=1-\frac{n}{n-p}\frac{SCR}{SCT}=1-\frac{n}{n-p}(1-R^2)
+$$
+
+Sous R, le coefficient de détermination $R^2$ est appelé ***Multiple R-Squared***, tandis que le coefficient de détermination ajusté $R_\alpha^2$ est appelé ***Adjusted R-Squared***.
+
+[**Exemple :**]{.underline}
+
+```{r}
+set.seed(22)
+
+## Predictors
+n <- 1000
+x_1 <- runif(n, min = -2, max = 2)
+x_2 <- runif(n, min = 0, max = 4)
+
+## Noise
+eps <- rnorm(n, mean = 0, sd = 5)
+
+## Model sim
+beta_0 <- 2; beta_1 <- 5; beta_2 <- -3
+y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+
+fit <- lm(y_sim ~ x_1 + x_2)
+summary(fit)
+```
+
+On observe que le $R^2$ ajusté est plus petit que le $R^2$ mais en est relativement proche.
