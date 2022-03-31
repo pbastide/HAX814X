@@ -1,0 +1,276 @@
+---
+title: "Regression Multiple - Moindre carrés"
+author: "LUCEA Lenny"
+date: "`r Sys.Date()`"
+output: 
+  prettydoc::html_pretty:
+    theme: architect
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## [1. Modélisation]{.underline}
+
+Le modèle de régression linéaire multiple est une généralisation du
+modèle de régression simple lorsque les variables explicatives sont en
+nombre quelconque.
+
+Nous supposons alors que les données suivent le modèle suivant:
+
+$$
+y_i = \beta_1x_{i1}+\beta_2x_{i2}+...+\beta_px_{ip}+\varepsilon_i \qquad
+i=1,...,n 
+$$
+
+Où :
+
+-   les $x_{ij}$ sont des nombres connus, non aléatoires, la variable
+    $x_{i1}$ valant souvent 1 pour tout $i$;
+
+-   les paramètres $\beta_j$ du modèle sont inconnus, mais non
+    aléatoires;
+
+-   les $\varepsilon_i$ sont des variables aléatoires inconnues.
+
+Un modèle de régression linéaire est défini par une équation de la forme
+:
+
+$$
+Y = X\beta + \varepsilon
+$$
+
+Où :
+
+-   $Y$ est un vecteur aléatoire de dimension n,
+
+-   $X$ est une matrice de taille $n\times p$ connue, appelée matrice du
+    plan d'expérience,
+
+-   $\beta$ est le vecteur de dimension p des paramètres inconnus du
+    modèle,
+
+-   $\varepsilon$ est le vecteur de dimension n des erreurs.
+
+Les hypothèses concernant le modèle sont :
+
+$$
+(H) \left\{
+\begin{array}{l}(H_1) : rg(X) = p \\
+(H_2) : \mathbb{E}[\varepsilon] = 0 , Var(\varepsilon) = \sigma^2I_n 
+\end{array}
+\right.
+$$
+
+Selon $(H_2)$ les erreurs sont centrées, de même variance
+(homoscédasticité) et non corrélées entre elles.
+
+## [2. Estimateurs des moindres Carrés Ordinaires]{.underline}
+
+L'estimateur des moindres carrés $\hat{\beta}$ est défini comme suit :
+
+$$
+\hat\beta = arg~{min}_{\beta \in \mathbb{R}^p}\sum_{i=1}^n
+\left(y_i - \sum_{j=1}^p \beta_jx_{ij}\right)^2= arg~{min}_{\beta \in \mathbb{R}^p} ||Y - X\beta||^2
+$$
+
+[N.B :]{.underline}
+
+La dénomination Moindre Carrés Ordinaires (MCO) vient du fait que nous
+considérons ici une fonction de coût quadratique de la même façon que
+pour la régression linéaire simple.
+
+### 2.1 Calcul de $\hat{\beta}$
+
+L'estimateur $\hat{\beta}$ des Moindre Carrés Ordinaires a pour
+expression:
+
+$$
+\hat\beta = (X'X)^{-1}X'Y
+$$
+
+Et la matrice $P_X$ de projection orthogonale sur $\mathcal{M}(X)$
+s'écrit :
+
+$$
+P_X = X(X'X)^{-1}X'
+$$
+
+Selon $(H_1)$ on conclut que la matrice $X'X$ est assurément inversible.
+
+De plus $X'X$ est symétrique définie positive.
+
+Soit:
+
+$$
+P_{X^\bot} = (I - P_X) 
+$$
+
+la matrice de projection orthogonale sur $\mathcal{M}^\bot(X)$.
+
+On en conclut que la décomposition:
+
+$$
+Y= \hat{Y} + (Y-\hat{Y}) = P_XY + (I-P_x)Y= P_XY + P_{X^\bot}Y
+$$
+
+n'est rien d'autre qu'une décomposition orthogonale de $Y$ sur
+$\mathcal{M}(X)$ et $\mathcal{M}^\bot(X)$ avec :
+
+$$
+\hat{Y}=X\hat{\beta} =\hat{\beta}_1X_1+...+\hat{\beta}_pX_p
+$$
+
+ce qui signifie que les $\hat{\beta}_i$ sont les coordonnées de
+$\hat{Y}$ dans la base $(X_1,…,X_p)$ de $\mathcal{M}(X)$. Ceci ne veut
+pas non plus dire que les $\hat{\beta}_i$ sont les coordonnées des
+projections de $Y$ sur les $X_i$ (c'est rarement le cas).
+
+Ceci n'est vrai que si la base $(X_1,…,X_P)$ est orthogonale.
+
+### 2.2 Quelques propriétés
+
+L'estimateur obtenu est sans biais. On obtient de plus une expression
+très simple pour sa matrice de covariance $Var(\hat{\beta})$.
+
+$$
+Var(\hat{\beta}) = \mathbb{E}[(\hat{\beta}- \mathbb{E}[\hat{\beta}])(\hat{\beta} - \mathbb{E}[\hat{\beta}])']=\mathbb{E}[\hat{\beta}\hat{\beta}'] - \mathbb{E}[\hat{\beta}]\mathbb{E}[ \hat{\beta}]'= \sigma^2(X'X)^{-1}
+$$
+
+D'après le résultat précédent qui n'est autre qu'une généralisation de
+celui vu en régression linéaire simple, on observe que l'estimateur des
+MCO est optimal en un certain sens.
+
+Comme $\beta$ est de taille $p$, elle est de dimension $p\times p$ .
+Pour toute matrice A de taille $m\times p$ et pour tout vecteur $B$ de
+dimension $m$ déterministes, on a
+$\mathbb{E}[A\hat{\beta}+B]=A\mathbb{E}[\hat{\beta}]+B$ et
+$Var(A\hat{\beta}+B)=AVar(\hat{\beta})A'$.
+
+Ces propriétés sont élémentaires et seront constamment appliquées pour
+les propriétés qui suivront.
+
+#### **Théorème de Gauss-Markov :**
+
+D'après le théorème de Gauss-Markov l'estimateur $\hat{\beta}$ des MCO
+est de variance minimale ( pour tout estimateur $\tilde{\beta}$ de
+$\beta$ linéaire et sans biais, $Var(\tilde{\beta})\ge Var(\hat{\beta})$
+) parmi les estimateurs linéaires sans biais de $\beta$. C'est donc par
+définition le BLUE (Best Linear Unbiased Estimator).
+
+Remarques :
+
+1.  Linéaire signifie "linéaire par rapport à $Y$", c'est-à-dire de la
+    forme $AY$ où $A$ est une matrice $(p,n)$ : en ce sens, l'estimateur
+    $\hat{\beta}$ des MCO est bien linéaire puisuqe
+    $\hat{\beta}=(X'X)^{-1}X'Y$.
+
+2.  Rappelons qu'il existe une relation d'ordre partielle entre matrices
+    symétriques réelles: dire que $S_1 \le S_2$ signifie que
+    $S=(S_2-S_1)$ est une matrice symétrique réelle positive,
+    c'est-à-dire que pour tout vecteur $x$,on a $x'S_1x\le x'S_2x$.Ceci
+    revient encore à dire que les valeurs propres de S sont toutes
+    supérieures ou égales à 0.
+
+### 2.3 Résidus et variance résiduelle
+
+les résidus sont définis par :
+
+$$
+\hat\varepsilon=[\hat\varepsilon_1,...,\hat\varepsilon_n]' = Y - \hat{Y} = (I - P_x)Y= P_{X^\bot}Y = P_{X^\bot}\varepsilon
+$$
+
+car $Y=X\beta+\varepsilon$ et $X\beta \in \mathcal{M}(X)$. On peut alors
+énoncer les résultats suivants:
+
+1.  $\mathbb{E}[\hat\varepsilon]=0$.
+
+2.  $Var(\hat\varepsilon)=\sigma^2P_{X^\bot}$.
+
+3.  $\mathbb{E}[\hat{Y}]=X\beta$.
+
+4.  $Var(\hat{Y})=\sigma^2P_X$
+
+5.  $Cov(\hat\varepsilon,\hat{Y})=0$
+
+La statistique $\sigma^2=\frac{||\varepsilon||^2}{n-p}=\frac{SCR}{n-p}$
+est un estimateur sans biais de $\sigma^2$.
+
+### 2.4 Prévision
+
+L'erreur de prévision $\hat\varepsilon_{n+1}=(y_{n+1}-\hat{y}_{n+1})$
+satisfait les propriétés suivantes:
+
+$$
+\left\{
+\begin{array}{l}\mathbb{E}[\hat\varepsilon_{n+1}]=0\\
+Var(\hat\varepsilon_{n+1})= \sigma^2(1+x_{n+1}'(X'X)^{-1}x_{n+1})
+\end{array}
+\right.
+$$
+
+## [3. Coefficient de détermination $R^2$]{.underline}
+
+Le coefficient de détermination $R^2$ est défini par:
+
+$$
+R^2= cos^2\theta_0=\frac{||\hat{Y}||^2}{||Y||^2}=1-\frac{||\hat\varepsilon||^2}{||Y-\hat{y}||^2}=1-\frac{SCR}{SCT}=\frac{Variation~expliquée~par~le~modèle}{Variation~ totale}
+$$
+
+Ce coefficient mesure le cosinus carré de l'angle entre les vecteurs $Y$
+et $\hat{Y}$ ( $\theta_0$ ) pris à l'origine ou pris en
+$\overline{y}\mathbb{I}$ . Il n'est cependant pas infaillible car il ne
+tient pas compte de la dimension de l'espace de projection
+$\mathcal{M}(X)$. C'est à dire qu'il est moins sensible à l'ajout de
+variables "inutiles". D'où la définition du coefficient de détermination
+ajusté $R_\alpha^2$ pénalisé par le nombre de prédicteurs p.
+
+$$
+R_\alpha^2=1-\frac{n}{n-p}\frac{||\hat\varepsilon||^2}{||\hat{Y}||^2}=1-\frac{n}{n-p}\frac{SCR}{SCT}=1-\frac{n}{n-p}(1-R^2)
+$$
+
+Sous R, le coefficient de détermination $R^2$ est appelé ***Multiple
+R-Squared***, tandis que le coefficient de détermination ajusté
+$R_\alpha^2$ est appelé ***Adjusted R-Squared***.
+
+[**Exemple :**]{.underline}
+
+```{r}
+set.seed(22)
+
+## Predictors
+n <- 1000
+x_1 <- runif(n, min = -2, max = 2)
+x_2 <- runif(n, min = 0, max = 4)
+x_3 <- runif(n, min = 1, max = 6)
+## Noise
+eps <- rnorm(n, mean = 0, sd = 5)
+
+## Model sim
+beta_0 <- 2; beta_1 <- 5; beta_2 <- -3
+y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+
+fit <- lm(y_sim ~ x_1 + x_2)
+fit2 <- lm(y_sim ~ x_1 +  x_2 + x_3)
+summary(fit)
+summary(fit2)
+```
+
+Ici typiquement nous avons décidé de créer un modèle de régression
+multiple (**y_sim).** On analyse ensuite le $R^2$ et le $R^2_\alpha$ de
+cette échantillon en prenant en compte toutes les variables. On observe
+que le $R^2$ ajusté est plus petit que le $R^2$ mais en est relativement
+proche.
+
+Par la suite on décide d'incorporer une variable qui n'apporte aucune
+information supplémentaire sur notre échantillon afin d'observer
+l'évolution de nos $R^2$.
+
+On remarque que notre $R^2$ a augmenté alors que notre $R^2_\alpha$ a
+diminué. En effet cet exemple illustre bien notre problématique car en
+ne tenant compte que du $R^2$ nous aurions pu nous dire que la variable
+enrichit notre échantillon ce qui n'est pas le cas.
