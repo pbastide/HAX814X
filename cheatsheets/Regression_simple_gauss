@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Rappel
 
-$\bullet$ Soit X une variable aléatoire tel que $X \sim\mathcal{N}(\mu, \sigma^2)$ de densité : $$f(x)=\frac{1}{\sqrt{2\pi\sigma^2}}\text{exp}\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$$
+$\bullet$ Soit $X$ une variable aléatoire tel que $X \sim\mathcal{N}(\mu, \sigma^2)$ de densité : $$f(x)=\frac{1}{\sqrt{2\pi\sigma^2}}\text{exp}\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$$
 
 Alors $\forall (a,b)\in \mathbb{R}^2$ on a : $$Y=aX+b \sim \mathcal{N}(a\mu+b, a^2\sigma^2)$$
 
@@ -23,7 +23,7 @@ Alors $\forall (a,b)\in \mathbb{R}^2$ on a : $$Y=aX+b \sim \mathcal{N}(a\mu+b, a
 
 ### Fonction du maximum de vraisemblance
 
-Soit X une va qui admet $f_\theta$ pour densité. Alors la fonction fonction maximum de vraisemblance est la densité $$\theta \mapsto L(\theta|x)=f_\theta(x)$$
+Soit $X$ une va qui admet $f_\theta$ pour densité qui dépend d-un paramètre $\theta$. Alors la fonction fonction maximum de vraisemblance est la densité $$\theta \mapsto L(\theta|x)=f_\theta(x)$$
 
 Notre modèle est $y_i =\beta_0+\beta_1x_i+\epsilon_i$, avec $\epsilon_i \sim \mathcal{N}(0, \sigma^2)$ Donc $y_i\underset{iid}{\sim}\mathcal{N}(\beta_0+\beta_1x_i,\sigma^2),~\forall i \in \{1,..,n\}$
 
@@ -42,12 +42,12 @@ Il est donné par : $$\hat\theta=\underset{\theta}{\text{argmax}}~L(\theta|x)$$
 
 On a vu que : $$
 \log L(\beta_0, \beta_1, \sigma^2 | \mathbf{y}) =
--\frac{n}{2} \log(2\pi\sigma^2) - \frac{1}{2\sigma^2}\underbrace{\sum_{i = 1}^n (y_i - \beta_0 - \beta_1 x_i)^2}_{\text{Sum of Squares } SS(\beta_0, \beta_1)}
+-\frac{n}{2} \log(2\pi\sigma^2) - \frac{1}{2\sigma^2}\underbrace{\sum_{i = 1}^n (y_i - \beta_0 - \beta_1 x_i)^2}_{\text{Somme des carrés} SS(\beta_0, \beta_1)}
 $$ Donc $\forall \sigma^2>0$, on a $(\hat{\beta}_0^{ML}, \hat{\beta}_1^{ML})=\underset{(\beta_0, \beta_1) \in \mathbb{R}^2}{\operatorname{argmax}} \log L(\beta_0, \beta_1, \sigma^2 | \mathbf{y})= \underset{(\beta_0, \beta_1) \in \mathbb{R}^2}{\operatorname{argmin}} SS(\beta_0, \beta_1)=(\hat{\beta}_0^{OLS}, \hat{\beta}_1^{OLS})$
 
 Donc l'estimateur du maximum de vraisemblance et l'estimateur des moindres carrées sont les mêmes.
 
-On a aussi l'estimateur du maximum de vraisemblance pour $\sigma^2$ :$\hat{\sigma}^2_{ML} = \frac{1}{n}\sum_{i = 1}^n \hat{\epsilon}_i^2$ De plus, celui ci est baisé : $\mathbb{E}[\hat{\sigma}^2_{ML}] = \frac{n - 2}{n}\sigma^2 \neq \sigma^2$
+On a aussi l'estimateur du maximum de vraisemblance pour $\sigma^2$ :$\hat{\sigma}^2_{ML} = \frac{1}{n}\sum_{i = 1}^n \hat{\epsilon}_i^2$ De plus, celui ci est baisé : $\mathbb{E}[\hat{\sigma}^2_{ML}] = \frac{n - 2}{n}\sigma^2 \neq \sigma^2$.
 
 ## Distribution des coefficients et estimateur de la variance
 
@@ -76,9 +76,9 @@ En général, $\sigma^2$ est inconnu, on va donc le remplacer par son estimateur
     \frac{\hat{\beta}_1 - \beta_1}{\sqrt{\frac{\sigma^2 \left(\frac{1}{s_{\mathbf{x}}^2}\right)}{n}}}\sim\mathcal{N}(0, 1)
     $$
 
--   Quand $\sigma^2$ est inconnu : $$\frac{\hat{\beta}_0-\beta_0}{\sqrt{\frac{\sigma^2 \left(1+\frac{\bar{x}^2}{s_{\mathbf{x}}^2}\right)}{n}}}\sim\mathcal{T}_{n-2}
+-   Quand $\sigma^2$ est inconnu : $$\frac{\hat{\beta}_0-\beta_0}{\sqrt{\frac{\hat\sigma^2 \left(1+\frac{\bar{x}^2}{s_{\mathbf{x}}^2}\right)}{n}}}\sim\mathcal{T}_{n-2}
     \qquad\text{et}\qquad
-    \frac{\hat{\beta}_1 - \beta_1}{\sqrt{\frac{\sigma^2 \left(\frac{1}{s_{\mathbf{x}}^2}\right)}{n}}}\sim\mathcal{T}_{n-2}
+    \frac{\hat{\beta}_1 - \beta_1}{\sqrt{\frac{\hat\sigma^2 \left(\frac{1}{s_{\mathbf{x}}^2}\right)}{n}}}\sim\mathcal{T}_{n-2}
     $$
 
 Les lois normales sont remplacées par des lois de Student à $n-2$ degrés de liberté.
@@ -172,7 +172,7 @@ lines(rep(fit_lm$coefficients[1], 2), ci[2,], col = ccc[4], lwd = 2)
 polygon(ci[1, c(1, 2, 2, 1)], ci[2, c(1, 1, 2, 2)], border = ccc[4])
 ```
 
-Difference between:
+Difference entre:
 
--   **confidence intervals** (green) and the
--   **confidence region** (purple).
+-   **Intervalles de confiance** (vert) and the
+-   **Région de confiance** (violet).
