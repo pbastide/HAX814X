@@ -13,6 +13,9 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+## [Introduction]
+
+En statistique, la régression linéaire multiple est une méthode de régression mathématique étendant la régression linéaire simple pour décrire les variations d'une variable endogène associée aux variations de plusieurs variables indépendantes. Cette fiche est fortement inspirée du polycopié de cours d'Arnaud Guyader. Si vous avez des questionnements vous y trouverez donc surement des réponses supplémentaires. 
 
 ## [1. Modélisation]{.underline}
 
@@ -100,6 +103,8 @@ $$
 P_X = X(X'X)^{-1}X'
 $$
 
+[N.B]:  $\mathcal{M}(X)$ est appelé espace image ou encore despace des solutions.
+
 Selon $(H_1)$ on conclut que la matrice $X'X$ est assurément inversible.
 
 De plus $X'X$ est symétrique définie positive.
@@ -125,14 +130,24 @@ $$
 \hat{Y}=X\hat{\beta} =\hat{\beta}_1X_1+...+\hat{\beta}_pX_p
 $$
 
-ce qui signifie que les $\hat{\beta}_i$ sont les coordonnées de
-$\hat{Y}$ dans la base $(X_1,…,X_p)$ de $\mathcal{M}(X)$. Ceci ne veut
-pas non plus dire que les $\hat{\beta}_i$ sont les coordonnées des
-projections de $Y$ sur les $X_i$ (c'est rarement le cas).
-
-Ceci n'est vrai que si la base $(X_1,…,X_P)$ est orthogonale.
+Cette équation signifie que les $\hat{\beta}_i$ sont les coordonnées de
+$\hat{Y}$ dans la base $(X_1,…,X_p)$ ( $X_i~i\in~1,...,p$ étant des vecteurs de prédicteurs non aléatoires ) de $\mathcal{M}(X)$. Ceci ne veut
+pas dire que les $\hat{\beta}_i$ sont les coordonnées des
+projections de $Y$ sur les $X_i$ (c'est rarement le cas). Ceci n'est vrai que si la base $(X_1,…,X_P)$ est orthogonale.
 
 ### 2.2 Quelques propriétés
+##### Préambule
+
+Quelques propriétés sur $\hat{\beta}$ qui s'avèreront nécessaires pour la suite:
+
+  Comme $\beta$ est de taille $p$, la matrice de covariance $Var(\hat{\beta})$ est de dimension $p\times p$ .
+  Pour toute matrice A de taille $m\times p$ et pour tout vecteur $B$ de
+  dimension $m$ déterministes, on a : 
+  
+  $\mathbb{E}[A\hat{\beta}+B]=A\mathbb{E}[\hat{\beta}]+B$ et $~Var(A\hat{\beta}+B)=AVar(\hat{\beta})A'$.
+
+##### Fin préambule
+
 
 L'estimateur obtenu est sans biais. On obtient de plus une expression
 très simple pour sa matrice de covariance $Var(\hat{\beta})$.
@@ -143,18 +158,11 @@ $$
 
 D'après le résultat précédent qui n'est autre qu'une généralisation de
 celui vu en régression linéaire simple, on observe que l'estimateur des
-MCO est optimal en un certain sens.
+MCO est optimal en au sens de Gauss-Markov.
 
-Comme $\beta$ est de taille $p$, elle est de dimension $p\times p$ .
-Pour toute matrice A de taille $m\times p$ et pour tout vecteur $B$ de
-dimension $m$ déterministes, on a
-$\mathbb{E}[A\hat{\beta}+B]=A\mathbb{E}[\hat{\beta}]+B$ et
-$Var(A\hat{\beta}+B)=AVar(\hat{\beta})A'$.
-
-Ces propriétés sont élémentaires et seront constamment appliquées pour
-les propriétés qui suivront.
 
 #### **Théorème de Gauss-Markov :**
+
 
 D'après le théorème de Gauss-Markov l'estimateur $\hat{\beta}$ des MCO
 est de variance minimale ( pour tout estimateur $\tilde{\beta}$ de
@@ -218,19 +226,18 @@ $$
 Le coefficient de détermination $R^2$ est défini par:
 
 $$
-R^2= cos^2\theta_0=\frac{||\hat{Y}||^2}{||Y||^2}=1-\frac{||\hat\varepsilon||^2}{||Y-\hat{y}||^2}=1-\frac{SCR}{SCT}=\frac{Variation~expliquée~par~le~modèle}{Variation~ totale}
+R^2= cos^2\theta_0=\frac{ESS}{TSS}=1-\frac{||\hat\varepsilon||^2}{||Y-\hat{Y}||^2}=1-\frac{SCR}{SCT}=\frac{||\hat{Y}-\bar{y}\mathbb{I}||^2}{||Y-\bar{y}\mathbb{I}||^2}
 $$
 
 Ce coefficient mesure le cosinus carré de l'angle entre les vecteurs $Y$
-et $\hat{Y}$ ( $\theta_0$ ) pris à l'origine ou pris en
-$\overline{y}\mathbb{I}$ . Il n'est cependant pas infaillible car il ne
+et $\hat{Y}$ ( $\theta_0$ ) pris à l'origine. Il n'est cependant pas infaillible car il ne
 tient pas compte de la dimension de l'espace de projection
 $\mathcal{M}(X)$. C'est à dire qu'il est moins sensible à l'ajout de
 variables "inutiles". D'où la définition du coefficient de détermination
 ajusté $R_\alpha^2$ pénalisé par le nombre de prédicteurs p.
 
 $$
-R_\alpha^2=1-\frac{n}{n-p}\frac{||\hat\varepsilon||^2}{||\hat{Y}||^2}=1-\frac{n}{n-p}\frac{SCR}{SCT}=1-\frac{n}{n-p}(1-R^2)
+R_\alpha^2=1-\frac{(n-1)RSS}{(n-p)(TSS)}=1-\frac{n-1}{n-p}(1-R^2)
 $$
 
 Sous R, le coefficient de détermination $R^2$ est appelé ***Multiple
