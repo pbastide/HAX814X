@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ## [Introduction]
 
-En statistique, la régression linéaire multiple est une méthode de régression mathématique étendant la régression linéaire simple pour décrire les variations d'une variable endogène associée aux variations de plusieurs variables indépendantes. Cette fiche est fortement inspirée du polycopié de cours d'Arnaud Guyader. Si vous avez des questionnements vous y trouverez donc surement des réponses supplémentaires. 
+En statistique, la régression linéaire multiple est une méthode de régression mathématique étendant la régression linéaire simple pour décrire les variations d'une variable endogène associée aux variations de plusieurs variables indépendantes. Cette fiche est fortement inspirée du polycopié de cours d'Arnaud Guyader disponible sur le moodle du cours de modèle linéaire ( https://moodle.umontpellier.fr/course/view.php?id=25368 ). Si vous avez des questionnements vous y trouverez donc surement des réponses supplémentaires. 
 
 ## [1. Modélisation]{.underline}
 
@@ -103,7 +103,7 @@ $$
 P_X = X(X'X)^{-1}X'
 $$
 
-[N.B]:  $\mathcal{M}(X)$ est appelé espace image ou encore despace des solutions.
+[N.B]:  $\mathcal{M}(X)$ est appelé espace image ou encore d'espace des solutions. En effet, c'est l'espace engendré par les colonnes de $X$.
 
 Selon $(H_1)$ on conclut que la matrice $X'X$ est assurément inversible.
 
@@ -229,8 +229,7 @@ $$
 R^2= cos^2\theta_0=\frac{ESS}{TSS}=1-\frac{||\hat\varepsilon||^2}{||Y-\hat{Y}||^2}=1-\frac{SCR}{SCT}=\frac{||\hat{Y}-\bar{y}\mathbb{I}||^2}{||Y-\bar{y}\mathbb{I}||^2}
 $$
 
-Ce coefficient mesure le cosinus carré de l'angle entre les vecteurs $Y$
-et $\hat{Y}$ ( $\theta_0$ ) pris à l'origine. Il n'est cependant pas infaillible car il ne
+Ce coefficient mesure le cosinus carré de l'angle entre les vecteurs $\hat{Y}$ et $\overline{y}\mathbb{I}$ ( $\theta_0$ ) pris à l'origine. Il n'est cependant pas infaillible car il ne
 tient pas compte de la dimension de l'espace de projection
 $\mathcal{M}(X)$. C'est à dire qu'il est moins sensible à l'ajout de
 variables "inutiles". D'où la définition du coefficient de détermination
