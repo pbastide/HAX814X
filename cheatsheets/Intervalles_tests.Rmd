@@ -33,18 +33,16 @@ explicatives du modèle.
 
 De plus, il y a des hypothèses additionnelles au modèle :
 
--   (H1) $rg(\mathbf{X}) = p$
+-   (H1) $rg(X) = p$
 -   (H2)
-    $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I}_n)$
-
-**Cas où** $p > 2$ :
+    $\varepsilon \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I}_n)$
 
 La forme générale s'écrit :
 
 pour tout $i$ on a
 $y_i= \beta_0 +\beta_1 x_{i1}+\beta_2 x_{i2} +...+\beta_p x_{ip}+ \varepsilon_i$
 
-Supposons que l'intercepte est dans le modèle. Alors la matrice $X$ et
+La matrice $X$ et
 $\beta$ s'écrivent :
 
 $$
@@ -71,7 +69,7 @@ y_n\\
 \end{pmatrix}
 $$
 
-Il y a $n-p$ degrés de liberté, et si $X^1=1$ est l'intercept alors il y
+Il y a $n-p$ degrés de liberté, et si $X_1=1$ (premiére colonne) est l'intercept alors il y
 a $p-1$ variables explicatives.
 
 ## 2) Biais et variance :
@@ -87,66 +85,68 @@ $$
 \mathbb{V}[\hat{\beta}]=\sigma^2(X'X)^{-1}
 $$
 
-### [b) Biais et variance de $\hat{\boldsymbol{\epsilon}}$ :]{.ul}
+### [b) Biais et variance de $\hat{\varepsilon}$ :]{.ul}
+
+On note $\mathbf{P}^{X}$ la matrice de projection sur le sous espace engendré par les vecteurs colonne de la matrice X.
 
 $$
-\hat{\boldsymbol{\epsilon}}
-= \mathbf{y} - \hat{\mathbf{y}}
-= (\mathbf{I}_n - \mathbf{P}^{\mathbf{X}})\mathbf{y}\\
-= \mathbf{P}^{\mathbf{X}^\bot}\mathbf{y}
-= \mathbf{P}^{\mathbf{X}^\bot}(\mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon})\\
-\hat{\boldsymbol{\epsilon}} = \mathbf{P}^{\mathbf{X}^\bot}\boldsymbol{\epsilon}
-$$
-
-$$
-\mathbb{E}[\hat{\boldsymbol{\epsilon}}]  = \mathbf{0} \\
-\mathbb{Var}[\hat{\boldsymbol{\epsilon}}]  = \sigma^2 \mathbf{P}^{\mathbf{X}^\bot}
-$$
-
-
-### [c) Biais et variance de $\hat{\boldsymbol{y}}$ :]{.ul}
-
-$$
-\hat{\mathbf{y}}=\mathbf{X}\hat{\boldsymbol{\beta}}=\mathbf{P}^{\mathbf{X}}\mathbf{y}
+\hat{\varepsilon}
+= Y - \hat{Y}
+= (\mathbf{I}_n - \mathbf{P}^{X})Y\\
+= \mathbf{P}^{X^\bot}Y
+= \mathbf{P}^{X^\bot}(X\boldsymbol{\beta} + \varepsilon)\\
+\hat{\varepsilon} = \mathbf{P}^{X^\bot}\varepsilon
 $$
 
 $$
-\mathbb{E}[\hat{\mathbf{y}}] = \mathbf{X}\boldsymbol{\beta} \\
-\mathbb{Var}[\hat{\mathbf{y}}] = \sigma^2 \mathbf{P}^{\mathbf{X}}
+\mathbb{E}[\hat{\varepsilon}]  = \mathbf{0} \\
+\mathbb{Var}[\hat{\varepsilon}]  = \sigma^2 \mathbf{P}^{{X}^\bot}
+$$
+
+
+### [c) Biais et variance de $\hat{Y}$ :]{.ul}
+
+$$
+\hat{Y}=X\hat{\boldsymbol{\beta}}=\mathbf{P}^{X}Y
 $$
 
 $$
-\mathbb{Cov}[\hat{\boldsymbol{\epsilon}}; \hat{\mathbf{y}}] = \mathbf{0}.
+\mathbb{E}[\hat{Y}] = X\boldsymbol{\beta} \\
+\mathbb{Var}[\hat{Y}] = \sigma^2 \mathbf{P}^{X}
+$$
+
+$$
+\mathbb{Cov}[\hat{\varepsilon}; \hat{Y}] = \mathbf{0}.
 $$
 
 ### [d) Estimateur de la variance :]{.ul}
 
 $$
-\hat{\sigma}^2 = \frac{1}{n - p} \| \hat{\epsilon} \|^2 =\frac{1}{n - p} \|y-\hat{y}\|^2 = \frac{1}{n - p} RSS
+\hat{\sigma}^2 = \frac{1}{n - p} \| \hat{\varepsilon} \|^2 =\frac{1}{n - p} \|y-\hat{y}\|^2 = \frac{1}{n - p} RSS
 $$
 
 c'est un estimateur sans biais car :
 
 $$
-\mathbb{E}[\| \hat{\epsilon} \|^2]= \sigma^2  (n - p)
+\mathbb{E}[\| \hat{\varepsilon} \|^2]= \sigma^2  (n - p)
 $$
 
 **Remarque :**
 
 $$
 \text{ On a   :}~~~~~~ 
-\hat{\sigma}^2 =  \frac{\|\mathbf{P}^{\mathbf{X}^\bot}\mathbf{y} \|^2}{n-p}~~~~~~  \text{ et  :}~~~~~~  \hat{\boldsymbol{\beta}} =  (\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}\mathbf{P}^{\mathbf{X}}\mathbf{y}\\
+\hat{\sigma}^2 =  \frac{\|\mathbf{P}^{X^\bot}Y \|^2}{n-p}~~~~~~  \text{ et  :}~~~~~~  \hat{\boldsymbol{\beta}} =  (X^{T}X)^{-1}X^{T}\mathbf{P}^{X}Y\\
 \text{ D'aprés le théoreme de cochran :} \\
-\mathbf{P}\mathbf{Y}  ~~~\text{et} ~~~\mathbf{P}^{\bot}\mathbf{Y}~~~ \text{ sont indépendants et donc} ~~~~ \hat{\boldsymbol{\beta}} \text{ et } \hat{\sigma}^2 \text{ sont indépendants}
+\mathbf{P}Y  ~~~\text{et} ~~~\mathbf{P}^{\bot}Y~~~ \text{ sont indépendants et donc} ~~~~ \hat{\boldsymbol{\beta}} \text{ et } \hat{\sigma}^2 \text{ sont indépendants}
 $$
 
-### [e) Erreur de prédiction $\hat{\boldsymbol{\epsilon}}_{n+1}$ :]{.ul}
+### [e) Erreur de prédiction $\hat{\varepsilon}_{n+1}$ :]{.ul}
 
-$\hat{\epsilon}_{n+1} = y_{n+1} - \hat{y}_{n+1}$
+$\hat{\varepsilon}_{n+1} = y_{n+1} - \hat{y}_{n+1}$
 
 $$
-\mathbb{E}[\hat{\epsilon}_{n+1}] = 0\\
-\mathbb{Var}[\hat{\epsilon}_{n+1}] = \sigma^2 \left(1 + \mathbf{x}^{n+1} (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{x}^{n+1})^T\right)\\
+\mathbb{E}[\hat{\varepsilon}_{n+1}] = 0\\
+\mathbb{Var}[\hat{\varepsilon}_{n+1}] = \sigma^2 \left(1 + x^{n+1} (X^TX)^{-1}(x^{n+1})^T\right)\\
 $$
 
 ## 2) Distribution des coefficients :
@@ -168,7 +168,7 @@ $$
 \sim
 \mathcal{N}\left(
 \boldsymbol{\beta};
-\sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
+\sigma^2 (X^TX)^{-1}
 \right).
 $$
 
@@ -177,19 +177,19 @@ Pour $1 \leq k \leq p$:
 $$
 \hat{\beta}_k
 \sim
-\mathcal{N}(\beta_k, \sigma^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{kk})\\
+\mathcal{N}(\beta_k, \sigma^2 [(X^TX)^{-1}]_{kk})\\
 \Leftrightarrow \\
-\frac{\hat{\beta}_k - \beta_k}{\sqrt{\sigma^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{kk}}}
+\frac{\hat{\beta}_k - \beta_k}{\sqrt{\sigma^2 [(X^TX)^{-1}]_{kk}}}
 \sim
 \mathcal{N}(0, 1).
 $$ Notation: $$
-\hat{\sigma}^2_k = \hat{\sigma}^2_{\hat{\beta}_k} = \hat{\sigma}^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{kk}
+\hat{\sigma}^2_k = \hat{\sigma}^2_{\hat{\beta}_k} = \hat{\sigma}^2 [(X^TX)^{-1}]_{kk}
 $$
 
 -   Quand $\sigma^2$ est inconnu :
 
 $$
-\frac{\hat{\beta}_k - \beta_k}{\sqrt{\sigma^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{kk}}}
+\frac{\hat{\beta}_k - \beta_k}{\sqrt{\sigma^2 [(X^TX)^{-1}]_{kk}}}
 \sim
 \mathcal{N}(0, 1)
 \quad
@@ -204,7 +204,7 @@ $$
 Alors :
 
 $$
-\frac{\hat{\beta}_k - \beta_k}{\sqrt{\hat{\sigma}^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{kk}}}
+\frac{\hat{\beta}_k - \beta_k}{\sqrt{\hat{\sigma}^2 [(X^TX)^{-1}]_{kk}}}
 \sim
 \mathcal{T}_{n-p}.
 $$
@@ -218,7 +218,7 @@ $$
 \sim
 \mathcal{N}\left(
 \boldsymbol{\beta};
-\sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
+\sigma^2 (X^TX)^{-1}
 \right)
 \quad
 \text{et}
@@ -231,13 +231,13 @@ $$ $$
 \sim
 \mathcal{N}\left(
 \boldsymbol{\beta};
-\sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
+\sigma^2 (X^TX)^{-1}
 \right)
 \qquad\qquad
 \\
 \qquad\qquad
 \implies
-\frac{1}{\sigma^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
+\frac{1}{\sigma^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (X^TX)\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
 \sim
 \chi^2_{p}
 $$ $$
@@ -249,7 +249,7 @@ $$ $$
 $$ D'ou : $$
 \begin{aligned}
 \frac{
-\frac{1}{\sigma^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right) / p
+\frac{1}{\sigma^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (X^TX)\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right) / p
 }{
 \frac{(n-p) \hat{\sigma}^2}{\sigma^2} / (n-p)
 }
@@ -257,42 +257,31 @@ $$ D'ou : $$
 \\
 \qquad\qquad
 =
-\frac{1}{p\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
+\frac{1}{p\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (X^TX)\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
 &\sim
 \mathcal{F}^p_{n-p}.
 \end{aligned}
 $$
 
-### [d) Distribution de $\hat{\boldsymbol{y}}$ :]{.ul}
+### [d) Distribution de $\hat{Y}$ :]{.ul}
 
 $$
-\hat{\boldsymbol{y}}
+\hat{Y}
 \sim
 \mathcal{N}\left(
-\mathbf{X}\boldsymbol{\beta}~~;~ 
-\sigma^2 \mathbf{P}^{\mathbf{X}}
+X\boldsymbol{\beta}~~;~ 
+\sigma^2 \mathbf{P}^{X}
 \right)
 \quad
 $$
 
-### [e) Distribution de $\hat{\boldsymbol{\epsilon}}_{n+1}$ (l'erreur de prédiction) :]{.ul}
+### [e) Distribution de $\hat{\varepsilon}_{n+1}$ (l'erreur de prédiction) :]{.ul}
 
--   Quand $\sigma^2$ est connu : $$
-    \hat{\boldsymbol{\epsilon}}_{n+1}
-    \sim
-    \mathcal{N}\left(
-    0~~;~ 
-    \sigma^2 \left(1 + \mathbf{x}^{n+1} (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{x}^{n+1})^T\right)
-    \right)
-    $$
--   Quand $\sigma^2$ est inconnu : $$
-    \hat{\boldsymbol{\epsilon}}_{n+1}=y_{n+1}-\hat{y}_{n+1}
-    \sim
-    \mathcal{N}\left(
-    0~~;~ 
-    \hat{\sigma}^2 \left(1 + \mathbf{x}^{n+1} (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{x}^{n+1})^T\right)
-    \right)
-    $$
+$$
+\hat{\varepsilon}_{n+1}
+\sim
+\mathcal{N}\left(0~~;~\sigma^2 \left(1 + \mathbf{x}^{n+1} (X^TX)^{-1}(x^{n+1})^T\right)\right)
+$$
 
 ## 3) Intervalle de confiance :
 
@@ -300,9 +289,12 @@ Avec probabilité $1-\alpha$:
 
 ### [a) Intervalle de confiance de ${\beta}_k$ :]{.ul}
 
+$t_{n-p}$ 
 $$
 \beta_k \in \left[\hat{\beta}_k \pm t_{n-p}(1 - \alpha/2) \sqrt{\hat{\sigma}_k^2}\right]\\
 $$
+
+ Avec $t_{n-p}(1 - \alpha/2)$ représente le fractile d'ordre $1 − \alpha/2$ de la loi de student
 
 ### [b) Intervalle de confiance de $\sigma^2$ :]{.ul}
 
@@ -310,10 +302,12 @@ $$
 \sigma^2 \in \left[\frac{(n-p)\hat{\sigma}^2}{c_{n-p}(1 - \alpha/2)}; \frac{(n-p)\hat{\sigma}^2}{c_{n-p}(\alpha/2)}\right]
 $$
 
+Avec $c_{n-p}(1 - \alpha/2)$ représente le fractile d'ordre $1 − \alpha/2$ de la loi khi-deux
+
 ### [c) Intervalle de prédiction :]{.ul}
 
 $$
-y_{n+1} \in \left[\hat{y}_{n+1} \pm t_{n-p}(1 - \alpha/2) \sqrt{\hat{\sigma}^2 \left(1 + \mathbf{x}^{n+1} (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{x}^{n+1})^T\right)}\right]\\
+y_{n+1} \in \left[\hat{y}_{n+1} \pm t_{n-p}(1 - \alpha/2) \sqrt{\hat{\sigma}^2 \left(1 + x^{n+1} (X^TX)^{-1}(x^{n+1})^T\right)}\right]\\
 $$
 
 ## 4) Tests {.build}
@@ -355,7 +349,7 @@ $$
 **Exemple :**
 
 $$
-y_i = -2 + 5 x_{i1} - x_{i2} + \epsilon_i
+y_i = -2 + 5 x_{i1} - x_{i2} + \varepsilon_i
 $$
 
 ```{r}
@@ -384,9 +378,9 @@ fit <- lm(y_sim ~ x_1 + x_2 + x_junk)
 summary(fit)
 ```
 
-On rejette (risque d'erreur 5%) $H_0$ pour les deux coefficients
+On rejette (risque d'erreur 5%) $H_0$ l'hypothése de nullité pour les deux coefficients
 $\beta_1$ et $\beta_2$ car leur $pvalue < 0.05$ par contre pour
-$\beta_3$ on ne peut pas rejeter $H_0$ car $pvalue = 0.426 < 0.05$.
+$\beta_3$ on ne peut pas rejeter $H_0$ car $pvalue = 0.426 > 0.05$.
 
 ### [b) Test de Fisher global :]{.ul}
 
@@ -427,14 +421,14 @@ Approche géométrique :
 $$
 \begin{aligned}
 F
-&= \frac{1}{p\hat{\sigma}^2}\hat{\boldsymbol{\beta}}^T (\mathbf{X}^T\mathbf{X})\hat{\boldsymbol{\beta}}
-= \frac{(\mathbf{X}\hat{\boldsymbol{\beta}})^T (\mathbf{X}\hat{\boldsymbol{\beta}}) / p}{\|\hat{\boldsymbol{\epsilon}}\|^2 / (n - p)} \\
-&= \frac{\|\hat{\mathbf{y}}\|^2 / p}{\|\hat{\boldsymbol{\epsilon}}\|^2 / (n - p)}
-= \frac{\|\hat{\mathbf{y}}\|^2 / p}{\|\mathbf{y} -  \hat{\mathbf{y}}\|^2 / (n - p)} \\
+&= \frac{1}{p\hat{\sigma}^2}\hat{\boldsymbol{\beta}}^T (X^TX)\hat{\boldsymbol{\beta}}
+= \frac{(X\hat{\boldsymbol{\beta}})^T (X\hat{\boldsymbol{\beta}}) / p}{\|\hat{\varepsilon}\|^2 / (n - p)} \\
+&= \frac{\|\hat{Y}\|^2 / p}{\|\hat{\varepsilon}\|^2 / (n - p)}
+= \frac{\|\hat{Y}\|^2 / p}{\|Y -  \hat{Y}\|^2 / (n - p)} \\
 \end{aligned}
 $$
 
--   Si $\|\hat{\mathbf{\epsilon}}\|^2$ est **petit** alors l'erreur est
+-   Si $\|\hat{\mathbf{\varepsilon}}\|^2$ est **petit** alors l'erreur est
     petite est F tend a être grand, ce qui signifie qu'on tend à rejeter
     $H_0$ (le modèle est utile)
 
@@ -472,7 +466,7 @@ text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
      labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
 ```
 
--   Si $\|\hat{\mathbf{\epsilon}}\|^2$ est **grand** alors l'erreur est
+-   Si $\|\hat{\mathbf{\varepsilon}}\|^2$ est **grand** alors l'erreur est
     grande est F tend a être petit, ce qui signifie qu'on tend à ne pas
     rejeter $H_0$ (le modèle est inutile)
 
@@ -513,7 +507,7 @@ text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
 **Exemple :**
 
 $$
-y_i = -2 + 5 x_{i1} - x_{i2} + \epsilon_i
+y_i = -2 + 5 x_{i1} - x_{i2} + \varepsilon_i
 $$
 
 ```{r}
@@ -588,38 +582,38 @@ $$
 \text{Le petit modéle :}  ~~~~~~~~~~~
 \mathbf{y} = \mathbf{X}_0\boldsymbol{\beta}_0 + \boldsymbol{\epsilon}
 $$
-Avec $\mathbf{X} = (\mathbf{X}_0 ~ \mathbf{X}_1)$,
-$rg(\mathbf{X}) = p$ et
-$rg(\mathbf{X}_0) = p_0$.
+Avec $X = (X_0 ~ X_1)$,
+$rg(X) = p$ et
+$rg(X_0) = p_0$.
 
-Géométriquement parlant on compare la distance entre $\hat{y}$ et $\hat{y_0}$ par rapport à $\|y-\hat{y}\|^2$ 
+Géométriquement parlant on compare la distance entre $\hat{Y}$ et $\hat{Y_0}$ par rapport à $\|Y-\hat{Y}\|^2$ 
 
 Par la méthode de Cochran on a :
 
 $$
-\frac{\|y-\hat{y}\|^2}{\sigma^2}
+\frac{\|y-\hat{Y}\|^2}{\sigma^2}
 \sim
 \chi^2_{n-p} ~~~~~~
 \text{et}~~~~
 \quad
-\frac{\|y-\hat{y_0}\|^2}{\sigma^2}
+\frac{\|Y-\hat{Y_0}\|^2}{\sigma^2}
 \sim
 \chi^2_{p-p_0}
 $$
-Et donc :
 
+On a alors :
 $$
 F = \frac{
-\|\hat{\mathbf{y}} -  \hat{\mathbf{y}}_0\|^2 / (p - p_0)
+\|\hat{Y} -  \hat{Y}_0\|^2 / (p - p_0)
 }{
-\|\mathbf{y} - \hat{\mathbf{y}}\|^2 / (n - p)
+\|Y - \hat{Y}\|^2 / (n - p)
 }
 = \frac{n - p}{p - p_0}\frac{RSS_0 - RSS}{RSS}
 \underset{\mathcal{H}_0}{\sim}
 \mathcal{F}^{p - p_0}_{n - p}.
 $$
 
-- Si $\|y-\hat{y_0}\|^2$ est grande par rapport à $\|y-\hat{y}\|^2$  alors F tend a être grande et donc on tend a rejeter $H_0$ ce qui signifie que le modèle complet est utile.
+- Si $\|Y-\hat{Y_0}\|^2$ est grande par rapport à $\|Y-\hat{Y}\|^2$  alors F tend a être grande et donc on tend a rejeter $H_0$ ce qui signifie que le modèle complet est utile.
 
 
 **Le grand modèle est utile** 
@@ -674,7 +668,7 @@ segments(x0 = ybaronev[1], y0 = ybaronev[2], x1 = yhatv[1], y1 = yhatv[2],
 ```
 
 
-- Si $\|y-\hat{y_0}\|^2$ est petite par rapport à $\|y-\hat{y}\|^2$  alors F tend a être petite et donc on tend à ne pas rejeter  $H_0$ ce que le modèle complet n'apporte pas beaucoup d'informations et donc le petit modèle suffit.
+- Si $\|Y-\hat{Y_0}\|^2$ est petite par rapport à $\|Y-\hat{Y}\|^2$  alors F tend a être petite et donc on tend à ne pas rejeter  $H_0$ ce qui veut dire que le modèle complet n'apporte pas beaucoup d'informations et donc le petit modèle suffit.
 
 **Le petit modéle est suffisant ** 
 
