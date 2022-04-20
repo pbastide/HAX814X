@@ -23,9 +23,12 @@ Alors $\forall (a,b)\in \mathbb{R}^2$ on a : $$Y=aX+b \sim \mathcal{N}(a\mu+b, a
 
 ### Fonction du maximum de vraisemblance
 
-Soit $X$ une va qui admet $f_\theta$ pour densité qui dépend d-un paramètre $\theta$. Alors la fonction fonction maximum de vraisemblance est la densité $$\theta \mapsto L(\theta|x)=f_\theta(x)$$
+Soit $X$ une va qui admet $f_\theta$ pour densité qui dépend d'un paramètre $\theta$. Alors la fonction fonction maximum de vraisemblance est la densité $$\theta \mapsto L(\theta|x)=f_\theta(x)$$
 
-Notre modèle est $y_i =\beta_0+\beta_1x_i+\epsilon_i$, avec $\epsilon_i \sim \mathcal{N}(0, \sigma^2)$ Donc $y_i\underset{iid}{\sim}\mathcal{N}(\beta_0+\beta_1x_i,\sigma^2),~\forall i \in \{1,..,n\}$
+Notre modèle est $y_i =\beta_0+\beta_1x_i+\epsilon_i$, avec $\epsilon_i \underset{iid}{\sim} \mathcal{N}(0, \sigma^2)$, c'est à dire que $\forall i \in \{1,..,n\}$, les $\epsilon_i$ sont indépendants, suivent une loi gaussienne centrée donc $\mathbb{E}[\epsilon_i]=0$,
+et ils sont homocédastiques, c'est à dire : $\mathbb{V}[\epsilon_i]=\sigma^2$.
+
+Donc $y_i\underset{iid}{\sim}\mathcal{N}(\beta_0+\beta_1x_i,\sigma^2),~\forall i \in \{1,..,n\}$
 
 La fonction de vraisemblance de $\mathbf{y}=(y_1, .., y_n)^T$ est donc : $$L(\beta_0, \beta_1,\sigma^2 | y_1, \dotsc, y_n)= \prod_{i = 1}^n L(\beta_0, \beta_1, \sigma^2 | y_i) = \frac{1}{\left(\sqrt{2\pi\sigma^2}\right)^n}\exp\left(-\frac{1}{2\sigma^2}\sum_{i = 1}^n (y_i - \beta_0 - \beta_1 x_i)^2\right)$$ avec $L(\beta_0, \beta_1, \sigma^2|y_i)=\frac{1}{\sqrt{2\pi\sigma^2}}\text{exp}\left(-\frac{(y_i - \beta_0 - \beta_1x_i)^2}{2\sigma^2}\right)$
 
