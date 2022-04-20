@@ -124,12 +124,21 @@ $$
 -   avec $\mathcal{F}^2_{n-2}$ la loi de **Fisher**.
 
 ### Région de confiance
+ 
+La distribution jointe nous donne une éllipse de confiance pour $\hat\beta$.
 
-La distribution jointe nous donne la région de confiance : $$
+$$
 \frac{1}{2\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T \mathbf{V}_n^{-1}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right) \leq f^2_{n-2}(1-\alpha)
 $$ Etant donné que $\mathbf{V}_n^{-1}$ est défini positive, c'est l'équation d'une région de confiance élliptique.
 
 $$\mathbf{y} = -2 \cdot \mathbb{1} + 3 \cdot \mathbf{x} + \boldsymbol{\epsilon}$$
+
+Le produit cartésien des intervalles de confiance des distributions marginales nous donne un rectangle de confiance.
+
+La distribution jointe nous donne une éllipse de confiance pour $\hat\beta$.
+
+L'intersection de ce rectangle et de l'éllipse est nommé la région de confiance.
+
 
 ```{r simcr, echo = FALSE}
 ## Set the seed (Quia Sapientia)
