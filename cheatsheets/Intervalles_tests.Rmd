@@ -69,7 +69,7 @@ y_n\\
 \end{pmatrix}
 $$
 
-Il y a $n-p$ degrés de liberté, et si $X_1=1$ (premiére colonne) est l'intercept alors il y
+Il y a $n-p$ degrés de liberté, et si $X_1=1$ (première colonne) est l'intercept alors il y
 a $p-1$ variables explicatives.
 
 ## 2) Biais et variance :
@@ -136,13 +136,16 @@ $$
 $$
 \text{ On a   :}~~~~~~ 
 \hat{\sigma}^2 =  \frac{\|\mathbf{P}^{X^\bot}Y \|^2}{n-p}~~~~~~  \text{ et  :}~~~~~~  \hat{\boldsymbol{\beta}} =  (X^{T}X)^{-1}X^{T}\mathbf{P}^{X}Y\\
-\text{ D'aprés le théoreme de cochran :} \\
+\text{ D'après le théoreme de cochran :} \\
 \mathbf{P}Y  ~~~\text{et} ~~~\mathbf{P}^{\bot}Y~~~ \text{ sont indépendants et donc} ~~~~ \hat{\boldsymbol{\beta}} \text{ et } \hat{\sigma}^2 \text{ sont indépendants}
 $$
 
 ### [e) Erreur de prédiction $\hat{\varepsilon}_{n+1}$ :]{.ul}
 
-$\hat{\varepsilon}_{n+1} = y_{n+1} - \hat{y}_{n+1}$
+
+Un des buts de la régression est de faire de la prévision, soit $x_{n+1}$ une nouvelle valeur de la variable explicative pour laquelle nous voulons prédire $y_{n+1}$ en utilisant le modéle ajusté  : $\hat{y}_{n+1}= \hat{\beta}_0+\hat{\beta}_1x_{n+1}$ 
+
+L'erreur de prédiction est définie dans ce cas par :  $\hat{\varepsilon}_{n+1} = y_{n+1} - \hat{y}_{n+1}$
 
 $$
 \mathbb{E}[\hat{\varepsilon}_{n+1}] = 0\\
@@ -280,7 +283,7 @@ $$
 $$
 \hat{\varepsilon}_{n+1}
 \sim
-\mathcal{N}\left(0~~;~\sigma^2 \left(1 + \mathbf{x}^{n+1} (X^TX)^{-1}(x^{n+1})^T\right)\right)
+\mathcal{N}\left(0~~;~\sigma^2 \left(1 + x^{n+1} (X^TX)^{-1}(x^{n+1})^T\right)\right)
 $$
 
 ## 3) Intervalle de confiance :
@@ -289,7 +292,6 @@ Avec probabilité $1-\alpha$:
 
 ### [a) Intervalle de confiance de ${\beta}_k$ :]{.ul}
 
-$t_{n-p}$ 
 $$
 \beta_k \in \left[\hat{\beta}_k \pm t_{n-p}(1 - \alpha/2) \sqrt{\hat{\sigma}_k^2}\right]\\
 $$
@@ -315,7 +317,7 @@ $$
 ### [a) Test de Student :]{.ul}
 
 $$
-\text{Hypothése:}
+\text{Hypothèse:}
 \qquad\qquad
 \mathcal{H}_0: \beta_k = 0
 \quad
@@ -378,14 +380,14 @@ fit <- lm(y_sim ~ x_1 + x_2 + x_junk)
 summary(fit)
 ```
 
-On rejette (risque d'erreur 5%) $H_0$ l'hypothése de nullité pour les deux coefficients
+On rejette (risque d'erreur 5%) $H_0$ l'hypothèse de nullité pour les deux coefficients
 $\beta_1$ et $\beta_2$ car leur $pvalue < 0.05$ par contre pour
 $\beta_3$ on ne peut pas rejeter $H_0$ car $pvalue = 0.426 > 0.05$.
 
 ### [b) Test de Fisher global :]{.ul}
 
 $$
-\text{Hypothéses:}
+\text{Hypothèses:}
 \qquad\qquad
 \mathcal{H}_0: \beta_1 = \cdots = \beta_p = 0
 \quad
@@ -432,7 +434,7 @@ $$
     petite est F tend a être grand, ce qui signifie qu'on tend à rejeter
     $H_0$ (le modèle est utile)
 
-**Modéle utile**
+**Modèle utile**
 
 ```{r proj2, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
 par(mar = c(0, 0, 0, 0) + 0.1)
@@ -470,7 +472,7 @@ text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
     grande est F tend a être petit, ce qui signifie qu'on tend à ne pas
     rejeter $H_0$ (le modèle est inutile)
 
-**Modéle inutile**
+**Modèle inutile**
 
 ```{r proj1, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
 par(mar = c(0, 0, 0, 0) + 0.1)
@@ -545,7 +547,7 @@ summary(fit1)
 ```
 
 Dans ce premier cas la statistique F est très grande ce qui nous mène a
-rejeter $H_0$ car la $pvalue<0.05$ et donc le mdèle est utile. Autrement
+rejeter $H_0$ car la $pvalue<0.05$ et donc le modèle est utile. Autrement
 dit il existe au moins un seul coefficient significativement non nul.
 
 Deuxième cas :
@@ -556,7 +558,7 @@ summary(fit2)
 
 La F statistique dans ce cas est trés petite, la $pvalue= 0.802>0.05$ ce
 qui nous méne à ne pas rejeter $H_0$ ce qui signifie que tous les
-coefficients sont nuls et donc le modéle est inutile.
+coefficients sont nuls et donc le modèle est inutile.
 
 
 **Remarque :** Pour le test de Fisher global si $p=1$  alors il est équivalent au test de Student.
@@ -578,9 +580,9 @@ $$
 Autrement dit on choisit entre : 
 $$
 \text{Le modèle complet :} ~~~~~~~~~~
-\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon} \\
+Y = X\boldsymbol{\beta} + \varepsilon \\
 \text{Le petit modéle :}  ~~~~~~~~~~~
-\mathbf{y} = \mathbf{X}_0\boldsymbol{\beta}_0 + \boldsymbol{\epsilon}
+Y = X_0\boldsymbol{\beta}_0 + \varepsilon
 $$
 Avec $X = (X_0 ~ X_1)$,
 $rg(X) = p$ et
@@ -591,17 +593,19 @@ Géométriquement parlant on compare la distance entre $\hat{Y}$ et $\hat{Y_0}$ 
 Par la méthode de Cochran on a :
 
 $$
-\frac{\|y-\hat{Y}\|^2}{\sigma^2}
+\frac{\|Y-\hat{Y}\|^2}{\sigma^2}
 \sim
 \chi^2_{n-p} ~~~~~~
 \text{et}~~~~
 \quad
-\frac{\|Y-\hat{Y_0}\|^2}{\sigma^2}
+\frac{\|\hat{Y}-\hat{Y_0}\|^2}{\sigma^2}
 \sim
 \chi^2_{p-p_0}
 $$
 
-On a alors :
+Comme $$(Y-\hat{Y}) = \mathbf{P}^{\bot}Y~~~~ et ~~~~~~ (\hat{Y}-\hat{Y_0}) = \mathbf{P}_{0}^{\bot}\mathbf{P}Y$$
+Alors $$(Y-\hat{Y}) \perp  (\hat{Y}-\hat{Y_0})$$
+Et :
 $$
 F = \frac{
 \|\hat{Y} -  \hat{Y}_0\|^2 / (p - p_0)
@@ -613,7 +617,7 @@ F = \frac{
 \mathcal{F}^{p - p_0}_{n - p}.
 $$
 
-- Si $\|Y-\hat{Y_0}\|^2$ est grande par rapport à $\|Y-\hat{Y}\|^2$  alors F tend a être grande et donc on tend a rejeter $H_0$ ce qui signifie que le modèle complet est utile.
+- Si $\|\hat{Y}-\hat{Y_0}\|^2$ est grande par rapport à $\|Y-\hat{Y}\|^2$  alors F tend a être grande et donc on tend a rejeter $H_0$ ce qui signifie que le modèle complet est utile.
 
 
 **Le grand modèle est utile** 
@@ -670,7 +674,7 @@ segments(x0 = ybaronev[1], y0 = ybaronev[2], x1 = yhatv[1], y1 = yhatv[2],
 
 - Si $\|Y-\hat{Y_0}\|^2$ est petite par rapport à $\|Y-\hat{Y}\|^2$  alors F tend a être petite et donc on tend à ne pas rejeter  $H_0$ ce qui veut dire que le modèle complet n'apporte pas beaucoup d'informations et donc le petit modèle suffit.
 
-**Le petit modéle est suffisant ** 
+**Le petit modèle est suffisant ** 
 
 ```{r proj5, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
 par(mar = c(0, 0, 0, 0) + 0.1)
