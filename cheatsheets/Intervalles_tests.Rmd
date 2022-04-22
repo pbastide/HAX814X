@@ -1,5 +1,5 @@
 ---
-title: "Intervalles de confiance et tests d'hypothéses"
+title: "Intervalles de confiance et tests d'hypothèses"
 subtitle: "Régression Multiple"
 author: "Malek BOUARROUDJ"
 date:
