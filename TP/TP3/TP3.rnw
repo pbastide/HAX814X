@@ -1,0 +1,319 @@
+\documentclass{td_um}
+\input{../../TD/header_td.tex}
+
+%\def\version{1}
+\def\version{0}
+
+\usepackage{hyperref}
+\ue{HAX814X}
+
+\providecommand{\T}{\mathbb{T}}
+\providecommand{\1}{\mathds{1}}
+\title{TP III: ANOVA}
+
+
+\newcommand{\miniscule}{\@setfontsize\miniscule{5}{6}}
+%-----------------------------------------------------------------------------
+\begin{document}
+\maketitle
+
+\bigskip
+\bigskip
+
+\noindent Nous utiliserons le langage \texttt{R} pour ce TP. Le corrigé sera à faire sous forme de \texttt{.Rmd} ou \texttt{.rnw}.
+
+
+\bigskip
+\bigskip
+
+Nous allons travailler sur des données de qualité de l'air mesurées en Bretagne. Elles sont contenues dans le fichier \texttt{ozone.txt} à télécharger sur l'espace pédagogique.
+
+\exo{Analyse de covariance}
+\begin{enumerate}
+\item Lire le fichier contenant les données:
+<<echo=T>>=
+ozone <- read.table("ozone.txt", header=T)
+@
+Quelles sont les deux variables qualitatives? Combien de modalités comportent-elles? 
+\if\version1{\small\color{gray}
+
+On peut utiliser la fonction \texttt{is.factor}:
+<<echo=T>>=
+facteurs <- unlist(lapply(ozone, is.factor))
+facteurs
+@
+Les deux variables qualitatives sont \texttt{vent} et \texttt{pluie}.
+<<echo=T>>=
+ozone$vent
+ozone$pluie
+@
+La variable vent contient 4 modalités: \texttt{Est}, \texttt{Nord}, \texttt{Ouest}, \texttt{Sud}. La variable \texttt{pluie} contient 2 modalités: \texttt{Pluie}, \texttt{Sec}.
+}
+\fi
+
+\item On va chercher à expliquer la concentration maximale en ozone (\texttt{maxO3}) en fonction de la température à midi (\texttt{T12}) et de la direction du vent.
+\begin{enumerate}
+\item Créer une variable \texttt{ozEst} contenant les données observées lorsque le vent vient de l'est.
+
+Utiliser cela pour estimer un modèle de régression simple de \texttt{maxO3} en fonction de \texttt{T12} pour chaque modalité de la variable \texttt{vent} (modèles stratifiés).
+
+\if\version1{\small\color{gray}
+\texttt{ozEst} contient les observations ayant la modalité \texttt{Est} de la variable \texttt{vent}. 
+<<echo=T>>=
+ozEst <- ozone[ozone$vent=="Est", ]
+@
+Le modèle restreint à ces données est:
+<<echo=T>>=
+#maxO3~T12 + ventEst
+regEst = lm(maxO3~T12,data=ozEst)
+resumeEst=summary(regEst)
+resumeEst
+@
+On procède de même pour les autres modalités:
+<<echo=T>>=
+#maxO3~T12 + ventNord
+ozNord=ozone[ozone$vent=="Nord",]
+regNord = lm(maxO3~T12,data=ozNord)
+resumeNord= summary(regNord)
+resumeNord
+#O3~T12 + vent_Ouest
+ozOuest=ozone[ozone$vent=="Ouest",]
+regOuest = lm(maxO3~T12,data=ozOuest)
+resumeOuest= summary(regOuest)
+resumeOuest
+#O3~T12 + ventSud
+ozSud=ozone[ozone$vent=="Sud",]
+regSud = lm(maxO3~T12,data=ozSud)
+resumeSud=summary(regSud)
+resumeSud
+@
+}\fi
+
+\item Tracer sur un même graphe les points d'observation en changeant la marque en fonction de la modalité de la variable \texttt{vent} (e.g. adapter la valeur de \texttt{pch} et \texttt{col}). Enfin, rajouter les 4 droites de régression estimées (e.g. avec la fonction \texttt{abline}). Commenter.
+
+\if\version1{\small\color{gray}
+<<echo=T>>=
+plot(ozone[ ,"T12"], ozone[,"maxO3"], pch=ozone$vent, col=as.numeric(as.factor(ozone$vent)))
+abline(regEst, col=1)
+abline(regNord, col=2)
+abline(regOuest, col=3)
+abline(regSud, col=4)
+legend(15, 167, legend=c("Est", "Nord", "Ouest", "Sud"), col = c(1,2,3,4), lty=1, cex=0.6)
+@
+
+<<echo=T>>=
+library(ggplot2)
+ggplot(data=ozone, aes(x=T12, y=maxO3, color=vent)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y~x)
+@
+On voit que les pentes et les ordonnées à l'origne des 4 droites de régressions sont différentes. Il semble que la modélisation de la concentration de l'ozone en fonction de la température dépende de la variable vent.
+}\fi
+
+\item On veut maintenant écrire le modèle complet :
+<<echo=T>>=
+mod1 <- lm(maxO3~-1+vent+T12:vent,ozone)
+@
+Le terme \texttt{T12:vent} correspond à l'interaction entre \texttt{T12} et le vent (lire la sortie de \texttt{?formula}). Regarder les estimateurs des coefficients. A quoi correspondent-ils? 
+
+\if\version1{\small\color{gray}
+Le premier modèle donne
+<<echo=T>>=
+resume <- summary(mod1)
+resume
+@
+Ils correspondent aux $\alpha_i$ et $\gamma_i$ dans le modèle d'ANCOVA. Autrement dit,
+\begin{align*}
+\mathtt{maxO3}_{\text{Est}}  &=  8.7357+4.0923 \mathtt{T12} + \varepsilon_{\text{Est}} \\
+\mathtt{maxO3}_{\text{Nord}} &=-16.1664+5.0983 \mathtt{T12} + \varepsilon_{\text {Nord }} \\
+\mathtt{maxO3}_{\text{Ouest}}&=-48.6310+6.3250 \mathtt{T12} + \varepsilon_{\text {Ouest }} \\
+\mathtt{maxO3}_{\text{Sud}}  &=-34.4595+5.7729 \mathtt{T12} + \varepsilon_{\text {Sud }}
+\end{align*}
+On retrouve bien les estimations des modèles stratifiés.
+}\fi
+
+On aurait également pu estimer le modèle avec la constante:
+<<echo=T>>=
+mod1b <- lm(maxO3~vent+T12:vent,ozone)
+@
+Qu'est-ce qui est modifié ?
+
+\if\version1{\small\color{gray}
+<<echo=T>>=
+rescont <- summary(mod1b)
+rescont
+@
+On ne voit pas \texttt{ventEST} (Voir CM7 slide 48). Les coeffcients des ordonnées à l'origine sont des effets relatifs  à \texttt{(Intercept)}, par exemple $-24.9021 + 8.7357 = -16.1664$ donne valeur de \texttt{ventNord} dans l'écriture précédente.
+}\fi
+
+\item On peut ensuite tester l'égalité des pentes et des ordonnées à l'origine suivant la direction du vent. Le modèle avec une seule pente s'écrit:
+<<echo=T>>=
+mod2 <- lm(maxO3~-1+vent+T12, ozone)
+summary(mod2)
+@
+Pour comparer les deux modèles, on tape :
+<<echo=T, results='hide'>>=
+anova(mod1, mod2)
+@
+Quelle est la conclusion ? 
+
+\if\version1{\small\color{gray}
+
+<<echo=T>>=
+aov <- anova(mod1, mod2)
+aov
+aov$F[2] == (aov$`Sum of Sq`[2] / aov$Df[2]) / (aov$RSS[1] / aov$Res.Df[1])
+@
+
+On constate que la décision de rejetter $H_0$ : "Les pentes sont identiques" a un risque d'erreur de supérieure à $34.27\%$. Donc on ne rejette pas $H_0$ et conclut que la direction du vent n'influe pas sur les pentes. On conserve alors le modèle avec une seule pente.
+}\fi
+
+Faire de même pour tester l’égalité des ordonnées à l’origine. Peut-on conclure
+que la direction du vent n’est pas utile pour estimer \texttt{maxO3} en fonction de \texttt{T12}?
+
+\if\version1{\small\color{gray}
+
+<<echo=T>>=
+mod3=lm(maxO3~T12:vent,ozone)
+summary(mod3)
+aov2 <- anova(mod3,mod1)
+aov2
+aov2$F[2] == (aov2$`Sum of Sq`[2] / aov2$Df[2]) / (aov2$RSS[2] / aov2$Res.Df[2])
+@
+On constate que la décision de rejetter $H_0$ : "Les ordonnés à l'origine sont identiques" a un risque d'erreur de supérieure à $23.68\%$. Donc on ne rejette pas $H_0$ et conclut que la direction du vent n'influe pas sur les ordonnés à l'origine. On conserve alors le modèle avec une même ordonné à l'origine. 
+
+On doit choisir le meilleur modèle entre \texttt{mod2} et \texttt{mod3}: 
+<<echo=T>>=
+summary(mod2)$adj.r.squared
+summary(mod3)$adj.r.squared
+@
+On obtient $R_a^2(\mathtt{mod2})= 0.9656$ et $R_a^2(\mathtt{mod3}) = 0.61$. Donc on choisit le modèle \texttt{mod2}.
+
+Pour conclure sur l'effet de la direction du vent: on fait un test entre \texttt{mod2} et le modèle avec une même pente et une même ordonnée à l'origine:
+<<echo=T>>=
+mod4 <- lm(maxO3~T12, ozone)
+summary(mod4)
+aov3 <- anova(mod4, mod2)
+aov3
+aov3$F[2] == (aov3$`Sum of Sq`[2] / aov3$Df[2]) / (aov3$RSS[2] / aov3$Res.Df[2])
+@
+On constate que la décision de rejetter $H_0$ : "Les ordonnés à l'origine sont identiques" a un risque d'erreur de supérieure à $32.35\%$. Donc on ne rejette pas $H_0$, on conserve alors le modèle avec une même ordonnée à l'origine et une même pente et conclut que la direction du vent n'est pas utile pour estimer \texttt{maxO3} en fonction de \texttt{T12}.
+}\fi
+
+\end{enumerate}
+\end{enumerate}
+
+\exo{Analyse de variance à deux facteurs}
+On va maintenant chercher à expliquer la concentration en ozone uniquement par les deux variables qualitatives du modèle: \texttt{vent} et \texttt{pluie}.
+\begin{enumerate}
+\item Calculer la moyenne de \texttt{maxO3} lorsque \texttt{vent=="Est"} et \texttt{pluie=="Sec"}. Faire de même pour les 7 autres couples de modalités. Représenter graphiquement ces moyennes.
+
+\if\version1{\small\color{gray}
+la moyenne de \texttt{maxO3} lorsque \texttt{vent=="Est"} et \texttt{pluie=="Sec"} est
+<<echo=T>>=
+maxO3EstSec= ozone[ozone$vent=="Est" & ozone$pluie=="Sec", "maxO3"]
+mean(maxO3EstSec)
+@
+Pour les 7 autres couples
+<<echo=T>>=
+maxO3NordSec= ozone[ozone$vent=="Nord" & ozone$pluie=="Sec" ,"maxO3"]
+maxO3OuestSec= ozone[ozone$vent=="Ouest" & ozone$pluie=="Sec" ,"maxO3"]
+maxO3SudSec= ozone[ozone$vent=="Sud" & ozone$pluie=="Sec" ,"maxO3"]
+maxO3EstPluie= ozone[ozone$vent=="Est" & ozone$pluie=="Pluie" ,"maxO3"]
+maxO3NordPluie= ozone[ozone$vent=="Nord" & ozone$pluie=="Pluie" ,"maxO3"]
+maxO3OuestPluie= ozone[ozone$vent=="Ouest" & ozone$pluie=="Pluie" ,"maxO3"]
+maxO3SudPluie= ozone[ozone$vent=="Sud" & ozone$pluie=="Pluie" ,"maxO3"]
+mean(maxO3NordSec)
+mean(maxO3OuestSec)
+mean(maxO3SudSec)
+mean(maxO3EstPluie)
+mean(maxO3NordPluie)
+mean(maxO3OuestPluie)
+mean(maxO3SudPluie)
+
+lm(data = ozone, maxO3 ~ -1 + pluie:vent)
+@
+Traçon cela sur un graphique:
+<<echo=T>>=
+meanSec= c(mean(maxO3EstSec),mean(maxO3NordSec), mean(maxO3OuestSec),
+mean(maxO3SudSec) )
+meanPluie= c(mean(maxO3EstPluie),mean(maxO3NordPluie), mean(maxO3OuestPluie),
+mean(maxO3SudPluie) )
+plot(1:4,meanSec,pch=1, ylim=c(40,150), type = "b", xaxt = "n", col ="red",
+xlab='Direction de vent', ylab= 'Moyenne de O3')
+axis(1, at=1:4, labels=c("Est", "Nord", "Ouest","Sud"))
+points(1:4, meanPluie,pch=2, type="b", col ="blue")
+legend(3, 150, legend=c("Sec", "Pluie" ), col=c("red", "blue"), lty=1, cex=0.8)
+
+library(ggplot2)
+ggplot() +
+  geom_boxplot(data = ozone[ozone$pluie=="Sec",], aes(y=maxO3, x=vent, col = "blue")) +
+  geom_boxplot(data = ozone[ozone$pluie=="Pluie",], aes(y=maxO3, x=vent, col = "red"))
+
+@
+Il y a une nette différence entre les moyennes de \texttt{maxO3} pour \texttt{Pluie} et \texttt{Sec}
+mais pour \texttt{Pluie} ou \texttt{Sec} uniquement les moyennes de \texttt{maxO3} de l'\texttt{Est}, du
+\texttt{Nord}, de l'\texttt{Ouest} et du \texttt{Sud} sont presque identiques.
+}\fi
+\item Estimer le modèle complet, avec interaction. Quelles sont les contraintes sur les paramètres?
+
+\if\version1{\small\color{gray}
+Le modèle complet
+<<echo=T>>=
+modcomplet <- lm(maxO3~-1 + vent+pluie+vent:pluie, data=ozone) # lm(maxO3~vent*pluie, data=ozone)
+resume = summary(modcomplet)
+resume
+@
+Les contraintes sur les paramètres du modèle
+\begin{align*}
+\mathtt{maxO3} & = \1 + \mathtt{vent} + \mathtt{pluie} + \mathtt{vent:pluie} + \varepsilon \\
+             y & = \mu + A_c \alpha + B_c \eta + C_c \gamma + \varepsilon
+\end{align*}
+
+}\fi
+
+\item Comparer avec le modèle sans interaction. L'interaction entre vent et pluie est-elle significative?
+
+\if\version1{\small\color{gray}
+Le modèle sans intéractions donne
+<<echo=T>>=
+modsansinter= lm(maxO3~-1 + vent+pluie,data=ozone)
+summary(modsansinter)
+anova(modsansinter, modcomplet)
+@
+On constate que la décision de rejetter $H_0$ : "Il n'y a pas d'interaction entre le vent et la pluie" a un risque d'erreur de supérieure à $64.93\%$. Donc on ne rejette pas $H_0$ et conclut que l'interaction entre vent et pluie n'est pas significative pour modéliser \texttt{maxO3}. On conserve alors le modèle sans interaction.
+}\fi
+\item Si elle n'est pas significative, tester la significativité du facteur pluie, puis du facteur vent.
+\if\version1{\small\color{gray}
+Pour tester la significativité du facteur pluie
+<<echo=T>>=
+modvent =lm(maxO3~vent,data=ozone)
+anova(modvent, modsansinter)
+@
+On constate que la décision de rejetter $H_0$ : "Il n'y a pas d'effet de la variable pluie" a un risque d'erreur de supérieure à 0.001. Donc on rejette $H_0$ et conclut que le facteur \texttt{pluie} influe sur la concentration d'ozone. On conserve alors le modèle sans interaction.
+
+
+
+
+Pour tester la significativité du facteur vent
+<<echo=T>>=
+modpluie =lm(maxO3~pluie,data=ozone)
+anova(modpluie, modsansinter)
+@
+On constate que la décision de rejette $H_0$ : "Il n'y a pas d'effet de la variable vent" a un risque d'erreur de supérieure à 0.1048. Donc on ne rejette pas $H_0$ et conclut que le facteur \texttt{vent} n'influe pas sur la concentration d'ozone. On conserve alors le modèle sans la variable \texttt{vent}
+
+}\fi
+
+\item Quel modèle retenir finalement? Cela confirme-t-il les résultats de l'analyse de covariance?
+
+\if\version1{\small\color{gray}
+On retient le modèle \texttt{modpluie} qui ne dépend que de \texttt{pluie}. Cela confirme les résultats de l'analyse de covariance
+<<echo=T>>=
+summary(modsansinter)
+summary(modpluie)
+@
+}\fi
+\end{enumerate}
+\end{document}
+
+
