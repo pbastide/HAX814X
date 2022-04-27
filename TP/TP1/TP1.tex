@@ -51,7 +51,7 @@ Décrire précisément ce que font chaque ligne de code. Ce graphique permet de 
 > beta2min<-coef(resume)[2,1] - seuil * coef(resume)[2,2]
 > beta2max<-coef(resume)[2,1] + seuil * coef(resume)[2,2]
 \end{minted}
-Retrouver ces valeurs à l'aide de la fonction \mintinline{R}{confint}. Que remarquez-vous sur l'intervalle de confiance de l'ordonnée à l'origine? Comment l'expliquez-vous?
+Retrouver ces valeurs à l'aide de la fonction \mintinline{R}{confint()}. Que remarquez-vous sur l'intervalle de confiance de l'ordonnée à l'origine? Comment l'expliquez-vous?
 \item Pour être plus précis et tenir compte de la dépendance entre les deux coefficients, on peut aussi construire une région de confiance. Les commandes suivantes permettent de visualiser la différence entre le rectangle de confiance, simple juxtaposition des deux intervalles de confiance, et la région de confiance. Elles nécessitent l'installation du package \mintinline{R}{ellipse}.
     \begin{minted}[bgcolor=blue!4,fontsize=\footnotesize,mathescape,tabsize=4,escapeinside=||, linenos, breaklines]{R}
 > library(ellipse)
