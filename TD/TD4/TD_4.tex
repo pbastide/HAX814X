@@ -1,0 +1,62 @@
+\documentclass{td_um}
+\input{../header_td.tex}
+
+%\def\version{eno}
+\def\version{cor}
+
+\usepackage{hyperref}
+\ue{HMMA201}
+
+\providecommand{\T}{\mathbb{T}}
+\providecommand{\1}{\mathds{1}}
+\title{TD IV}
+
+
+\newcommand{\miniscule}{\@setfontsize\miniscule{5}{6}}
+%-----------------------------------------------------------------------------
+\begin{document}
+\maketitle
+
+\exo{} On a recueilli le poids (noté $P$), la taille (notée $T$) et le sexe (noté $S$) de $8$ étudiants. Voici les données : 
+\begin{align*}
+    P&=(65,78,85,51,48,62,65,57)^{t},\\ 
+    T&=(154,167,183,155,175,178,191,149)^{t}, \\ 
+    S&=(F, M, M, M, F, F, M, F)^{t}
+\end{align*}
+On cherche à expliquer le poids en fonction de la taille et du sexe par un modèle linéaire.
+\begin{enumerate}
+    \item  On considère un modèle de régression simple pour chaque modalité de la variable sexe. Ecrire les deux modèles sous forme matricielle. Estimer leurs paramètres (ne pas inverser de matrice, utiliser les formules du Chapitre 1).
+    \item  Ecrire le modèle global sous forme matricielle. Quels sont ses paramètres?
+    \item  Comment sont estimées les variances des erreurs dans chacun des cas?
+\end{enumerate}
+
+\cor{\newpage}
+
+\exo{}On se place dans le cadre de l'analyse de variance à un facteur. Le modèle global est
+\[
+y_{i, j}=\mu+\alpha_{i}+\varepsilon_{i, j}
+\]
+\begin{enumerate}
+    \item  Pour rendre le modèle identifiable, on introduit la contrainte : $\mu=0$.
+        \begin{enumerate}
+            \item  Exprimer la somme des résidus quadratiques et démontrer l'expression des estimateurs MC donnée dans le cours.
+            \item  Que deviennent ces estimateurs si on cherche maintenant à minimiser la somme des résidus en valeur absolue?
+        \end{enumerate}
+    \item  Idem si la contrainte est : $\sum_{i=1}^{I} \alpha_{i}=0$.
+\end{enumerate}
+
+
+\cor{\newpage}
+
+\exo{} Soit le jeu de données suivant pour deux facteurs à deux niveaux
+\[
+    \begin{array}{ccccccccc} \hline\text { facteur 1 } & 1 & 1 & 1 & 1 & 1 & 2 & 2 & 2 \\ \text { facteur 2 } & 1 & 1 & 1 & 2 & 2 & 1 & 1 & 2 \\ \text { réponse } & 19 & 15 & 14 & 10 & 6 & 9 & 11 & 6\\\hline\end{array}
+\]
+\begin{enumerate}
+    \item  Que peut-on dire du plan d'expérience?
+    \item  Calculez les estimateurs dans le modèle complet (en introduisant la contrainte 1 puis la contrainte 2 données dans le cours).
+    \item  Que vaut l'estimateur de la variance des erreurs?
+    \item  Donnez la valeur de la statistique de test permettant de savoir si l'interaction entre les deux facteurs est significative. Quelle est la conclusion du test sachant que $f_{1,4}(0.95)=7.708647 ?$
+\end{enumerate}
+\end{document}
+
