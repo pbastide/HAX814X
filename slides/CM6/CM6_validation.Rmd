@@ -640,6 +640,36 @@ If the $\epsilon_i$ are not Gaussian, this is **not true** anymore.
 
 Is it *approximatelly* true ?
 
+
+## Simulation - Gaussian
+
+What about the distribution of $\hat{\beta}_2$ ?
+
+```{r gauss3, fig.height=3.5, fig.width=3.5, fig.align='center'}
+set.seed(1289)
+Nsim <- 1000
+beta_hat_2 <- vector("numeric", Nsim)
+for (i in 1:Nsim) {
+  ## error
+  eps <- rnorm(n, 0, 1)
+  ## Sim
+  y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+  ## Fit
+  fit <- lm(y_sim ~ x_1 + x_2)
+  ## Get beta_1
+  beta_hat_2[i] <- coef(fit)[3]
+}
+```
+
+## Simulation - Gaussian
+
+What about the distribution of $\hat{\beta}_2$ ?
+
+```{r gauss4, fig.height=3.5, fig.width=3.5, fig.align='center'}
+## Empirical distribution
+qqnorm(beta_hat_2); qqline(beta_hat_2, col = "lightblue", lwd = 2)
+```
+
 ## Simulation - Not Gaussian
 
 What about the distribution of $\hat{\beta}_2$ ?
@@ -699,7 +729,7 @@ qqnorm(beta_hat_2); qqline(beta_hat_2, col = "lightblue", lwd = 2)
 * If $\epsilon$ has **finite** variance:
     - The coefficients will be *approximately* Gaussian (empirically).
     - The confidence intervals **won't be exact**.
-    - CI tend to be **too narrow** (for a heavy tail distribution)
+    - CI tend to be **too narrow** (for a heavy tail distribution).
 
 >* If $\epsilon$ has **non-finite** variance:
 >    - The Gaussian approximation for the coefficients becomes bad.
@@ -1068,7 +1098,7 @@ summary(fit)
 
 i.e. if I remove one observation, do they change a lot ?
 
-e.g. outiliers can have a strong leverage.
+e.g. Outliers can have a strong leverage.
 
 ## Outliers and Leverage - Simulation
 
@@ -1284,7 +1314,7 @@ $\hat{y}_i = 0$
 $\to$ $y_i$ does not have any effect on $\hat{y}_i$.
 
 >* If $h_{ii}$ is *"large"*  
-$\to$ $\hat{y}_i$ has a strong impact on $y_i$.
+$\to$ $y_i$ has a strong impact on $\hat{y}_i$.
 
 >* What is *"large"* ?
 
@@ -1356,7 +1386,7 @@ Last point is consistent with the other observations.
 
 But its $x$ value is high $\to$ high leverage point.
 
-## Outilier vs Hight Leverage {.smaller}
+## Outlier vs Hight Leverage {.smaller}
 
 <div class="columns-2">
 
@@ -1420,7 +1450,7 @@ abline(h = 3 * 2 / n, lty = 3)
 # Cook Distance
 <!-- ************************************************************************ -->
 
-## Outilier vs Hight Leverage 
+## Outlier vs Hight Leverage 
 
 * **Outlier**:  
     - Very different from other points ($y$).  
@@ -1500,7 +1530,230 @@ $$
 **Note**:  
 Cook "distance" is actually the square of a distance.
 
-**Proof**: Exercise.
+## Cook Distance - Proof {.smaller}
+
+$$
+C_i
+= \frac{h_{ii}(y_{i} - \hat{y}_{i}^P)^2}{p\hat{\sigma}^2}
+= \frac{h_{ii}}{p(1-h_{ii})^2}\frac{\hat{\epsilon}_i}{\hat{\sigma}^2}
+= \frac{h_{ii}}{p(1-h_{ii})}t_i^2
+$$
+
+**Hints**:
+
+$$
+(\mathbf{A} + \mathbf{u}\mathbf{v}^T)^{-1}
+=
+\mathbf{A}^{-1}
+-
+\frac{
+\mathbf{A}^{-1} \mathbf{u}\mathbf{v}^T \mathbf{A}^{-1}
+}{
+1 + \mathbf{v}^T\mathbf{A}^{-1}\mathbf{u}
+}.
+$$
+
+$$
+\mathbf{X}^T\mathbf{X}
+= \mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)} + (\mathbf{x}^{i})^T\mathbf{x}^i
+$$
+
+$$
+\mathbf{X}^T\mathbf{y}
+= \mathbf{X}_{(-i)}^T\mathbf{y}_{(-i)} + (\mathbf{x}^{i})^Ty_i
+$$
+
+$$
+h_{ii}
+=
+[\mathbf{X}(\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}]_{ii}
+= \mathbf{x}^{i} (\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T
+$$
+
+So:
+$$
+(\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}
+= (\mathbf{X}^T\mathbf{X} - (\mathbf{x}^{i})^T\mathbf{x}^i)^{-1}
+= \cdots
+$$
+
+$$
+\hat{\boldsymbol{\beta}}_{(-i)} 
+= (\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}\mathbf{X}_{(-i)}^T\mathbf{y}_{(-i)}
+= \cdots
+$$
+
+## Cook Distance - Proof - 1/6 {.build}
+
+$$
+(\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}
+= (\mathbf{X}^T\mathbf{X} - (\mathbf{x}^{i})^T\mathbf{x}^i)^{-1}
+= \cdots
+$$
+
+$$
+(\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}
+= (\mathbf{X}^T\mathbf{X})^{-1}
++
+\frac{
+(\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T\mathbf{x}^{i} (\mathbf{X}^T\mathbf{X})^{-1}
+}{
+1 - \mathbf{x}^{i}(\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{x}^{i})^T
+}
+$$
+
+$$
+(\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}
+= (\mathbf{X}^T\mathbf{X})^{-1} + \frac{(\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T\mathbf{x}^{i} (\mathbf{X}^T\mathbf{X})^{-1}}{1 - h_{ii}}
+$$
+
+## Cook Distance - Proof - 2/6 {.build}
+
+$$
+\hat{\boldsymbol{\beta}}_{(-i)} 
+= (\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}\mathbf{X}_{(-i)}^T\mathbf{y}_{(-i)}
+$$
+
+But:
+$$
+(\mathbf{X}_{(-i)}^T\mathbf{X}_{(-i)})^{-1}
+=
+(\mathbf{X}^T\mathbf{X})^{-1} + 
+\frac{(\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T\mathbf{x}^{i} (\mathbf{X}^T\mathbf{X})^{-1}}{1 - h_{ii}}
+$$
+$$
+\mathbf{X}_{(-i)}^T\mathbf{y}_{(-i)}
+=
+\mathbf{X}^T\mathbf{y} - (\mathbf{x}^{i})^Ty_i
+$$
+
+Hence:
+$$
+\begin{multline}
+\hat{\boldsymbol{\beta}}_{(-i)}
+= \left[
+(\mathbf{X}^T\mathbf{X})^{-1} + \frac{(\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T\mathbf{x}^{i} (\mathbf{X}^T\mathbf{X})^{-1}}{1 - h_{ii}}
+\right]
+\\
+\times
+[\mathbf{X}^T\mathbf{y} - (\mathbf{x}^{i})^Ty_i]
+\end{multline}
+$$
+
+## Cook Distance - Proof - 3/6 {.build}
+
+$$
+\begin{multline}
+\hat{\boldsymbol{\beta}}_{(-i)}
+= (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T\mathbf{y}
+-  (\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^Ty_i
+\\
++ \frac{(\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T}{1 - h_{ii}}\mathbf{x}^{i} (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T\mathbf{y}
+\\
+- \frac{(\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T\mathbf{x}^{i} (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{x}^{i})^T}{1 - h_{ii}} y_i
+\end{multline}
+$$
+
+$$
+\begin{multline}
+\hat{\boldsymbol{\beta}}_{(-i)}
+= \hat{\boldsymbol{\beta}} 
+- (\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^Ty_i
++ \frac{1}{1-h_{ii}}(\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T \mathbf{x}^i \hat{\boldsymbol{\beta}}
+\\
+- \frac{h_{ii}}{1-h_{ii}} (\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T y_i
+\end{multline}
+$$
+
+$$
+\hat{\boldsymbol{\beta}}_{(-i)} - \hat{\boldsymbol{\beta}} 
+= (\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T
+\left[\frac{1}{1-h_{ii}} \hat{y}_i 
+- \left(1 + \frac{h_{ii}}{1-h_{ii}}\right) y_i
+\right]
+$$
+
+## Cook Distance - Proof - 4/6 {.build}
+
+$$
+\begin{aligned}
+\hat{\boldsymbol{\beta}}_{(-i)} - \hat{\boldsymbol{\beta}} 
+&= (\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T
+\frac{1}{1-h_{ii}}
+(\hat{y}_i - y_i)\\
+&= - (\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T
+\frac{1}{1-h_{ii}}
+\hat{\epsilon}_i
+\end{aligned}
+$$
+
+But remember:
+$$
+y_i - \hat{y}_i^P
+= \frac{1}{1-h_{ii}}\hat{\epsilon}_i
+$$
+hence:
+$$
+\hat{\boldsymbol{\beta}}_{(-i)} - \hat{\boldsymbol{\beta}} 
+= - (y_i - \hat{y}_i^P) (\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T
+$$
+
+## Cook Distance - Proof - 5/6 {.build}
+
+We have:
+$$
+\hat{\boldsymbol{\beta}}_{(-i)} - \hat{\boldsymbol{\beta}} 
+= - (y_i - \hat{y}_i^P) (\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T
+$$
+$$
+C_i = 
+\frac{1}{p\hat{\sigma}^2}
+\left(\hat{\boldsymbol{\beta}}_{(-i)} - \hat{\boldsymbol{\beta}}\right)^T (\mathbf{X}^T\mathbf{X})
+\left(\hat{\boldsymbol{\beta}}_{(-i)}  - \hat{\boldsymbol{\beta}}\right)
+$$
+
+Hence:
+$$
+\begin{aligned}
+C_i 
+&= 
+\frac{1}{p\hat{\sigma}^2}
+(\mathbf{x}^{i}) (\mathbf{X}^T\mathbf{X})^{-1}
+(\mathbf{X}^T\mathbf{X})
+(\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{x}^{i})^T
+(y_i - \hat{y}_i^P)^2\\
+&= 
+\frac{1}{p\hat{\sigma}^2}
+h_{ii}
+(y_i - \hat{y}_i^P)^2
+\end{aligned}
+$$
+
+## Cook Distance - Proof - 6/6
+
+$$
+C_i = 
+\frac{1}{p\hat{\sigma}^2}
+\left(\hat{\boldsymbol{\beta}}_{(-i)} - \hat{\boldsymbol{\beta}}\right)^T (\mathbf{X}^T\mathbf{X})
+\left(\hat{\boldsymbol{\beta}}_{(-i)}  - \hat{\boldsymbol{\beta}}\right)
+= 
+\frac{1}{p\hat{\sigma}^2}
+h_{ii}
+(y_i - \hat{y}_i^P)^2
+$$
+
+and:
+$$
+y_i - \hat{y}_i^P
+= \frac{1}{1-h_{ii}}\hat{\epsilon}_i
+$$
+
+hence:
+$$
+C_i
+= \frac{h_{ii}}{p(1-h_{ii})^2}\frac{\hat{\epsilon}_i}{\hat{\sigma}^2}
+= \frac{h_{ii}}{p(1-h_{ii})}t_i^2
+$$
 
 ## Cook Distance
 

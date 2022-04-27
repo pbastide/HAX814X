@@ -1595,7 +1595,7 @@ $$
 
 We would like:
 $$
-\eta_0 = \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} R(\hat{\mathbf{y}}_\eta)
+\eta_0 = \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} R(\hat{\mathbf{y}}_\eta)
 $$
 
 >* Minimize the risk over all possible models.
@@ -1604,7 +1604,7 @@ $$
 
 >* **Idea**: Minimize an *estimator* $\hat{R}(\hat{\mathbf{y}}_\eta)$ of $R(\hat{\mathbf{y}}_\eta)$:
 $$
-\hat{\eta} = \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta).
+\hat{\eta} = \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta).
 $$
 
 ## Expectation of the RSS
@@ -1709,8 +1709,8 @@ $$
 Hence:
 $$
 \hat{\eta} 
-= \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} C_p(\hat{\mathbf{y}}_\eta)
-= \underset{\eta \subset \{1, \cdots, n\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta).
+= \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} C_p(\hat{\mathbf{y}}_\eta)
+= \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta).
 $$
 
 $\to$ Minimizing Mallow's $C_p$ is the same as minimizing an unbiased estimate of the risk.
@@ -2078,10 +2078,10 @@ dropterm(fit0)
 ## Backward search - Drop term {.smaller}
 
 ```{r backward2, message = FALSE}
-## drop x_junk.4
+## drop x_junk.3
 fit1 <- lm(y_sim ~ x_1 + x_2 
-           + x_junk.1 + x_junk.2 + x_junk.3 
-           + x_junk.5 + x_junk.6, data = data_all)
+           + x_junk.1 + x_junk.2 +
+           + x_junk.4 + x_junk.5 + x_junk.6, data = data_all)
 ## Drop another
 dropterm(fit1)
 ```
@@ -2089,9 +2089,9 @@ dropterm(fit1)
 ## Backward search - Drop term {.smaller}
 
 ```{r backward3, message = FALSE}
-## drop x_junk.3
+## drop x_junk.4
 fit2 <- lm(y_sim ~ x_1 + x_2 
-           + x_junk.1 + x_junk.3 
+           + x_junk.1 + x_junk.2 +
            + x_junk.5 + x_junk.6, data = data_all)
 ## Drop another
 dropterm(fit2)
@@ -2100,10 +2100,10 @@ dropterm(fit2)
 ## Backward search - Drop term {.smaller}
 
 ```{r backward4, message = FALSE}
-## drop x_junk.5
+## drop x_junk.1
 fit3 <- lm(y_sim ~ x_1 + x_2 
-           + x_junk.1 + x_junk.3 
-           + x_junk.6, data = data_all)
+           + x_junk.2 +
+           + x_junk.5 + x_junk.6, data = data_all)
 ## Drop another
 dropterm(fit3)
 ```
@@ -2111,10 +2111,9 @@ dropterm(fit3)
 ## Backward search - Drop term {.smaller}
 
 ```{r backward5, message = FALSE}
-## drop x_junk.6
+## drop x_junk.2
 fit4 <- lm(y_sim ~ x_1 + x_2 
-           + x_junk.1 + x_junk.3 ,
-           data = data_all)
+           + x_junk.5 + x_junk.6, data = data_all)
 ## Drop another
 dropterm(fit4)
 ```
@@ -2122,9 +2121,9 @@ dropterm(fit4)
 ## Backward search - Drop term {.smaller}
 
 ```{r backward6, message = FALSE}
-## drop x_junk.5
-fit5 <- lm(y_sim ~ x_1 + x_2 + x_junk.3 ,
-           data = data_all)
+## drop x_junk.6
+fit5 <- lm(y_sim ~ x_1 + x_2 
+           + x_junk.5, data = data_all)
 ## Drop another
 dropterm(fit5)
 ```
@@ -2132,7 +2131,7 @@ dropterm(fit5)
 ## Backward search - Drop term {.smaller}
 
 ```{r backward7, message = FALSE}
-## drop x_junk.3
+## drop x_junk.5
 fit6 <- lm(y_sim ~ x_1 + x_2,
            data = data_all)
 ## Drop another
@@ -2355,9 +2354,9 @@ p(\mathbf{y} | \eta) \\
 \left\{\log p(\mathbf{y} | \hat{\boldsymbol{\theta}}, \eta) - \frac{|\eta|}{2} \log(n)\right\}\\
 & \approx \underset{\eta}{\operatorname{argmin}} 
 \left\{-2\log p(\mathbf{y} | \hat{\boldsymbol{\theta}}, \eta) + |\eta| \log(n) \right\}\\
-&\approx \underset{\eta}{\operatorname{argmax}}
+&\approx \underset{\eta}{\operatorname{argmin}}
 \left\{- 2\log \hat{L}_\eta + |\eta| \log(n)\right\}
-= \underset{\eta}{\operatorname{argmax}}
+= \underset{\eta}{\operatorname{argmin}}
  BIC(\hat{\mathbf{y}}_\eta)
 \end{aligned}
 $$
