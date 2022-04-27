@@ -1,0 +1,329 @@
+\documentclass{td_um}
+\input{../../TD/header_td.tex}
+
+\def\version{0}
+%\def\version{1}
+
+\usepackage{hyperref}
+\ue{HAX814X}
+
+\providecommand{\T}{\mathbb{T}}
+\providecommand{\1}{\mathds{1}}
+\title{TP IV: Régression linéaire et erreurs non gaussiennes}
+
+
+\newcommand{\miniscule}{\@setfontsize\miniscule{5}{6}}
+%-----------------------------------------------------------------------------
+\begin{document}
+\maketitle
+
+\bigskip
+\bigskip
+
+\noindent Nous utiliserons le langage \texttt{R} pour ce TP. Le corrigé sera à faire sous forme de \texttt{.Rmd}.
+
+
+\bigskip
+\bigskip
+
+\section{Un peu de théorie}
+
+On dispose d'un échantillon de $n$ couples $\left(x_{i}, y_{i}\right), i=1 \cdots, n$ où
+\begin{equation}\label{eq.lm}
+    y_{i}=\beta_{0}+\beta_{1} x_{i, 1}+\cdot+\beta_{p} x_{i, p}+\varepsilon_{i}, \text { pour } i=1, \cdots, n
+\end{equation}
+où l'on suppose que le vecteur $\varepsilon=\left(\varepsilon_{1}, \cdots, \varepsilon_{n}\right)^{t}$ des résidus vérifie :
+\begin{itemize}
+    \item indépendance: $\varepsilon_{1}, \cdots, \varepsilon_{n}$ sont indépendants et identiquement distribués,
+    \item centrage: $\mathbb{E} \varepsilon_{1}=0$,
+    \item homoscédasticité: $\mathbb{E} \varepsilon_{1}^{2}=\sigma^{2}$. 
+\end{itemize}
+Autrement dit, on ne suppose pas que la loi des erreurs est gaussienne. On veut étudier le comportement asymptotique des statistiques $\hat{\beta}$, l'estimateur de $\beta$ par la méthode des moindres carrés, ainsi que des statistiques de tests classiques. On a le résultat théorique suivant
+
+\begin{theo}
+    On suppose que le modèle \eqref{eq.lm} est régulier et que les hypothèses précédentes sont vérifiées. On note $\pi_{X}$ la matrice de projection sur $Im(X)$ et $h_{n}$ le terme maximal de la matrice $\pi_{X}$
+    \begin{enumerate}[label=$(\roman*)$]
+        \item Si $h_{n} \rightarrow 0$ lorsque $n \rightarrow+\infty$, $\hat{\beta}$ est asymptotiquement un vecteur gaussien.
+        \item En particulier si $\frac{1}{n^{\alpha}} X^{t} X \rightarrow Q$, où $Q$ matrice définie positive et $\alpha>0$, alors :
+            \[
+                h_{n} \rightarrow 0 \quad \Longrightarrow \quad n^{\alpha / 2}(\hat{\beta}-\beta)\xrightarrow[n \rightarrow \infty]{\mathcal{L}} \mathcal N\left(0, \sigma^{2} Q^{-1}\right)
+            \]
+        \item On considère le problème de test $H_{0}: K^{t} \beta=0$ contre $H_{1}: K^{t} \beta \neq 0$, où $K^{t}$ matrice $k \times(p+1)$ de rang $\operatorname{Rg}(K) \leq p+1 .$ Alors on a $:$
+            \[
+                h_{n} \to 0 \quad \Longrightarrow \quad \hat{F}=\frac{\left(K^{t} \hat{\beta}\right)^{t}\left[K^{t}\left(X^{t} X\right)^{-1} K\right]^{-1} K^{t} \hat{\beta}}{\operatorname{Rg}(K) s^{2}} \xrightarrow[n \rightarrow \infty]{\mathcal{L}} \frac{1}{\operatorname{Rg}(K)} \chi^{2}(\operatorname{Rg}(K))
+\]
+\end{enumerate}
+\end{theo}
+
+Ce résultat, basé sur le Théorème de Lindeberg  (qui généralise le TLC), assure la construction de tests asymptotiques de combinaisons linéaires des coefficients, notamment les tests de Fisher (global et partiel). Notons que d'après la théorie des probabilités, on sait que si $\hat{F} \sim \mathcal{F}[k, n-p]$, alors
+\[
+\hat{F} \underset{n \rightarrow \infty}{\stackrel{\mathcal{L}}{\longrightarrow}} \frac{1}{k} \chi^{2}(k)
+\]
+Ainsi les lois limites dans le théorème précédent sont les mêmes que celle que l'on peut obtenir dans le cas gaussien (cela est également valable pour les tests de Student). En conclusion, les résultats asymptotiques de la régression linéaire sont donc similaires sans l'hypothèse de normalité des résidus. C'est pour cela qu'en pratique, l'hypothèse de normalité n'est pas nécessaire lorsque $n$ est assez grand.
+
+\section{Simulations}
+
+%On va illustrer ces résultats en simulant des modèles de régression non-gaussiens. On considère un modèle de régression où $p=3$ de la forme \eqref{eq.lm} où chaque $x_{i}=\left(x_{i, 1}, x_{i, 2}, x_{i, 3}\right)^{t}$ consiste en 3 réalisations de loi uniforme sur un intervalle $[a, b]$. On peut faire varier les valeurs de $a, b$ selon les coordonnées des $x_{i}$, ou bien considérer d'autres distributions que des lois uniformes mais ces considérations sur le design n'ont pas vraiment d'importance ici. Dans cette étude on se concentre sur l'erreur $\varepsilon$ et on choisit $\varepsilon_{1}, \cdots, \varepsilon_{n}$ i.i.d. de loi :
+%\begin{itemize}
+%    \item Exponentielle symétrisée de paramètre $\lambda=1$. 
+%    \item Uniforme sur l'intervalle $[-A, A]$.
+%\end{itemize}
+%
+%\bigskip
+%
+%\begin{enumerate}
+%    \item Vérifier les hypothèses principales des résultats théoriques en simulant ces modèles de régressions avec $n$ qui augmente.
+%    \item Montrer que l'hypothèse de $(ii)$ est vérifiée pour $\alpha=1$ dans le cas particulier où $x_{i}$ est constitué de 3 réalisations indépendantes de loi uniforme sur un intervalle $[a, b]$.
+%    \item Calculer les réalisations de $\hat{\beta}, s^{2}$ et $F=\frac{M C_{R}}{M C_{r e s}}$ dans un modèle simulé.
+%    \item Générer $m=100$ modèles \eqref{eq.lm} et estimer la loi des statistiques précédentes. Vérifier les résultats théoriques.
+%    \item Faites varier $\lambda$ dans la régression avec bruit exponentiel, ou $A>0$ dans la régression avec bruit uniforme. Que se passe-t'il?
+%    \item Réaliser la régression à l'aide de la fonction \texttt{lm()}. Les résultats sont-ils utilisables?
+%\end{enumerate}
+%Application aux jeux de données réelles: Vérifier la loi des résidus des données des TD-TP de régression simple et multiple. Regarder notamment les données eucalyptus (fichier "eucalyptus.txt") et espérance de vie (fichier "lifeexp.dat").
+
+
+On va illustrer ces résultats en simulant des modèles de régression non-gaussiens. On considère un modèle de régression où $p=3$ de la forme \eqref{eq.lm} où chaque $x_{i}=\left(x_{i, 1}, x_{i, 2}, x_{i, 3}\right)^{t}$ consiste en 3 réalisations de loi uniforme sur un intervalle $[0, 5]$. On prendra $\beta = (20, 2, 1, 0.5)^t$. Dans cette étude on se concentre sur l'erreur $\varepsilon$ et on choisit $\varepsilon_{1}, \cdots, \varepsilon_{n}$ i.i.d. tel que $\varepsilon_i = we + (w-1)e'$ où $e, e'$ sont des variables aléatoires de loi exponentielle de paramètre $\lambda=1$ et $w$ une variable aléatoire uniforme sur $\{0,1\}$. 
+
+
+\bigskip
+
+\begin{enumerate}
+    \item Simuler un jeu de données avec $n=100$ à l'aide du modèle décrit (écrire une fonction \texttt{generate\_data(n)} qui prend en entrée un entier $n$ et renvoie un $n$-échantillon). Faire la régression linéaire. Faire des graphiques. 
+
+\if\version1{\small\color{gray}    
+On génère un jeu de données jouet avec le modèle décrit
+<<echo=T>>=  
+
+beta = c(20, 2, 1, 0.5)
+lambda = 1
+
+generate_data <- function(sample_size, beta = c(20, 2, 1, 0.5), lambda = 1) {
+  # covariates
+  X1 <- runif(sample_size, 0, 5)
+  X2 <- runif(sample_size, 0, 5)
+  X3 <- runif(sample_size, 0, 5)
+  X <- matrix(c(rep(1, sample_size), X1, X2, X3), ncol = 4)
+  
+  # noise
+  W = (runif(sample_size) > 1 / 2)
+  noise = (W) * rexp(sample_size, lambda) + (W - 1) * rexp(sample_size, lambda)
+  
+  # observations
+  Y = X %*% beta + noise
+  
+  data = data.frame(cbind(Y, X[, -1]))
+  colnames(data) = c("y", "x1", "x2", "x3")
+  
+  return(data)
+}
+
+
+n <- 100
+data_expo <- generate_data(n)
+@
+
+La régression linéaire donne
+<<echo=T>>=
+reg = lm(y ~ x1 + x2 + x3, data_expo)
+resume = summary(reg)
+est = coef(resume)[, 1]
+est
+
+# library(ggplot2)
+
+# ggplot(data_expo, aes(x = x1, y = y)) + 
+#   geom_point() +
+#   stat_smooth(method = "lm", col = "red")
+@
+}\fi
+    
+    
+    \item En faisant varier $n$ (prendre \texttt{seq(100, 2000, length = 50)}. Montrer que l'hypothèse de $(i)$ est vérifiée expérimentalement. 
+
+\if\version1{\small\color{gray} 
+
+Vérifions empiriquement les hypothèses du Théorème. Tout d'abord, la décroissance de $h_n$ vers 0:
+
+<<echo=T>>=
+vect = seq(100, 2000, length = 50)
+hn = matrix(0, ncol = 50)
+
+for (i in 1:50) {
+  data <- generate_data(vect[i])
+  X <- cbind(rep(1, vect[i]), as.matrix(data[,2:4]))
+  
+  hn[i] = max(X %*% solve(t(X) %*% X) %*% t(X))
+}
+
+library(ggplot2)
+ggplot() + 
+  geom_point(data = data.frame(t(hn)), aes(x = vect, y = t.hn.)) +
+  xlab("n") +
+  ylab("hn") +
+  ggtitle("Décroissance de hn")
+  
+@
+
+}\fi
+
+    \item En faisant varier $n$ (prendre \texttt{seq(100, 10000, length = 50)}. Montrer que l'hypothèse de $(ii)$ est vérifiée expérimentalement.
+
+\if\version1{\small\color{gray}   
+
+
+Ensuite, on vérifie que les valeurs propres (normalisées) de la matrice de covariance empirique convergent:
+<<echo=T>>=
+vect = seq(100, 10000, length = 50)
+w.vect = matrix(0, nrow= 50, ncol = 4)
+
+for (i in 1:50) {
+  data <- generate_data(vect[i])
+  X <- cbind(rep(1, vect[i]), as.matrix(data[,2:4]))
+  
+  w = eigen((1 / vect[i]) * t(X) %*% X)
+  
+  w.vect[i, ] = w$values
+}
+
+w.df = data.frame(w.vect)
+colnames(w.df) = c("intercept", "X1", "X2", "X3")
+
+library(ggplot2)
+ggplot() + 
+  geom_point(data = w.df, aes(x = vect, y = intercept)) +
+  geom_point(data = w.df, aes(x = vect, y = X1),  colour = 'red') +
+  geom_point(data = w.df, aes(x = vect, y = X2),  colour = 'green') +
+  geom_point(data = w.df, aes(x = vect, y = X3),  colour = 'yellow') +
+  scale_y_continuous(trans = "log10")
+  ggtitle("Valeurs propres de X^t X / n") 
+#  labs(legend = c("valeur propre 1",
+#                  "valeur propre 2",
+#                  "valeur propre 3"))
+@
+
+
+}\fi
+
+    \item Calculer les réalisations de $\hat{\beta}, s^{2}$ et $F=\frac{M C_{R}}{M C_{r e s}}$ dans un modèle simulé.
+
+\if\version1{\small\color{gray} 
+
+<<echo=T>>=
+data <- generate_data(1000)
+reg = lm(y ~ x1 + x2 + x3, data_expo)
+
+beta.hat = reg$coefficients
+s2.hat = sum(reg$residuals * reg$residuals) / reg$df.residual # summary(reg)$sigma ^2
+F.hat <- summary(reg)$fstatistic[1]
+
+@
+
+}\fi
+
+    \item Générer $m=500$ modèles \eqref{eq.lm} et estimer la loi des statistiques précédentes. Vérifier les résultats théoriques.
+
+\if\version1{\small\color{gray} 
+
+On se donne un générateur pour les données. On utilise la fonction \texttt{apply} pour éviter de faire une boucle dans \texttt{R}...
+
+<<echo=T>>=
+n = 1000 # sample size
+m = 500 # number of repetition
+
+design = runif(3 * n * m, 0, 5)
+datax = array(design, c(n, 3, m))
+
+
+mod = function(X) {
+  X = cbind(rep(1, n), X)
+    # noise
+  W = (runif(n) > 1 / 2)
+  noise = (W) * rexp(n, lambda) + (W - 1) * rexp(n, lambda)
+  
+  # observations
+  Y = X %*% beta + noise
+  
+  data = data.frame(cbind(Y, X[, -1]))
+  colnames(data) = c("y", "x1", "x2", "x3")
+
+  res = cbind(Y, X[, -1])
+  return(res)
+}
+
+datacomplet = apply(datax, 3, mod)
+@
+
+On calcule les estimateurs sur les données:
+<<echo=T>>=
+betahat = function(col) {
+  data = data.frame(matrix(col, ncol = 4))
+  colnames(data) = c("y", "x1", "x2", "x3")
+  #reg = lm(data[, "y"] ~ data[, "x1"] + data[, "x2"] + data[, "x3"])
+  reg = lm(data = data, y ~ x1 + x2 + x3)
+  resume = summary(reg)
+  return(c(coef(resume)[, 1], resume$fstatistic[1]))
+}
+
+est = apply(datacomplet, 2, betahat)
+
+est_df <- data.frame(t(est))
+colnames(est_df) = c("intercept", "beta1", "beta2", "beta3", "F")
+@
+
+Traçons les histogrammes, ainsi qu'un test de normalité pour le paramètre $\beta_0$ (\texttt{intercept}) 
+<<echo=T>>=
+library(ggplot2)
+ggplot(est_df, aes(x = intercept)) +
+  geom_histogram(aes(y=..density..), color="black", fill="white", bins = 30) +
+  geom_density(alpha=.2, fill="#FF6666") 
+shapiro.test(as.matrix(est_df["intercept"]))$p.value # Should be close to 1 !
+@
+
+Puis $\beta_1$, \dots
+<<echo=T>>=
+ggplot(est_df, aes(x = beta1)) +
+  geom_histogram(aes(y=..density..), color="black", fill="white", bins = 30) +
+  geom_density(alpha=.2, fill="#FF6666")
+shapiro.test(as.matrix(est_df["beta1"]))$p.value # Should be close to 1 !
+@
+\dots ensuite $\beta_2$, \dots
+<<echo=T>>=
+ggplot(est_df, aes(x = beta2)) +
+  geom_histogram(aes(y=..density..), color="black", fill="white", bins = 30) +
+  geom_density(alpha=.2, fill="#FF6666")
+shapiro.test(as.matrix(est_df["beta2"]))$p.value # Should be close to 1 !
+@
+
+\dots et enfin $\beta_3$.
+<<echo=T>>=
+ggplot(est_df, aes(x = beta3)) +
+  geom_histogram(aes(y=..density..), color="black", fill="white", bins = 30) +
+  geom_density(alpha=.2, fill="#FF6666")
+shapiro.test(as.matrix(est_df["beta3"]))$p.value
+@
+
+
+<<echo=T>>=
+ggplot(est_df, aes(x = F)) +
+  geom_histogram(aes(y=..density..), color="black", fill="white", bins = 30) +
+  geom_density(alpha=.2, fill="#FF6666")
+shapiro.test(as.matrix(est_df["beta3"]))$p.value
+@
+
+}\fi
+
+    \item Faites varier $\lambda$ dans la régression avec bruit exponentiel. Que se passe-t'il?
+
+\if\version1{\small\color{gray} 
+
+<<echo=T>>=
+lambda <- 1/5
+
+
+@
+}\fi
+
+\end{enumerate}
+
+\end{document}
+
