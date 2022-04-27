@@ -1,0 +1,67 @@
+\documentclass{td_um}
+\input{../header_td.tex}
+
+\def\version{eno}
+%\def\version{cor}
+
+\usepackage{hyperref}
+\ue{HMMA201}
+
+\providecommand{\T}{\mathbb{T}}
+\providecommand{\1}{\mathds{1}}
+\title{TD III}
+
+
+\newcommand{\miniscule}{\@setfontsize\miniscule{5}{6}}
+%-----------------------------------------------------------------------------
+\begin{document}
+\maketitle
+
+
+\exo{}  Montrer que la statistique de test $F$, introduite en cours pour tester la validité d'un modèle emboîté, peut s'écrire
+\[
+F=\frac{n-p}{q} \frac{R^{2}-R_{0}^{2}}{1-R^{2}}
+\]
+où $R^{2}$ et $R_{0}^{2}$ sont les coefficients de détermination associés respectivement au modèle complet et au modèle emboîté.
+
+%\newpage
+
+\exo{} Dans le modèle de régression linéaire, il arrive parfois que l'on souhaite imposer des contraintes linéaires à $\beta$, par exemple que sa première coordonnée soit égale à $1$. Nous supposerons en général que nous imposons $q$ contraintes linéairement indépendantes à $\beta$, ce qui s'écrit sous la forme : $R \beta=r$, où $R$ est une matrice $q \times p$ de rang $q<p$ et $r$ un vecteur de taille $q$. Montrer que l'estimateur des moindres carrés sous contraintes s'écrit:
+\[
+\hat{\beta}_{c}=\hat{\beta}+\left(X^{t} X\right)^{-1} R^{t}\left[R\left(X^{t} X\right)^{-1} R^{t}\right]^{-1}(r-R \hat{\beta}).
+\]
+Calculer  $\mathbb{E}\left(\hat{\beta}_{c}\right)$ et  $\mathbb{V}\left(\hat{\beta}_{c}\right)$
+
+%\newpage
+
+\exo{Modèle de Cobb-Douglas} Nous disposons pour $n$ entreprises de la valeur du capital $K_{i},$ de l'emploi $L_{i}$ et de la valeur ajoutée $V_{i}$. Nous supposons que la fonction de production de ces entreprises est du type Cobb-Douglas:
+\[
+V_{i}=\lambda L_{i}^{\alpha} K_{i}^{\gamma}
+\]
+\begin{enumerate}
+\item Comment se ramène-t-on à un modèle de régression linéaire?
+\item Pour $n=1658$ entreprises, nous avons obtenu les estimateurs suivants :
+\[
+    \hat{\beta}=\begin{pmatrix}3,136 \\ 0,738 \\ 0,282\end{pmatrix}
+\]
+avec $R^{2}=0,945$ et $S C R=148,27$. Nous donnons aussi
+\[
+    \left(X^{t} X\right)^{-1}=\left(\begin{array}{ccc}
+            0,0288 & 0,0012 & -0,0034 \\
+            0,0012 & 0,0016 & -0,0010 \\
+            -0,0034 & -0,0010 & 0,0009
+    \end{array}\right) \text { et } X^{t} X=\left(\begin{array}{ccc}
+            423 & 2231 & 4077 \\
+            2231 & 13808 & 23769 \\
+            4077 & 23769 & 42923
+    \end{array}\right)
+\]
+Calculer $\hat{\sigma}^{2}$ et une estimation de $\mathbb{V}(\hat{\beta})$.
+\item Donner un intervalle de confiance au niveau $95 \%$ pour $\alpha$. Idem pour $\gamma$.
+\item Tester au niveau $5 \%$ l'hypothèse $H_{0}: \gamma=0,$ contre $H_{1}: \gamma>0$.
+\item Nous voulons tester l'hypothèse selon laquelle les rendements d'échelle sont constants (une fonction de production $F$ est à rendement d'échelle constant si $\left.\forall \theta \in \mathbb{R}^{+}, F(\theta L, \theta K)=\theta F(L, K)\right)$. Quelles sont les contraintes verifiées par le modèle lorsque les rendements d'échelle sont constants? Tester au niveau $5 \%$ l'hypothèse  $H_{0}:$ "les rendements sont constants", contre $H_{1}:$ "les rendements sont croissants".
+    \end{enumerate}
+
+
+\end{document}
+
