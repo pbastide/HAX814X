@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Rappel
 
-$\bullet$ Soit $X$ une variable aléatoire tel que $X \sim\mathcal{N}(\mu, \sigma^2)$ de densité : $$f(x)=\frac{1}{\sqrt{2\pi\sigma^2}}\text{exp}\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$$
+$\bullet$ Soit $X$ une variable aléatoire telle que $X \sim\mathcal{N}(\mu, \sigma^2)$ de densité : $$f(x)=\frac{1}{\sqrt{2\pi\sigma^2}}\text{exp}\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$$
 
 Alors $\forall (a,b)\in \mathbb{R}^2$ on a : $$Y=aX+b \sim \mathcal{N}(a\mu+b, a^2\sigma^2)$$
 
@@ -23,7 +23,7 @@ Alors $\forall (a,b)\in \mathbb{R}^2$ on a : $$Y=aX+b \sim \mathcal{N}(a\mu+b, a
 
 ### Fonction du maximum de vraisemblance
 
-Soit $X$ une va qui admet $f_\theta$ pour densité qui dépend d'un paramètre $\theta$. Alors la fonction fonction maximum de vraisemblance est la densité $$\theta \mapsto L(\theta|x)=f_\theta(x)$$
+Soit $X$ une va qui admet $f_\theta$ pour densité qui dépend d'un paramètre $\theta$. Alors la fonction du maximum de vraisemblance est la densité $$\theta \mapsto L(\theta|x)=f_\theta(x)$$
 
 Notre modèle est $y_i =\beta_0+\beta_1x_i+\epsilon_i$, avec $\epsilon_i \underset{iid}{\sim} \mathcal{N}(0, \sigma^2)$, c'est à dire que $\forall i \in \{1,..,n\}$, les $\epsilon_i$ sont indépendants, suivent une loi gaussienne centrée donc $\mathbb{E}[\epsilon_i]=0$,
 et ils sont homocédastiques, c'est à dire : $\mathbb{V}[\epsilon_i]=\sigma^2$.
@@ -39,7 +39,7 @@ $$
 
 ### Estimateur du maximum de vraisemblance
 
-L'estimateur de vraisemblance (ML) de $\theta$, noté $\hat\theta$, est celui qui maximise la fonction de vraisemblance à une observation $x$ donné.
+L'estimateur de vraisemblance (ML) de $\theta$, noté $\hat\theta$, est celui qui maximise la fonction de vraisemblance à une observation $x$ donnée.
 
 Il est donné par : $$\hat\theta=\underset{\theta}{\text{argmax}}~L(\theta|x)$$
 
@@ -50,7 +50,7 @@ $$ Donc $\forall \sigma^2>0$, on a $(\hat{\beta}_0^{ML}, \hat{\beta}_1^{ML})=\un
 
 Donc, l'estimateur du maximum de vraisemblance et l'estimateur des moindres carrées sont les mêmes.
 
-On a aussi l'estimateur du maximum de vraisemblance pour $\sigma^2$ :$\hat{\sigma}^2_{ML} = \frac{1}{n}\sum_{i = 1}^n \hat{\epsilon}_i^2$ De plus, celui ci est baisé : $\mathbb{E}[\hat{\sigma}^2_{ML}] = \frac{n - 2}{n}\sigma^2 \neq \sigma^2$.
+On a aussi l'estimateur du maximum de vraisemblance pour $\sigma^2$ :$\hat{\sigma}^2_{ML} = \frac{1}{n}\sum_{i = 1}^n \hat{\epsilon}_i^2$ Cependant, celui ci est baisé : $\mathbb{E}[\hat{\sigma}^2_{ML}] = \frac{n - 2}{n}\sigma^2 \neq \sigma^2$.
 
 ## Distribution des coefficients et estimateur de la variance
 
@@ -132,7 +132,7 @@ La distribution jointe nous donne une ellipse de confiance pour $\hat\beta$.
 
 $$
 \frac{1}{2\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T \mathbf{V}_n^{-1}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right) \leq f^2_{n-2}(1-\alpha)
-$$ Etant donné que $\mathbf{V}_n^{-1}$ est défini positive, c'est l'équation d'une région de confiance élliptique.
+$$ Etant donné que $\mathbf{V}_n^{-1}$ est définie positive, c'est l'équation d'une région de confiance élliptique.
 
 $$\mathbf{y} = -2 \cdot \mathbb{1} + 3 \cdot \mathbf{x} + \boldsymbol{\epsilon}$$
 
