@@ -1,5 +1,5 @@
 ---
-title: "Fiche_ML_2"
+title: "Régression simple Gaussienne"
 author: 'Fanny Chery et Adrien Simon '
 date: "28/03/2022"
 output:
@@ -46,9 +46,9 @@ Il est donné par : $$\hat\theta=\underset{\theta}{\text{argmax}}~L(\theta|x)$$
 On a vu que : $$
 \log L(\beta_0, \beta_1, \sigma^2 | \mathbf{y}) =
 -\frac{n}{2} \log(2\pi\sigma^2) - \frac{1}{2\sigma^2}\underbrace{\sum_{i = 1}^n (y_i - \beta_0 - \beta_1 x_i)^2}_{\text{Somme des carrés} SS(\beta_0, \beta_1)}
-$$ Donc $\forall \sigma^2>0$, on a $(\hat{\beta}_0^{ML}, \hat{\beta}_1^{ML})=\underset{(\beta_0, \beta_1) \in \mathbb{R}^2}{\operatorname{argmax}} \log L(\beta_0, \beta_1, \sigma^2 | \mathbf{y})= \underset{(\beta_0, \beta_1) \in \mathbb{R}^2}{\operatorname{argmin}} SS(\beta_0, \beta_1)=(\hat{\beta}_0^{OLS}, \hat{\beta}_1^{OLS})$
+$$ Donc $\forall \sigma^2>0$, on a $(\hat{\beta}_0^{ML}, \hat{\beta}_1^{ML})=\underset{(\beta_0, \beta_1) \in \mathbb{R}^2}{\operatorname{argmax}} \log L(\beta_0, \beta_1, \sigma^2 | \mathbf{y})= \underset{(\beta_0, \beta_1) \in \mathbb{R}^2}{\operatorname{argmin}} SS(\beta_0, \beta_1)=(\hat{\beta}_0^{OLS}, \hat{\beta}_1^{OLS})$.
 
-Donc l'estimateur du maximum de vraisemblance et l'estimateur des moindres carrées sont les mêmes.
+Donc, l'estimateur du maximum de vraisemblance et l'estimateur des moindres carrées sont les mêmes.
 
 On a aussi l'estimateur du maximum de vraisemblance pour $\sigma^2$ :$\hat{\sigma}^2_{ML} = \frac{1}{n}\sum_{i = 1}^n \hat{\epsilon}_i^2$ De plus, celui ci est baisé : $\mathbb{E}[\hat{\sigma}^2_{ML}] = \frac{n - 2}{n}\sigma^2 \neq \sigma^2$.
 
@@ -67,11 +67,11 @@ Lorsque le paramètre $\sigma^2$ est connu, le vecteur $\begin{pmatrix} \hat\bet
 
 On rappelle les relations suivantes : $$\hat\sigma^2=\frac{1}{n-2}\sum^n_{i=1}\hat\epsilon^2_i\quad\text{et}\quad \mathbb{E}[\hat\sigma^2]=\sigma^2$$
 
-On a donc $\hat\sigma^2 \sim \chi^2_{n-2}$ c'est à dire que $\hat\sigma^2$ suit une loi du $\chi^2$ à $n-2$ degrés de liberté.
+On a donc $\frac{(n-2)\hat\sigma^2}{\sigma^2} \sim \chi^2_{n-2}$ c'est à dire que $\hat\sigma^2$ suit une loi du $\chi^2$ à $n-2$ degrés de liberté.
 
 ### Distribution des coefficients avec $\sigma^2$ inconnu
 
-En général, $\sigma^2$ est inconnu, on va donc le remplacer par son estimateur sans biais, c'est à dire $\hat\sigma^2$. Cela modifie la distribution des coefficients et par le théorème central limite :
+En général, $\sigma^2$ est inconnu, on va donc le remplacer par son estimateur sans biais, c'est à dire $\hat\sigma^2$. Cela modifie la distribution des coefficients et on obtient :
 
 -   Quand $\sigma^2$ est connu : $$
     \frac{\hat{\beta}_0 - \beta_0}{\sqrt{\frac{\sigma^2 \left(1+\frac{\bar{x}^2}{s_{\mathbf{x}}^2}\right)}{n}}}\sim\mathcal{N}(0, 1)
@@ -96,7 +96,7 @@ Nous avons donc
 
 -   $\frac{\hat\beta_1 - \beta_1}{\sqrt{\hat\sigma_1^2}}\sim\mathcal{T}_{n-2}$
 
-On obtient alors les intervalles de confiance suivants avec probabilité $1-\alpha$ :
+On obtient alors les intervalles de confiance suivants avec probabilité $1-\alpha$ et avec les quantiles t_{n-2} de la loi de $student$ et c_{n-2} de la loi du $\chi^2$ :
 
 -   $\beta_0 \in \begin{bmatrix}\hat\beta_0\pm t_{n-2}(1-\frac{\alpha}{2})\sqrt{\hat\sigma_0^2}\end{bmatrix}$
 
@@ -128,7 +128,7 @@ $$
 
 ### Région de confiance
  
-La distribution jointe nous donne une éllipse de confiance pour $\hat\beta$.
+La distribution jointe nous donne une ellipse de confiance pour $\hat\beta$.
 
 $$
 \frac{1}{2\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T \mathbf{V}_n^{-1}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right) \leq f^2_{n-2}(1-\alpha)
@@ -140,7 +140,7 @@ Le produit cartésien des intervalles de confiance des distributions marginales 
 
 La distribution jointe nous donne une éllipse de confiance pour $\hat\beta$.
 
-L'intersection de ce rectangle et de l'éllipse est nommé la région de confiance.
+La région de confiance correspond donc à l'éllipse de confiance.
 
 
 ```{r simcr, echo = FALSE}
@@ -186,5 +186,5 @@ polygon(ci[1, c(1, 2, 2, 1)], ci[2, c(1, 1, 2, 2)], border = ccc[4])
 
 Difference entre:
 
--   **Intervalles de confiance** (vert) and the
+-   **Intervalles de confiance** (vert) et la
 -   **Région de confiance** (violet).
