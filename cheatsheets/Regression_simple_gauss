@@ -67,7 +67,7 @@ Lorsque le paramètre $\sigma^2$ est connu, le vecteur $\begin{pmatrix} \hat\bet
 
 On rappelle les relations suivantes : $$\hat\sigma^2=\frac{1}{n-2}\sum^n_{i=1}\hat\epsilon^2_i\quad\text{et}\quad \mathbb{E}[\hat\sigma^2]=\sigma^2$$
 
-On a donc $\frac{(n-2)\hat\sigma^2}{\sigma^2} \sim \chi^2_{n-2}$ c'est à dire que $\hat\sigma^2$ suit une loi du $\chi^2$ à $n-2$ degrés de liberté.
+On a donc $\frac{(n-2)\hat\sigma^2}{\sigma^2} \sim \chi^2_{n-2}$ c'est à dire que $\hat\sigma^2$, une fois renormalisée, suit une loi du $\chi^2$ à $n-2$ degrés de liberté.
 
 ### Distribution des coefficients avec $\sigma^2$ inconnu
 
