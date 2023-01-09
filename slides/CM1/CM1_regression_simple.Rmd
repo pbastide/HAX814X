@@ -50,7 +50,7 @@ output:
 ## Ressources
 
 * Polycopié de Arnaud Guyader  
-https://www.lpsm.paris/pageperso/guyader/files/teaching/Regression.pdf
+https://perso.lpsm.paris/~aguyader/files/teaching/Regression.pdf
 
 * An Introduction to Statistical Learning,  
 G. James, D. Witten, T. Hastie and R. Tibshirani  

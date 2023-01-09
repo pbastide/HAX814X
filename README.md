@@ -17,7 +17,7 @@ toujours la dernière version des supports de cours disponibles.
 
 ## Ressources
 
-* Le [polycopié](https://www.lpsm.paris/pageperso/guyader/files/teaching/Regression.pdf) de Arnaud Guyader.
+* Le [polycopié](https://perso.lpsm.paris/~aguyader/files/teaching/Regression.pdf) de Arnaud Guyader.
 
 * [An Introduction to Statistical Learning](https://statlearning.com/), G. James, D. Witten, T. Hastie and R. Tibshirani
 
