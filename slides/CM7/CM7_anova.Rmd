@@ -1,7 +1,7 @@
 ---
 title: 'Régression - Variables Qualitatives'
-author: "Paul Bastide - Benjamin Charlier"
-date: "14/04/2022"
+author: "Paul Bastide - Nicolas Meyer"
+date: "12/04/2022"
 output:
   ioslides_presentation:
   fig_width: 7

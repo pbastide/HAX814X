@@ -1,7 +1,7 @@
 ---
 title: 'Régression Multiple - Validation'
-author: "Paul Bastide - Benjamin Charlier"
-date: "23/03/2022"
+author: "Paul Bastide - Nicolas Meyer"
+date: "22/03/2022"
 output:
   ioslides_presentation:
   fig_width: 7
