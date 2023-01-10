@@ -80,7 +80,7 @@ https://moodle.umontpellier.fr/course/view.php?id=25368
   
 * Fiches synthétiques
   * k-ème fiche acceptée (PR) = $\frac{2}{2^{k-1}}$ points en plus sur la note du CC.
-  * peuvent être écrites en collaboration.
+  * peuvent être écrites en collaboration (au moins un commit par personne).
 
 
 <!-- ************************************************************************ -->
@@ -301,6 +301,25 @@ n \hat{\beta}_0 &= \sum_{i = 1}^n y_i - \hat{\beta}_1 \sum_{i = 1}^n x_i \\
 \end{aligned}
 $$
 
+## Advertising: Gravity Point
+
+$$
+\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x} \rightarrow \bar{y} = \hat{\beta}_0 + \hat{\beta}_1 \bar{x}
+$$
+
+```{r ad11, echo=FALSE, fig.height=4, fig.width=6}
+ad.fit <- lm(sales ~ TV)
+par(mar = c(5, 4, 0, 2) + 0.1)
+plot(TV, sales, pch = 16, cex = 0.7)
+abline(a = ad.fit$coefficients[1], b = ad.fit$coefficients[2], col = "blue", lwd = 2)
+points(mean(TV), mean(sales), col = "red", pch = 19)
+abline(v = mean(TV), lty = 2)
+abline(h = mean(sales), lty = 2)
+```
+
+* OLS line goes through $(\bar{x}, \bar{y})$ the gravity point.
+
+
 ## OLS: Computation - 4/5
 
 First equation gives:
@@ -357,10 +376,20 @@ $$
 
 Closed form expressions:
 $$
-\hat{\beta}_1 = \frac{\sum_{i = 1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i = 1}^n (x_i - \bar{x})^2}
+\hat{\beta}_1 
+= \frac{\sum_{i = 1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i = 1}^n (x_i - \bar{x})^2}
+= \frac{s_{\mathbf{y},\mathbf{x}}^2}{s_{\mathbf{x}}^2}
 \qquad
 \hat{\beta}_0 = \bar{y} - \hat{\beta}_1\bar{x}
 $$
+
+With 
+$$
+s_{\mathbf{x}}^2 = \frac{1}{n}\sum_{i = 1}^n (x_i - \bar{x})^2
+\qquad
+s_{\mathbf{y},\mathbf{x}}^2 = \frac{1}{n}\sum_{i = 1}^n (x_i - \bar{x})(y_i - \bar{y})
+$$
+the empirical variance and covariance of $\mathbf{x}$ and $\mathbf{y}$.
 
 ## Advertising: OLS line
 
@@ -375,20 +404,6 @@ segments(x0 = TV, y0 = sales, x1 = TV, y1 = predict(ad.fit))
 * $\hat{\beta}_0 = 7.03$, $\hat{\beta}_1 = 0.0475$
 * An additional $1000$ k\$ spent on TV is associated with selling approximately $47.5$ more units of the product.
 
-## Advertising: OLS line
-
-```{r ad11, echo=FALSE, fig.height=4, fig.width=6}
-ad.fit <- lm(sales ~ TV)
-par(mar = c(5, 4, 0, 2) + 0.1)
-plot(TV, sales, pch = 16, cex = 0.7)
-abline(a = ad.fit$coefficients[1], b = ad.fit$coefficients[2], col = "blue", lwd = 2)
-points(mean(TV), mean(sales), col = "red", pch = 19)
-abline(v = mean(TV), lty = 2)
-abline(h = mean(sales), lty = 2)
-```
-
-* Red dot is $(\bar{x}, \bar{y})$ the gravity point
-
 ## OLS: Remarks
 
 $$
@@ -397,15 +412,12 @@ $$
 \hat{\beta}_0 = \bar{y} - \hat{\beta}_1\bar{x}
 $$
 
->* $\hat{\beta}_0 + \hat{\beta}_1 \bar{x} = \bar{y}$  
+* $\hat{\beta}_0 + \hat{\beta}_1 \bar{x} = \bar{y}$  
 The OLS regression line goes through the gravity point $(\bar{x}, \bar{y})$
 
->* $\hat{\beta}_0$ and $\hat{\beta}_1$ are **linear** in the data $\mathbf{y} = (y_1, \cdots, y_n)^T$.
+* $\hat{\beta}_0$ and $\hat{\beta}_1$ are **linear** in the data $\mathbf{y} = (y_1, \cdots, y_n)^T$.
 
->* $\hat{\beta}_1 = \frac{s_{\mathbf{y},\mathbf{x}}^2}{s_{\mathbf{x}}^2}$  
-With $s_{\mathbf{x}}^2 = \frac{1}{n}\sum_{i = 1}^n (x_i - \bar{x})^2 =  \frac{1}{n}\sum_{i = 1}^n x_i^2 - \bar{x}^2$  
-and $s_{\mathbf{y},\mathbf{x}}^2 = \frac{1}{n}\sum_{i = 1}^n (x_i - \bar{x})(y_i - \bar{y})$  
-the empirical variance and covariance of $\mathbf{x}$ and $\mathbf{y}$.
+* $\hat{\beta}_1 = \frac{s_{\mathbf{y},\mathbf{x}}^2}{s_{\mathbf{x}}^2}$.
 
 <!-- ************************************************************************ -->
 # OLS estimators are unbiased
