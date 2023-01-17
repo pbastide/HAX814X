@@ -1,7 +1,7 @@
 ---
 title: 'Régression simple - I'
 author: "Paul Bastide - Nicolas Meyer"
-date: "17/01/2022"
+date: "17/01/2023"
 output:
   ioslides_presentation:
     fig_width: 7
