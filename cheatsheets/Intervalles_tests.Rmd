@@ -1,0 +1,769 @@
+---
+title: "Intervalles de confiance et tests d'hypothèses"
+subtitle: "Régression Multiple"
+author: "Malek BOUARROUDJ"
+date:
+output: 
+  prettydoc::html_pretty:
+    theme: tactile
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1) Généralité :
+
+Un modèle gaussien est défini par : $Y=X\beta + \varepsilon$ où
+
+-   $Y$ est un vecteur aléatoire de dimension $n$ appelé variable à
+    expliquer
+-   $X$ est une matrice (non-aléatoire) de taille $n\times p$ appelée
+    matrice du plan d'expérience
+-   $\beta$ est le vecteur de dimension $p$ des paramètres inconnus du
+    modèle
+-   $\varepsilon$ est le vecteur aléatoire de dimension $n$ des erreurs
+    (ou bruits)
+
+**Remarque** : Les colonnes de $X$ sont aussi appelées variables
+explicatives du modèle.
+
+De plus, il y a des hypothèses additionnelles au modèle :
+
+-   (H1) $rg(X) = p$
+-   (H2)
+    $\varepsilon \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I}_n)$
+
+La forme générale s'écrit :
+
+pour tout $i$ on a
+$y_i= \beta_0 +\beta_1 x_{i1}+\beta_2 x_{i2} +...+\beta_p x_{ip}+ \varepsilon_i$
+
+La matrice $X$ et
+$\beta$ s'écrivent :
+
+$$
+\begin{pmatrix}
+y_1\\ 
+.\\ 
+.\\ 
+y_n\\ 
+\end{pmatrix} = \begin{pmatrix}
+ x_{11}& ..&  ..&  x_{1p}& \\ 
+ .&   ..& ..& .& \\ 
+  .&   ..& ..& .& \\ 
+ x_{n1}&  ..& ..& x_{np}& 
+\end{pmatrix}\begin{pmatrix}
+\beta_1\\ 
+.\\ 
+.\\ 
+\beta_p\\
+\end{pmatrix}+\begin{pmatrix}
+\epsilon_1\\ 
+.\\ 
+.\\ 
+\epsilon_n\\ 
+\end{pmatrix}
+$$
+
+Il y a $n-p$ degrés de liberté, et si $X_1=1$ (première colonne) est l'intercept alors il y
+a $p-1$ variables explicatives.
+
+## 2) Biais et variance :
+
+### [a) Biais et Variance de $\hat{\beta}$ :]{.ul}
+
+$$
+\hat{\beta}=(X'X)^{-1}X'Y
+$$
+
+$$
+\mathbb{E}[\hat{\beta}]=\beta \\
+\mathbb{V}[\hat{\beta}]=\sigma^2(X'X)^{-1}
+$$
+
+### [b) Biais et variance de $\hat{\varepsilon}$ :]{.ul}
+
+On note $\mathbf{P}^{X}$ la matrice de projection sur le sous espace engendré par les vecteurs colonne de la matrice X.
+
+$$
+\hat{\varepsilon}
+= Y - \hat{Y}
+= (\mathbf{I}_n - \mathbf{P}^{X})Y\\
+= \mathbf{P}^{X^\bot}Y
+= \mathbf{P}^{X^\bot}(X\boldsymbol{\beta} + \varepsilon)\\
+\hat{\varepsilon} = \mathbf{P}^{X^\bot}\varepsilon
+$$
+
+$$
+\mathbb{E}[\hat{\varepsilon}]  = \mathbf{0} \\
+\mathbb{Var}[\hat{\varepsilon}]  = \sigma^2 \mathbf{P}^{{X}^\bot}
+$$
+
+
+### [c) Biais et variance de $\hat{Y}$ :]{.ul}
+
+$$
+\hat{Y}=X\hat{\boldsymbol{\beta}}=\mathbf{P}^{X}Y
+$$
+
+$$
+\mathbb{E}[\hat{Y}] = X\boldsymbol{\beta} \\
+\mathbb{Var}[\hat{Y}] = \sigma^2 \mathbf{P}^{X}
+$$
+
+$$
+\mathbb{Cov}[\hat{\varepsilon}; \hat{Y}] = \mathbf{0}.
+$$
+
+### [d) Estimateur de la variance :]{.ul}
+
+$$
+\hat{\sigma}^2 = \frac{1}{n - p} \| \hat{\varepsilon} \|^2 =\frac{1}{n - p} \|y-\hat{y}\|^2 = \frac{1}{n - p} RSS
+$$
+
+c'est un estimateur sans biais car :
+
+$$
+\mathbb{E}[\| \hat{\varepsilon} \|^2]= \sigma^2  (n - p)
+$$
+
+**Remarque :**
+
+$$
+\text{ On a   :}~~~~~~ 
+\hat{\sigma}^2 =  \frac{\|\mathbf{P}^{X^\bot}Y \|^2}{n-p}~~~~~~  \text{ et  :}~~~~~~  \hat{\boldsymbol{\beta}} =  (X^{T}X)^{-1}X^{T}\mathbf{P}^{X}Y\\
+\text{ D'après le théoreme de cochran :} \\
+\mathbf{P}Y  ~~~\text{et} ~~~\mathbf{P}^{\bot}Y~~~ \text{ sont indépendants et donc} ~~~~ \hat{\boldsymbol{\beta}} \text{ et } \hat{\sigma}^2 \text{ sont indépendants}
+$$
+
+### [e) Erreur de prédiction $\hat{\varepsilon}_{n+1}$ :]{.ul}
+
+
+Un des buts de la régression est de faire de la prévision, soit $x_{n+1}$ une nouvelle valeur de la variable explicative pour laquelle nous voulons prédire $y_{n+1}$ en utilisant le modéle ajusté  : $\hat{y}_{n+1}= \hat{\beta}_0+\hat{\beta}_1x_{n+1}$ 
+
+L'erreur de prédiction est définie dans ce cas par :  $\hat{\varepsilon}_{n+1} = y_{n+1} - \hat{y}_{n+1}$
+
+$$
+\mathbb{E}[\hat{\varepsilon}_{n+1}] = 0\\
+\mathbb{Var}[\hat{\varepsilon}_{n+1}] = \sigma^2 \left(1 + x^{n+1} (X^TX)^{-1}(x^{n+1})^T\right)\\
+$$
+
+## 2) Distribution des coefficients :
+
+### [a) Distribution de $\hat{\sigma}^2$]{.ul} (Théoreme de cochran) :
+
+$$
+\frac{(n-p) \hat{\sigma}^2}{\sigma^2}
+\sim
+\chi^2_{n-p}
+$$
+
+### [b) Distribution de $\hat{\boldsymbol{\beta}}$ :]{.ul}
+
+-   Quand $\sigma^2$ est connu :
+
+$$
+\hat{\boldsymbol{\beta}}
+\sim
+\mathcal{N}\left(
+\boldsymbol{\beta};
+\sigma^2 (X^TX)^{-1}
+\right).
+$$
+
+Pour $1 \leq k \leq p$:
+
+$$
+\hat{\beta}_k
+\sim
+\mathcal{N}(\beta_k, \sigma^2 [(X^TX)^{-1}]_{kk})\\
+\Leftrightarrow \\
+\frac{\hat{\beta}_k - \beta_k}{\sqrt{\sigma^2 [(X^TX)^{-1}]_{kk}}}
+\sim
+\mathcal{N}(0, 1).
+$$ Notation: $$
+\hat{\sigma}^2_k = \hat{\sigma}^2_{\hat{\beta}_k} = \hat{\sigma}^2 [(X^TX)^{-1}]_{kk}
+$$
+
+-   Quand $\sigma^2$ est inconnu :
+
+$$
+\frac{\hat{\beta}_k - \beta_k}{\sqrt{\sigma^2 [(X^TX)^{-1}]_{kk}}}
+\sim
+\mathcal{N}(0, 1)
+\quad
+\text{et}
+\quad
+\frac{(n-p) \hat{\sigma}^2}{\sigma^2}
+\sim
+\chi^2_{n-p} \\
+\text{et comme on a } ~~~\hat{\boldsymbol{\beta}} \text{ et } \hat{\sigma}^2 ~~\text{ indépendants}
+$$ 
+
+Alors :
+
+$$
+\frac{\hat{\beta}_k - \beta_k}{\sqrt{\hat{\sigma}^2 [(X^TX)^{-1}]_{kk}}}
+\sim
+\mathcal{T}_{n-p}.
+$$
+
+### [c) Distribution jointe des coefficients :]{.ul}
+
+-   Quand $\sigma^2$ est inconnu :
+
+$$
+\hat{\boldsymbol{\beta}}
+\sim
+\mathcal{N}\left(
+\boldsymbol{\beta};
+\sigma^2 (X^TX)^{-1}
+\right)
+\quad
+\text{et}
+\quad
+\frac{(n-p) \hat{\sigma}^2}{\sigma^2}
+\sim
+\chi^2_{n-p}
+$$ $$
+\hat{\boldsymbol{\beta}}
+\sim
+\mathcal{N}\left(
+\boldsymbol{\beta};
+\sigma^2 (X^TX)^{-1}
+\right)
+\qquad\qquad
+\\
+\qquad\qquad
+\implies
+\frac{1}{\sigma^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (X^TX)\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
+\sim
+\chi^2_{p}
+$$ $$
+\frac{(n-p) \hat{\sigma}^2}{\sigma^2}
+\sim
+\chi^2_{n-p}
+\quad
+\text{ independante de } \hat{\boldsymbol{\beta}}
+$$ D'ou : $$
+\begin{aligned}
+\frac{
+\frac{1}{\sigma^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (X^TX)\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right) / p
+}{
+\frac{(n-p) \hat{\sigma}^2}{\sigma^2} / (n-p)
+}
+\qquad\qquad\qquad
+\\
+\qquad\qquad
+=
+\frac{1}{p\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (X^TX)\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
+&\sim
+\mathcal{F}^p_{n-p}.
+\end{aligned}
+$$
+
+### [d) Distribution de $\hat{Y}$ :]{.ul}
+
+$$
+\hat{Y}
+\sim
+\mathcal{N}\left(
+X\boldsymbol{\beta}~~;~ 
+\sigma^2 \mathbf{P}^{X}
+\right)
+\quad
+$$
+
+### [e) Distribution de $\hat{\varepsilon}_{n+1}$ (l'erreur de prédiction) :]{.ul}
+
+$$
+\hat{\varepsilon}_{n+1}
+\sim
+\mathcal{N}\left(0~~;~\sigma^2 \left(1 + x^{n+1} (X^TX)^{-1}(x^{n+1})^T\right)\right)
+$$
+
+## 3) Intervalle de confiance :
+
+Avec probabilité $1-\alpha$:
+
+### [a) Intervalle de confiance de ${\beta}_k$ :]{.ul}
+
+$$
+\beta_k \in \left[\hat{\beta}_k \pm t_{n-p}(1 - \alpha/2) \sqrt{\hat{\sigma}_k^2}\right]\\
+$$
+
+ Avec $t_{n-p}(1 - \alpha/2)$ représente le fractile d'ordre $1 − \alpha/2$ de la loi de student
+
+### [b) Intervalle de confiance de $\sigma^2$ :]{.ul}
+
+$$
+\sigma^2 \in \left[\frac{(n-p)\hat{\sigma}^2}{c_{n-p}(1 - \alpha/2)}; \frac{(n-p)\hat{\sigma}^2}{c_{n-p}(\alpha/2)}\right]
+$$
+
+Avec $c_{n-p}(1 - \alpha/2)$ représente le fractile d'ordre $1 − \alpha/2$ de la loi khi-deux
+
+### [c) Intervalle de prédiction :]{.ul}
+
+$$
+y_{n+1} \in \left[\hat{y}_{n+1} \pm t_{n-p}(1 - \alpha/2) \sqrt{\hat{\sigma}^2 \left(1 + x^{n+1} (X^TX)^{-1}(x^{n+1})^T\right)}\right]\\
+$$
+
+## 4) Tests {.build}
+
+### [a) Test de Student :]{.ul}
+
+$$
+\text{Hypothèse:}
+\qquad\qquad
+\mathcal{H}_0: \beta_k = 0
+\quad
+\text{vs}
+\quad
+\mathcal{H}_1: \beta_k \neq 0
+$$
+
+$$
+\text{Test Statistique:}
+\qquad\qquad\qquad\qquad
+T_k 
+= \frac{\hat{\beta}_k}{\sqrt{\hat{\sigma}^2_k}}
+\underset{\mathcal{H}_0}{\sim}
+\mathcal{T}_{n-p}
+$$
+
+$$
+\text{Région de rejet:}
+\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\\
+\mathbb{P}[\text{Rejet} | \mathcal{H}_0 \text{ vraie}] \leq \alpha
+\qquad\qquad\qquad\qquad\qquad\\
+\qquad\qquad\qquad \iff \mathcal{R}_\alpha = \left\{ t \in \mathbb{R}  ~|~ |t| \geq t_{n-p}(1 - \alpha/2) \right\}
+$$
+
+$$
+\text{p value:}\qquad\qquad\qquad\qquad\quad
+p = \mathbb{P}_{\mathcal{H}_0}[|T_k| > T_k^{obs}]
+$$
+
+**Exemple :**
+
+$$
+y_i = -2 + 5 x_{i1} - x_{i2} + \varepsilon_i
+$$
+
+```{r}
+## Simulation de la base de données 
+set.seed(1997)
+
+## Predicteurs
+n <- 500
+x_1 <- runif(n, min = -2, max = 2)
+x_2 <- runif(n, min = -2, max = 2)
+
+## Bruit
+eps <- rnorm(n, mean = 0, sd = 2)
+
+## Modele simuler 
+beta_0 <- -2
+beta_1 <- 5
+beta_2 <- -1
+y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+
+## Prédicteur inutile 
+x_junk <- runif(n, min = -2, max = 2)
+
+# Regression 
+fit <- lm(y_sim ~ x_1 + x_2 + x_junk)
+summary(fit)
+```
+
+On rejette (risque d'erreur 5%) $H_0$ l'hypothèse de nullité pour les deux coefficients
+$\beta_1$ et $\beta_2$ car leur $pvalue < 0.05$ par contre pour
+$\beta_3$ on ne peut pas rejeter $H_0$ car $pvalue = 0.426 > 0.05$.
+
+### [b) Test de Fisher global :]{.ul}
+
+$$
+\text{Hypothèses:}
+\qquad\qquad
+\mathcal{H}_0: \beta_1 = \cdots = \beta_p = 0
+\quad
+\text{vs}
+\quad
+\mathcal{H}_1: \exists~k ~|~ \beta_k \neq 0
+$$ 
+
+$$
+\text{Test Statistique:}
+\qquad\qquad\qquad
+F
+= \frac{1}{p\hat{\sigma}^2}\hat{\boldsymbol{\beta}}^T (\mathbf{X}^T\mathbf{X})\hat{\boldsymbol{\beta}}
+\underset{\mathcal{H}_0}{\sim}
+\mathcal{F}^p_{n-p}
+$$ 
+
+$$
+\text{Région de rejet:}
+\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\\
+\mathbb{P}[\text{Rejet} | \mathcal{H}_0 \text{ vraie}] \leq \alpha
+\qquad\qquad\qquad\qquad\qquad\\
+\qquad\qquad\qquad \iff \mathcal{R}_\alpha = \left\{ f \in \mathbb{R}_+  ~|~ f \geq f^p_{n-p}(1 - \alpha) \right\}
+$$
+
+$$
+\text{p value:}\qquad\qquad\qquad\qquad\quad
+p = \mathbb{P}_{\mathcal{H}_0}[F > F^{obs}]
+$$
+
+Approche géométrique :
+
+$$
+\begin{aligned}
+F
+&= \frac{1}{p\hat{\sigma}^2}\hat{\boldsymbol{\beta}}^T (X^TX)\hat{\boldsymbol{\beta}}
+= \frac{(X\hat{\boldsymbol{\beta}})^T (X\hat{\boldsymbol{\beta}}) / p}{\|\hat{\varepsilon}\|^2 / (n - p)} \\
+&= \frac{\|\hat{Y}\|^2 / p}{\|\hat{\varepsilon}\|^2 / (n - p)}
+= \frac{\|\hat{Y}\|^2 / p}{\|Y -  \hat{Y}\|^2 / (n - p)} \\
+\end{aligned}
+$$
+
+-   Si $\|\hat{\mathbf{\varepsilon}}\|^2$ est **petit** alors l'erreur est
+    petite est F tend a être grand, ce qui signifie qu'on tend à rejeter
+    $H_0$ (le modèle est utile)
+
+**Modèle utile**
+
+```{r proj2, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.55, 0.45)
+yv <- c(0.8, 0.7)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.8, 0.3)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "firebrick", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "firebrick", pos = 2)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))),
+     col = "dodgerblue2", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue2", lwd = 1, lty = 2)
+# hat epsilon
+text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+     labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
+```
+
+-   Si $\|\hat{\mathbf{\varepsilon}}\|^2$ est **grand** alors l'erreur est
+    grande est F tend a être petit, ce qui signifie qu'on tend à ne pas
+    rejeter $H_0$ (le modèle est inutile)
+
+**Modèle inutile**
+
+```{r proj1, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.65, 0.45)
+yv <- c(0.4, 1.0)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.4, 0.2)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "firebrick", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "firebrick", pos = 2)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))),
+     col = "dodgerblue2", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue2", lwd = 1, lty = 2)
+# hat epsilon
+text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+     labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
+```
+
+**Exemple :**
+
+$$
+y_i = -2 + 5 x_{i1} - x_{i2} + \varepsilon_i
+$$
+
+```{r}
+## Simulation de la base de données 
+set.seed(1997)
+
+## Predicteurs
+n <- 500
+x_1 <- runif(n, min = -2, max = 2)
+x_2 <- runif(n, min = -2, max = 2)
+
+## Bruit
+eps <- rnorm(n, mean = 0, sd = 2)
+
+## Modele simuler 
+beta_0 <- -2
+beta_1 <- 5
+beta_2 <- -1
+y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+
+## Prédicteur inutile 
+x_junk_1 <- runif(n, min = -2, max = 2)
+x_junk_2 <- runif(n, min = -2, max = 2)
+x_junk_3 <- runif(n, min = -2, max = 2)
+
+# Regression 
+fit1 <- lm(y_sim ~ x_1 + x_2 + x_junk_1 + x_junk_2 +x_junk_3 )
+fit2 <- lm(y_sim ~ x_junk_1 + x_junk_2 +x_junk_3 )
+```
+
+Premier cas :
+
+```{r}
+summary(fit1)
+```
+
+Dans ce premier cas la statistique F est très grande ce qui nous mène a
+rejeter $H_0$ car la $pvalue<0.05$ et donc le modèle est utile. Autrement
+dit il existe au moins un seul coefficient significativement non nul.
+
+Deuxième cas :
+
+```{r}
+summary(fit2)
+```
+
+La F statistique dans ce cas est trés petite, la $pvalue= 0.802>0.05$ ce
+qui nous méne à ne pas rejeter $H_0$ ce qui signifie que tous les
+coefficients sont nuls et donc le modèle est inutile.
+
+
+**Remarque :** Pour le test de Fisher global si $p=1$  alors il est équivalent au test de Student.
+
+
+### [c) Test entre modèle emboité :]{.ul}
+
+On suppose vouloir tester la nullité simultanée des $q=(p-p_0)$ derniers coefficients du modèle.
+
+$$
+\text{Hypothéses:}
+\qquad\qquad
+\begin{aligned}
+\mathcal{H}_0&: \beta_{p_0 + 1} = \cdots = \beta_p = 0\\
+\mathcal{H}_1&: \exists~k\in \{p_0+1, \dotsc, p\} ~|~ \beta_k \neq 0
+\end{aligned}
+$$ 
+
+Autrement dit on choisit entre : 
+$$
+\text{Le modèle complet :} ~~~~~~~~~~
+Y = X\boldsymbol{\beta} + \varepsilon \\
+\text{Le petit modéle :}  ~~~~~~~~~~~
+Y = X_0\boldsymbol{\beta}_0 + \varepsilon
+$$
+Avec $X = (X_0 ~ X_1)$,
+$rg(X) = p$ et
+$rg(X_0) = p_0$.
+
+Géométriquement parlant on compare la distance entre $\hat{Y}$ et $\hat{Y_0}$ par rapport à $\|Y-\hat{Y}\|^2$ 
+
+Par la méthode de Cochran on a :
+
+$$
+\frac{\|Y-\hat{Y}\|^2}{\sigma^2}
+\sim
+\chi^2_{n-p} ~~~~~~
+\text{et}~~~~
+\quad
+\frac{\|\hat{Y}-\hat{Y_0}\|^2}{\sigma^2}
+\sim
+\chi^2_{p-p_0}
+$$
+
+Comme $$(Y-\hat{Y}) = \mathbf{P}^{\bot}Y~~~~ et ~~~~~~ (\hat{Y}-\hat{Y_0}) = \mathbf{P}_{0}^{\bot}\mathbf{P}Y$$
+Alors $$(Y-\hat{Y}) \perp  (\hat{Y}-\hat{Y_0})$$
+Et :
+$$
+F = \frac{
+\|\hat{Y} -  \hat{Y}_0\|^2 / (p - p_0)
+}{
+\|Y - \hat{Y}\|^2 / (n - p)
+}
+= \frac{n - p}{p - p_0}\frac{RSS_0 - RSS}{RSS}
+\underset{\mathcal{H}_0}{\sim}
+\mathcal{F}^{p - p_0}_{n - p}.
+$$
+
+- Si $\|\hat{Y}-\hat{Y_0}\|^2$ est grande par rapport à $\|Y-\hat{Y}\|^2$  alors F tend a être grande et donc on tend a rejeter $H_0$ ce qui signifie que le modèle complet est utile.
+
+
+**Le grand modèle est utile** 
+
+```{r proj4, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.55, 0.45)
+yv <- c(0.8, 1.0)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.8, 0.3)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "firebrick", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "firebrick", pos = 2)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))),
+     col = "dodgerblue2", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue2", lwd = 1, lty = 2)
+# hat epsilon
+# text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+#      labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
+# M_0
+down <- c(0.25, 0.15)
+up <- c(0.6, 0.5)
+segments(x0 = down[1], y0 = down[2], x1 = up[1], y1 = up[2],
+         col = "darkblue", lwd = 3)
+# yhat 0
+text(ybaronev[1], ybaronev[2],
+     labels = expression(hat(bold(y))[0]),
+     col = "darkblue", pos = 2)
+# epsilon hat 0
+segments(x0 = yv[1], y0 = yv[2], x1 = ybaronev[1], y1 = ybaronev[2],
+         col = "darkblue", lwd = 3, lty = 3)
+# text((yv[1] + ybaronev[1])/2, (yv[2] + ybaronev[2])/2,
+#      labels = expression(hat(bold(epsilon))[0]), col = "darkblue", pos = 4)
+# yhat yhat 0
+segments(x0 = ybaronev[1], y0 = ybaronev[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "limegreen", lwd = 3, lty = 3)
+```
+
+
+- Si $\|Y-\hat{Y_0}\|^2$ est petite par rapport à $\|Y-\hat{Y}\|^2$  alors F tend a être petite et donc on tend à ne pas rejeter  $H_0$ ce qui veut dire que le modèle complet n'apporte pas beaucoup d'informations et donc le petit modèle suffit.
+
+**Le petit modèle est suffisant ** 
+
+```{r proj5, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.45, 0.35)
+yv <- c(0.5, 1.0)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.5, 0.3)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "firebrick", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "firebrick", pos = 2)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))),
+     col = "dodgerblue2", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue2", lwd = 1, lty = 2)
+# hat epsilon
+# text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+#      labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
+# M_0
+down <- c(0.25, 0.15)
+up <- c(0.6, 0.5)
+segments(x0 = down[1], y0 = down[2], x1 = up[1], y1 = up[2],
+         col = "darkblue", lwd = 3)
+# yhat 0
+text(ybaronev[1], ybaronev[2],
+     labels = expression(hat(bold(y))[0]),
+     col = "darkblue", pos = 2)
+# epsilon hat 0
+segments(x0 = yv[1], y0 = yv[2], x1 = ybaronev[1], y1 = ybaronev[2],
+         col = "darkblue", lwd = 3, lty = 3)
+# text((yv[1] + ybaronev[1])/2, (yv[2] + ybaronev[2])/2,
+#      labels = expression(hat(bold(epsilon))[0]), col = "darkblue", pos = 4)
+# yhat yhat 0
+segments(x0 = ybaronev[1], y0 = ybaronev[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "limegreen", lwd = 3, lty = 3)
+```
+
+
+**Exemple :**
+
+$$
+y_i = -2 + 5 x_{i1} - x_{i2} + \epsilon_i
+$$
+
+```{r include=FALSE}
+## Simulation de la base de données 
+set.seed(1997)
+
+## Predicteurs
+n <- 500
+x_1 <- runif(n, min = -2, max = 2)
+x_2 <- runif(n, min = -2, max = 2)
+
+## Bruit
+eps <- rnorm(n, mean = 0, sd = 2)
+
+## Modele simuler 
+beta_0 <- -2
+beta_1 <- 5
+beta_2 <- -1
+y_sim <- beta_0 + beta_1 * x_1 + beta_2 * x_2 + eps
+
+## Prédicteur inutile 
+x_junk_1 <- runif(n, min = -2, max = 2)
+x_junk_2 <- runif(n, min = -2, max = 2)
+x_junk_3 <- runif(n, min = -2, max = 2)
+
+# Regression 
+petit_modele <- lm(y_sim ~ x_1 + x_2)
+grand_modele <- lm(y_sim ~ x_1 + x_2 + x_junk_1 + x_junk_2 +x_junk_3 )
+```
+
+
+```{r}
+petit_modele <- lm(y_sim ~ x_1 + x_2)
+grand_modele <- lm(y_sim ~ x_1 + x_2 + x_junk_1 + x_junk_2 +x_junk_3 )
+anova(petit_modele, grand_modele)$`Pr(>F)`[2]
+```
+La $pvalue=0.82> 0.05$  ce qui nous mène à ne pas rejeter $H_0$. Les 3 derniers coefficients sont nuls et donc le petit modèle est suffisant.
