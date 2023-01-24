@@ -1,0 +1,510 @@
+---
+title: "Questionaire"
+author: "PB"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Régression Simple
+
+### Modèle
+
+1. Les $\epsilon_i$ sont aléatoires
+    a. Oui
+    a. Non
+1. Les $x_i$ sont aléatoires
+    a. Oui
+    a. Non
+1. Les $y_i$ sont aléatoires
+    a. Oui
+    a. Non
+1. Les $\beta_i$ sont aléatoires
+    a. Oui
+    a. Non
+1. Les $\epsilon_i$ sont indépendants
+    a. Oui
+    a. Non
+
+### Variances
+
+1. Lorsque les $x_i$ sont plus étalés, la variance de $\hat{\beta}_0$ est :
+    a. plus grande
+    a. plus petite
+    a. indéterminé
+1. Lorsque les $x_i$ sont plus étalés, la variance de $\hat{\beta}_1$ est :
+    a. plus grande
+    a. plus petite
+    a. indéterminé
+1. L'estimateur des moindres carrés est l'estimateur qui a la plus petite variance.
+    a. Vrai
+    a. Faux
+    a. Indéterminé
+1. Si $R^2$ est proche de 1, les $y_i$ sont à peu près répartis sur une droite en fonction des $x_i$
+    a. Vrai
+    a. Faux
+    a. Indéterminé
+  
+## Régression Simple Gaussienne
+
+### Modèle
+
+1. Les $\epsilon_i$ sont gaussiens
+    a. Oui
+    a. Non
+1. Les $x_i$ sont gaussiens
+    a. Oui
+    a. Non
+1. Les $y_i$ sont gaussiens
+    a. Oui
+    a. Non
+1. Les $\beta_i$ sont gaussiens
+    a. Oui
+    a. Non
+1. Les $\epsilon_i$ sont indépendants
+    a. Oui
+    a. Non
+  
+### Estimateurs
+
+1. Les estimateurs du maximum de vraisemblance $\hat{\beta}_0$ et $\hat{\beta}_1$ sont non biaisés
+    a. Oui
+    a. Non
+1. L'estimateur du maximum de vraisemblance de la variance $\hat{\sigma}^2$ est non biaisé
+    a. Oui
+    a. Non
+1. Les estimateurs du maximum de vraisemblance $\hat{\beta}_0$ et $\hat{\beta}_1$ sont les estimateurs avec la plus petite variance parmis les estimateurs linéaires
+    a. Oui
+    a. Non
+  
+### Distribution des estimateurs - variance connue
+
+On se place dans le cadre du modèle gaussien, avec variance **connue**.
+
+1. Lorsque la variance est connue, les estimateurs $\hat{\beta}_0$ et $\hat{\beta}_1$ sont gaussiens
+    a. Oui
+    a. Non
+1. Lorsque la variance est connue, les estimateurs $\hat{\beta}_0$ et $\hat{\beta}_1$ sont indépendants
+    a. Oui
+    a. Non
+1. Lorsque la variance est connue, l'estimateur (des moindres carrés) $\hat{\sigma}^2$ est gaussien
+    a. Oui
+    a. Non
+  
+### Distribution des estimateurs - variance inconnue
+
+On se place dans le cadre du modèle gaussien, avec variance **inconnue**.
+
+1. Lorsque la variance est inconnue, les estimateurs $\hat{\beta}_0$ et $\hat{\beta}_1$ sont biaisés
+    a. Oui
+    a. Non
+1. Lorsque la variance est inconnue, les estimateurs $\hat{\beta}_0$ et $\hat{\beta}_1$ sont gaussiens
+    a. Oui
+    a. Non
+1. Lorsque la variance est inconnue, les estimateurs $\hat{\beta}_0$ et $\hat{\beta}_1$ sont indépendants
+    a. Oui
+    a. Non
+  
+## Régression Multiple
+
+### Modèle
+
+On considère le modèle $\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}$
+avec $n$ observations et $p$ prédicteurs.
+
+1. Quelle est la dimension de $\mathbf{X}$ ?
+    a. $p \times p$ 
+    a. $n \times p$
+    a. $p \times n$
+
+1. Quelle est la dimension de $\mathbf{y}$ ?
+    a. $p \times 1$ 
+    a. $n \times 1$
+    a. $1 \times n$
+    a. $1 \times p$
+  
+1. Quelle est la dimension de $\boldsymbol{\beta}$ ?
+    a. $p \times 1$ 
+    a. $n \times 1$
+    a. $1 \times n$
+    a. $1 \times p$
+  
+1. Quelle est la dimension de $\boldsymbol{\epsilon}$ ?
+    a. $p \times 1$ 
+    a. $n \times 1$
+    a. $1 \times n$
+    a. $1 \times p$
+  
+1. Quelle est la dimension de $\mathbf{x}_i$ la i$^{ème}$ colonne de $\mathbf{X}$ ?
+    a. $p \times 1$ 
+    a. $n \times 1$
+    a. $1 \times n$
+    a. $1 \times p$
+  
+1. Quelle est la dimension de $\mathbf{x}^i$ la i$^{ème}$ ligne de $\mathbf{X}$ ?
+    a. $p \times 1$ 
+    a. $n \times 1$
+    a. $1 \times n$
+    a. $1 \times p$
+  
+1. Lesquelles de ces formules sont correctes ?
+    a. $y_i = \mathbf{x}_i \boldsymbol{\beta} + \epsilon_i$
+    a. $y_i = \mathbf{x}^i \boldsymbol{\beta} + \epsilon_i$
+    a. $\mathbf{y} = \sum_{k = 1}^p \beta_k \mathbf{x}_k + \boldsymbol{\epsilon}$
+    a. $\mathbf{y} = \sum_{k = 1}^p \beta_k \mathbf{x}^k + \boldsymbol{\epsilon}$
+
+### Degrés de libertés
+
+1. Dans une régression simple $y_i = \beta_0 + \beta_1 x_i + \epsilon_i$ combien y a t il de **variables explicatives** ? (En supposant les vecteurs $\mathbf{1}$ et $\mathbf{x}$ indépendants.)
+    a. $1$
+    a. $2$
+    a. $3$
+    a. $4$
+    
+1. Dans une régression simple $y_i = \beta_0 + \beta_1 x_i + \epsilon_i$ combien y a t il de **degrés de liberté** ? (En supposant les vecteurs $\mathbf{1}$ et $\mathbf{x}$ indépendants.)
+explicatives** ? (En supposant les vecteurs $\mathbf{1}$ et $\mathbf{x}$ indépendants.)
+    a. $n - 1$
+    a. $n - 2$
+    a. $n - 3$
+    a. $n - 4$
+    
+1. Dans une régression multiple $y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i$ combien y a t il de **variables explicatives** ? (En supposant les vecteurs $\mathbf{1}$ et $\mathbf{x}_1$ et $\mathbf{x}_2$ indépendants.)
+    a. $1$
+    a. $2$
+    a. $3$
+    a. $4$
+    
+1. Dans une régression multiple $y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i$ combien y a t il de **degrés de liberté** ? (En supposant les vecteurs $\mathbf{1}$ et $\mathbf{x}_1$ et $\mathbf{x}_2$ indépendants.)
+    a. $n - 1$
+    a. $n - 2$
+    a. $n - 3$
+    a. $n - 4$
+    
+1. Dans une régression multiple $y_i = \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i$ combien y a t il de **variables explicatives** ? (En supposant les vecteurs $\mathbf{x}_1$ et $\mathbf{x}_2$ indépendants.)
+    a. $1$
+    a. $2$
+    a. $3$
+    a. $4$
+    
+1. Dans une régression multiple $y_i = \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i$ combien y a t il de **degrés de liberté** ? (En supposant les vecteurs $\mathbf{x}_1$ et $\mathbf{x}_2$ indépendants.)
+    a. $n - 1$
+    a. $n - 2$
+    a. $n - 3$
+    a. $n - 4$
+    
+### Projections
+
+1. Dans le modèle matriciel $\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}$, l'estimateur des moindres carrés $\hat{\boldsymbol{\beta}}$ est la projection de $\mathbf{y}$ sur l'espace engendré par les lignes de $\mathbf{X}$.
+    a. Oui
+    a. Non
+
+1. Dans le modèle matriciel $\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}$, l'estimateur des moindres carrés $\hat{\boldsymbol{\beta}}$ est la projection de $\mathbf{y}$ sur l'espace engendré par les colonnes de $\mathbf{X}$.
+    a. Oui
+    a. Non
+  
+1. Dans le modèle matriciel $\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}$, le prédicteur $\hat{\mathbf{y}} = \mathbf{X}\hat{\boldsymbol{\beta}}$ est la projection de $\mathbf{y}$ sur l'espace engendré par les colonnes de $\mathbf{X}$.
+    a. Oui
+    a. Non
+  
+1. Dans le modèle matriciel $\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}$, le prédicteur $\hat{\mathbf{y}} = \mathbf{X}\hat{\boldsymbol{\beta}}$ est la projection de $\mathbf{y}$ sur l'espace engendré par les lignes de $\mathbf{X}$.
+    a. Oui
+    a. Non
+  
+### Matrices de projection
+
+1. Soit $\mathbf{P}^\mathbf{X}$ la matrice de projection orthogonale sur l'espace engendré par les colonnes de $\mathbf{X}$.
+Alors : $\mathbf{P}^\mathbf{X} \mathbf{P}^\mathbf{X} = \mathbf{P}^\mathbf{X}$.
+    a. Oui
+    a. Non
+
+1. $\mathbf{P}^\mathbf{X}$ est symétrique.
+    a. Oui
+    a. Non
+  
+1. Si $p$ est le rang de la matrice $\mathbf{X}$, la trace de $\mathbf{P}^\mathbf{X}$ vaut
+    a. $p$
+    a. $n-p$
+  
+1. $\mathbf{P}^\mathbf{X} \mathbf{y}$ est égal à
+    a. $\hat{\boldsymbol{\beta}}$
+    a. $\hat{\mathbf{y}}$
+    a. aucun des deux
+  
+## Estimateur
+
+1. $\hat{\boldsymbol{\beta}}=$
+    a. $(\mathbf{X}\mathbf{X}^{T})^{-1}\mathbf{X}^{T}\mathbf{y}$
+    a. $(\mathbf{X}\mathbf{X}^{T})^{-1}\mathbf{X}\mathbf{y}$
+    a. $(\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}\mathbf{y}$
+    a. $(\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}\mathbf{y}$
+  
+### $R^2$
+
+1. Un modèle avec plus de variables a toujours un $R^2$ plus grand qu'un modèle avec moins de variables.
+    a. Oui
+    a. Non
+
+1. Un modèle avec un $R^2$ plus grand est toujours meilleur qu'un modèle avec un $R^2$ plus petit.
+    a. Oui
+    a. Non
+  
+## Régression Multiple Gaussienne
+
+### Loi des estimateurs
+
+1. Lorsque la variance est connue, l'estimateur $\hat{\boldsymbol{\beta}}$ est un vecteur gaussien.
+    a. Oui
+    a. Non
+
+1. Lorsque la variance est connue, l'estimateur $\hat{\boldsymbol{\beta}}$ est biaisé.
+    a. Oui
+    a. Non
+
+1. Lorsque la variance est connue, l'estimateur $\hat{\sigma}^2$ est
+    a. un vecteur
+    a. un scalaire
+
+1. Lorsque la variance est connue, l'estimateur $\hat{\sigma}^2$ des moindres carrés est biaisé.
+    a. Oui
+    a. Non
+
+1. Lorsque la variance est connue, l'estimateur $\hat{\sigma}^2$ des moindres carrés, normalisé, suit:
+    a. une loi de Student à $p$ degrés de libertés
+    a. une loi de Student à $n-p$ degrés de libertés
+    a. une loi du chi deux à $p$ degrés de libertés
+    a. une loi du chi deux à $n-p$ degrés de libertés
+  
+1. $\hat{\boldsymbol{\beta}}$ et $\hat{\sigma}^2$ sont indépendants.
+    a. Oui
+    a. Non
+  
+### Test de Fisher global
+
+1. Pour un test de Fisher global, l'hypothèse nulle est :
+    a. $\exists~ k ~|~ \beta_k = 0$
+    a. $\exists~ k ~|~ \beta_k \neq 0$
+    a. $\forall~ k, \beta_k = 0$
+    a. $\forall~ k, \beta_k \neq 0$
+  
+1. Pour un test de Fisher global, l'hypothèse alternative est :
+    a. $\exists~ k ~|~ \beta_k = 0$
+    a. $\exists~ k ~|~ \beta_k \neq 0$
+    a. $\forall~ k, \beta_k = 0$
+    a. $\forall~ k, \beta_k \neq 0$
+  
+1. Qualitativement, lorsque l'erreur $\| \hat{\boldsymbol{\epsilon}} \|^2$ est grande, la statistique de test $F$ est :
+    a. plutôt grande
+    a. plutôt petite
+  
+1. Qualitativement, lorsque l'erreur $\| \hat{\boldsymbol{\epsilon}} \|^2$ est grande :
+    a. on a tendance à rejeter l'hypothèse nulle
+    a. on a tendance à ne pas rejeter l'hypothèse nulle
+  
+1. Sous l'hypothèse nulle, la statistique de test $F$ suit la loi :
+    a. $\mathcal{F}(p, n-p)$
+    a. $\mathcal{T}(p)$
+    a. $\chi^2(n-p)$
+  
+### Test de Fisher emboîté
+
+On réalise un test de Fisher emboîté sur les deux modèles :
+$\mathbf{y} = \mathbf{X}_0 \boldsymbol{\beta}_0 + \boldsymbol{\epsilon}_0$
+et
+$\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}$,
+où $\mathbf{X}_0$ est une sous-matrice de $\mathbf{X}$.
+
+1. Si je rejette H_0, cela signifie :
+    a. que le modèle représenté par $\mathbf{X}_0$ est suffisant
+    a. que le modèle représenté par $\mathbf{X}_0$ n'est pas suffisant
+  
+1. La statistique de test vaut ;
+    a. $\frac{RSS - RSS_0}{RSS}$
+    a. $\frac{(RSS - RSS_0)/ (p - p_0)}{RSS / p}$
+    a. $\frac{(RSS - RSS_0) / (p - p_0)}{RSS / (n - p)}$
+    a. $\frac{RSS_0 - RSS}{RSS}$
+    a. $\frac{(RSS_0 - RSS)/ (p - p_0)}{RSS / p}$
+    a. $\frac{(RSS_0 - RSS) / (p - p_0)}{RSS / (n - p)}$
+  
+1. Sa distribution sous l'hypothèse nulle est :
+    a. $\mathcal{F}(p, n-p)$
+    a. $\mathcal{F}(p_0, n-p)$
+    a. $\mathcal{F}(p - p_0, n-p)$
+    a. $\mathcal{F}(p - p_0, n-p_0)$
+  
+### $F$ Statistic
+
+On considère la "$F$ statistic" renvoyée par `R` :
+
+1. Cette statistique représente la statistique d'un test de Fisher emboîté :
+    a. oui
+    a. non
+
+1. Sous l'hypothèse nulle correspondante :
+    a. le modèle est complet
+    a. le modèle comporte uniquement l'intercepte
+    a. le modèle est vide (tous les coefficients sont nuls)
+
+## Sélection de variables
+
+### Risque prédictif
+
+1. Si j'ajoute des variables au modèle, celui-ci s'ajuste mieux aux données
+    a. Oui
+    a. Non
+    a. Indéterminé
+  
+1. Si j'ajoute des variables au modèle, celui-ci est plus performant pour prédire de nouveaux points
+    a. Oui
+    a. Non
+    a. Indéterminé
+  
+### Critères de sélection
+
+1. On sélection un modèle avec un $R^2$
+    a. le plus grand possible
+    a. le plus petit possible
+    a. indéterminé
+  
+1. On sélection un modèle avec un $R^2_a$
+    a. le plus grand possible
+    a. le plus petit possible
+    a. indéterminé
+  
+1. On sélection une vraisemblance maximisée
+    a. la plus grande possible
+    a. la plus petite possible
+    a. indéterminé
+  
+1. On sélection un AIC
+    a. le plus grand possible
+    a. le plus petit possible
+    a. indéterminé
+  
+1. On sélection un BIC
+    a. le plus grand possible
+    a. le plus petit possible
+    a. indéterminé
+  
+1. On sélection un $C_p$ de Mallow
+    a. le plus grand possible
+    a. le plus petit possible
+    a. indéterminé
+  
+### Critères de sélection
+
+1. Pour un modèle avec $k$ variables, AIC = 
+    a. $2\log \hat{L} + 2 k$
+    a. $2\log \hat{L} - 2 k$
+    a. $- 2\log \hat{L} + 2 k$
+    a. $- 2\log \hat{L} - 2 k$
+  
+1. Pour un modèle avec $k$ variables, BIC = 
+    a. $- 2\log \hat{L} + 2 k \log(n)$
+    a. $- 2\log \hat{L} + k \log(n)$
+    a. $- \log \hat{L} +  k \log(n)$
+  
+## Validation
+
+### Résidus
+
+1. Sous l'hypothèse Gaussienne, les résidus $\hat{\epsilon}_i = y_i - \hat{y}_i$ sont identiquement distribués.
+    a. Oui
+    a. Non
+    a. Indéterminé
+  
+1. Sous l'hypothèse Gaussienne, les résidus studentisés $t^*_i$ sont identiquement distribués.
+    a. Oui
+    a. Non
+    a. Indéterminé
+  
+1. Sous l'hypothèse Gaussienne, les résidus normalisés $t_i$ suivent une loi de Student à
+    a. $p$ degrés de libertés
+    a. $n - p$ degrés de libertés
+    a. $n - 1$ degrés de libertés
+    a. $n - p - 1$ degrés de libertés
+    a. pas une loi de Student
+  
+1. Sous l'hypothèse Gaussienne, les résidus studentisés $t_i^*$ suivent une loi de Student à
+    a. $p$ degrés de libertés
+    a. $n - p$ degrés de libertés
+    a. $n - 1$ degrés de libertés
+    a. $n - p - 1$ degrés de libertés
+    a. pas une loi de Student
+  
+### Intervalles de confiance
+
+1. Si les résidus sont centrés iid, on peut calculer la variance des estimateurs $\hat{\beta}$
+    a. Oui
+    a. Non
+    a. Indéterminé
+  
+1. Si les résidus sont centrés iid de variance finie, on peut calculer la variance des estimateurs $\hat{\beta}$
+    a. Oui
+    a. Non
+    a. Indéterminé
+  
+1. Si les résidus sont centrés iid de variance finie, on peut calculer un intervalle de confiance pour les estimateurs $\hat{\beta}$
+    a. Oui, exact
+    a. Oui, approché
+    a. Non
+    a. Indéterminé
+  
+1. Si les résidus sont centrés iid gaussiens, on peut calculer un intervalle de confiance pour les estimateurs $\hat{\beta}$
+    a. Oui, exact
+    a. Oui, approché
+    a. Non
+    a. Indéterminé
+  
+### Points de leviers et aberrants
+
+1. Un point aberrant (outlier) est toujours un point levier (high leverage)
+    a. Oui
+    a. Non
+  
+1. Un point levier (outlier) est toujours un point aberrant (high leverage)
+    a. Oui
+    a. Non
+  
+1. Lorsque l'on retire un point aberrant de l'analyse, la droite de régression change significativement
+    a. Oui
+    a. Non
+  
+1. Lorsque l'on retire un point de distance de Cook élevée de l'analyse, la droite de régression change significativement
+    a. Oui
+    a. Non
+  
+## ANOVA
+
+1. Dans l'ANOVA à un facteur, combien y-a-t-il de groupes différents ?
+    a. 1
+    a. 2
+    a. 3
+    a. 4
+    a. plus
+    a. Indéterminé
+  
+1. Dans l'ANOVA à deux facteurs, combien y-a-t-il de groupes différents ?
+    a. 1
+    a. 2
+    a. 3
+    a. 4
+    a. plus
+    a. Indéterminé
+  
+1. Dans l'ANOVA à un facteur, peut-on prendre des effets d'interactions en compte ?
+    a. Oui
+    a. Non
+  
+1. Dans l'ANOVA à deux facteurs, peut-on prendre des effets d'interactions en compte ?
+    a. Oui
+    a. Non
+  
+1. Dans l'ANCOVA, peut-on prendre des effets d'interactions en compte ?
+    a. Oui
+    a. Non
+  
+1. Pour une ANOVA à deux facteurs, la table de "Type I" traite les deux facteurs de manière symétrique.
+    a. Oui
+    a. Non
