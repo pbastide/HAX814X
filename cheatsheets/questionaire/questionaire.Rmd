@@ -75,7 +75,7 @@ knitr::opts_chunk$set(echo = TRUE)
 1. L'estimateur du maximum de vraisemblance de la variance $\hat{\sigma}^2$ est non biaisé
     a. Oui
     a. Non
-1. Les estimateurs du maximum de vraisemblance $\hat{\beta}_0$ et $\hat{\beta}_1$ sont les estimateurs avec la plus petite variance parmis les estimateurs linéaires
+1. Les estimateurs du maximum de vraisemblance $\hat{\beta}_0$ et $\hat{\beta}_1$ sont les estimateurs avec la plus petite variance parmi les estimateurs linéaires
     a. Oui
     a. Non
   

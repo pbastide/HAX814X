@@ -1140,7 +1140,7 @@ summary(fit_tv)
 >- How large is the effect of TV on sales ?
 >    - $\hat{\beta}_1 \approx 0.047537 \pm 1.96 \times 0.002691$
 >    - CI away from 0
->    - When I spent 1000\$ more in TV, I sell about 47.5 more units.
+>    - When I spend 1000\$ more in TV, I sell about 47.5 more units.
 
 ## Advertising - TV - 4/6
 
