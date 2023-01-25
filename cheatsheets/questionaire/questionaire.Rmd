@@ -164,7 +164,6 @@ avec $n$ observations et $p$ prédicteurs.
     a. $4$
     
 1. Dans une régression simple $y_i = \beta_0 + \beta_1 x_i + \epsilon_i$ combien y a t il de **degrés de liberté** ? (En supposant les vecteurs $\mathbf{1}$ et $\mathbf{x}$ indépendants.)
-explicatives** ? (En supposant les vecteurs $\mathbf{1}$ et $\mathbf{x}$ indépendants.)
     a. $n - 1$
     a. $n - 2$
     a. $n - 3$
