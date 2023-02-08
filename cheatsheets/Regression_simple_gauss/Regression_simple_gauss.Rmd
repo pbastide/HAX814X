@@ -50,7 +50,7 @@ $$ Donc $\forall \sigma^2>0$, on a $(\hat{\beta}_0^{ML}, \hat{\beta}_1^{ML})=\un
 
 Donc, l'estimateur du maximum de vraisemblance et l'estimateur des moindres carrées sont les mêmes.
 
-On a aussi l'estimateur du maximum de vraisemblance pour $\sigma^2$ :$\hat{\sigma}^2_{ML} = \frac{1}{n}\sum_{i = 1}^n \hat{\epsilon}_i^2$ Cependant, celui ci est baisé : $\mathbb{E}[\hat{\sigma}^2_{ML}] = \frac{n - 2}{n}\sigma^2 \neq \sigma^2$.
+On a aussi l'estimateur du maximum de vraisemblance pour $\sigma^2$ :$\hat{\sigma}^2_{ML} = \frac{1}{n}\sum_{i = 1}^n \hat{\epsilon}_i^2$ Cependant, celui ci est biaisé : $\mathbb{E}[\hat{\sigma}^2_{ML}] = \frac{n - 2}{n}\sigma^2 \neq \sigma^2$.
 
 ## Distribution des coefficients et estimateur de la variance
 
@@ -67,7 +67,7 @@ Lorsque le paramètre $\sigma^2$ est connu, le vecteur $\begin{pmatrix} \hat\bet
 
 On rappelle les relations suivantes : $$\hat\sigma^2=\frac{1}{n-2}\sum^n_{i=1}\hat\epsilon^2_i\quad\text{et}\quad \mathbb{E}[\hat\sigma^2]=\sigma^2$$
 
-On a donc $\frac{(n-2)\hat\sigma^2}{\sigma^2} \sim \chi^2_{n-2}$ c'est à dire que $\hat\sigma^2$, une fois renormalisée, suit une loi du $\chi^2$ à $n-2$ degrés de liberté.
+On a donc $\frac{(n-2)\hat\sigma^2}{\sigma^2} \sim \chi^2_{n-2}$ c'est à dire que $\hat\sigma^2$, une fois renormalisé, suit une loi du $\chi^2$ à $n-2$ degrés de liberté.
 
 ### Distribution des coefficients avec $\sigma^2$ inconnu
 
@@ -132,15 +132,15 @@ La distribution jointe nous donne une ellipse de confiance pour $\hat\beta$.
 
 $$
 \frac{1}{2\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T \mathbf{V}_n^{-1}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right) \leq f^2_{n-2}(1-\alpha)
-$$ Etant donné que $\mathbf{V}_n^{-1}$ est définie positive, c'est l'équation d'une région de confiance élliptique.
+$$ Etant donné que $\mathbf{V}_n^{-1}$ est définie positive, c'est l'équation d'une région de confiance elliptique.
 
 $$\mathbf{y} = -2 \cdot \mathbb{1} + 3 \cdot \mathbf{x} + \boldsymbol{\epsilon}$$
 
 Le produit cartésien des intervalles de confiance des distributions marginales nous donne un rectangle de confiance.
 
-La distribution jointe nous donne une éllipse de confiance pour $\hat\beta$.
+La distribution jointe nous donne une ellipse de confiance pour $\hat\beta$.
 
-La région de confiance correspond donc à l'éllipse de confiance.
+La région de confiance correspond donc à l'ellipse de confiance.
 
 
 ```{r simcr, echo = FALSE}
@@ -184,7 +184,7 @@ lines(rep(fit_lm$coefficients[1], 2), ci[2,], col = ccc[4], lwd = 2)
 polygon(ci[1, c(1, 2, 2, 1)], ci[2, c(1, 1, 2, 2)], border = ccc[4])
 ```
 
-Difference entre:
+Différence entre:
 
 -   **Intervalles de confiance** (vert) et la
 -   **Région de confiance** (violet).
