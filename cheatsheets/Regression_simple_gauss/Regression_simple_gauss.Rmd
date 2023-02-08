@@ -26,7 +26,7 @@ Alors $\forall (a,b)\in \mathbb{R}^2$ on a : $$Y=aX+b \sim \mathcal{N}(a\mu+b, a
 Soit $X$ une va qui admet $f_\theta$ pour densité qui dépend d'un paramètre $\theta$. Alors la fonction du maximum de vraisemblance est la densité $$\theta \mapsto L(\theta|x)=f_\theta(x)$$
 
 Notre modèle est $y_i =\beta_0+\beta_1x_i+\epsilon_i$, avec $\epsilon_i \underset{iid}{\sim} \mathcal{N}(0, \sigma^2)$, c'est à dire que $\forall i \in \{1,..,n\}$, les $\epsilon_i$ sont indépendants, suivent une loi gaussienne centrée donc $\mathbb{E}[\epsilon_i]=0$,
-et ils sont homocédastiques, c'est à dire : $\mathbb{V}[\epsilon_i]=\sigma^2$.
+et ils sont homoscédastiques, c'est à dire : $\mathbb{V}[\epsilon_i]=\sigma^2$.
 
 Donc $y_i\underset{iid}{\sim}\mathcal{N}(\beta_0+\beta_1x_i,\sigma^2),~\forall i \in \{1,..,n\}$
 
@@ -48,7 +48,7 @@ On a vu que : $$
 -\frac{n}{2} \log(2\pi\sigma^2) - \frac{1}{2\sigma^2}\underbrace{\sum_{i = 1}^n (y_i - \beta_0 - \beta_1 x_i)^2}_{\text{Somme des carrés} SS(\beta_0, \beta_1)}
 $$ Donc $\forall \sigma^2>0$, on a $(\hat{\beta}_0^{ML}, \hat{\beta}_1^{ML})=\underset{(\beta_0, \beta_1) \in \mathbb{R}^2}{\operatorname{argmax}} \log L(\beta_0, \beta_1, \sigma^2 | \mathbf{y})= \underset{(\beta_0, \beta_1) \in \mathbb{R}^2}{\operatorname{argmin}} SS(\beta_0, \beta_1)=(\hat{\beta}_0^{OLS}, \hat{\beta}_1^{OLS})$.
 
-Donc, l'estimateur du maximum de vraisemblance et l'estimateur des moindres carrées sont les mêmes.
+Donc, l'estimateur du maximum de vraisemblance et l'estimateur des moindres carrés sont les mêmes.
 
 On a aussi l'estimateur du maximum de vraisemblance pour $\sigma^2$ :$\hat{\sigma}^2_{ML} = \frac{1}{n}\sum_{i = 1}^n \hat{\epsilon}_i^2$ Cependant, celui ci est baisé : $\mathbb{E}[\hat{\sigma}^2_{ML}] = \frac{n - 2}{n}\sigma^2 \neq \sigma^2$.
 
