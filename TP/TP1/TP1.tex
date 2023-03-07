@@ -1,69 +1,126 @@
-\documentclass{td_um}
+\documentclass{../../TD/td_um}
 \input{../../TD/header_td.tex}
 
 %\def\version{eno}
 \def\version{cor}
 
-\usepackage{minted}
-
+%\usepackage{minted}
 \usepackage{hyperref}
 \ue{HAX814X}
 
 \providecommand{\T}{\mathbb{T}}
 \providecommand{\1}{\mathds{1}}
-\title{TP I : Régression linéaire simple}
+\title{TP 1 : Régression linéaire simple}
 
 
 \newcommand{\miniscule}{\@setfontsize\miniscule{5}{6}}
 %-----------------------------------------------------------------------------
 \begin{document}
-\maketitle
+	\maketitle
+	
+	\bigskip
+	\bigskip
+	
+	%\noindent Nous utiliserons le langage \texttt{R} pour ce TP.
 
-\bigskip
-\bigskip
+	%\bigskip
 
-\noindent Nous utiliserons le langage \texttt{R} pour ce TP. Le corrigé sera à faire sous forme de \texttt{.Rmd}.
-
-
-\bigskip
-\bigskip
-
-\exo{Estimateurs des moindres carrés}
-Nous allons traiter les $n=50$ données journalières de la concentration en ozone en fonction de la température. Les données se trouvent dans le fichier \mintinline{R}{ozone.txt}. La variable à expliquer est la concentration en ozone, notée \mintinline{R}{maxO3}, et la variable explicative est la température à midi, notée \mintinline{R}{T12}.
-\begin{enumerate}
-    \item Commencer par représenter les données. On tracera \mintinline{R}{maxO3} en fonction de \mintinline{R}{T12}. Une regression linéaire simple semble-t-elle justifiée graphiquement?
-    \item Effectuer la régression linéaire à l'aide de la commande \mintinline{R}{lm()} dont on stockera la sortie dans une variable \mintinline{R}{reg}. Consulter alors les résultats à l'aide de la commande \mintinline{R}{summary()}. Que représentent les coefficients de la matrice coefficients?
-\item Tracer l'estimation de la droite de régression, ainsi qu'un intervalle de confiance à $95 \%$ de celle-ci grâce aux commandes suivantes:
-\begin{minted}[bgcolor=blue!4,fontsize=\footnotesize,mathescape,tabsize=4,escapeinside=||, linenos, breaklines]{R}
-> plot(maxO3~T12,data=ozone)
-> T12 <- seq(min(ozone[,"T12"]), max(ozone[,"T12"]), length=100)
-> grille <- data.frame(T12)
-> ICdte <- predict(reg, new=grille, interval="confidence", level=0.95)
-> matlines(grille$T12, cbind(ICdte), lty=c(1,2,2),col=1)
-\end{minted}
-Décrire précisément ce que font chaque ligne de code. Ce graphique permet de vérifier visuellement l'ajustement des données au modèle de régression proposé. Que remarquez-vous?
-\item On s'intéresse à présent à la qualité de prévision du modèle. Pour cela, il faut tracer un intervalle de confiance des prévisions en adaptant le code de la question précédente.
-\item On va maintenant calculer les intervalles de confiance des coefficients du modèle de régression. Pour cela, on utilise la fonction \mintinline{R}{coef()} qui permet d'extraire les estimateurs et leurs écarts types empiriques.
-\begin{minted}[bgcolor=blue!4,fontsize=\footnotesize,mathescape,tabsize=4,escapeinside=||, linenos, breaklines]{R}
-> seuil<-qt(0.975, df =reg$df.res)
-> beta1min<-coef(resume)[1,1] - seuil * coef(resume)[1,2]
-> beta1max<-coef(resume)[1,1] + seuil * coef(resume)[1,2]
-> beta2min<-coef(resume)[2,1] - seuil * coef(resume)[2,2]
-> beta2max<-coef(resume)[2,1] + seuil * coef(resume)[2,2]
-\end{minted}
-Retrouver ces valeurs à l'aide de la fonction \mintinline{R}{confint()}. Que remarquez-vous sur l'intervalle de confiance de l'ordonnée à l'origine? Comment l'expliquez-vous?
-\item Pour être plus précis et tenir compte de la dépendance entre les deux coefficients, on peut aussi construire une région de confiance. Les commandes suivantes permettent de visualiser la différence entre le rectangle de confiance, simple juxtaposition des deux intervalles de confiance, et la région de confiance. Elles nécessitent l'installation du package \mintinline{R}{ellipse}.
-    \begin{minted}[bgcolor=blue!4,fontsize=\footnotesize,mathescape,tabsize=4,escapeinside=||, linenos, breaklines]{R}
-> library(ellipse)
-> plot(ellipse(reg, level=0.95), type="l", xlab="beta1", ylab="beta2")
-> points(coef(reg)[1], coef(reg)[2], pch=3)
-> lines(c(beta1min, beta1min, beta1max, beta1max, beta1min), c(beta2min, beta2max, beta2max, beta2min, beta2min), lty=2)
-\end{minted}
-\item Au vu de la représentation de la concentration d'ozone en fonction de la température, nous souhaitons maintenant modéliser l'ozone par la température au carré. Estimer les paramètres de ce modèle quadratique et le comparer au modèle initial.
-\end{enumerate}
-
-%\exo{Estimateurs des moindres valeurs absolues}
-%Calculez, pour le même jeu de données, les estimateurs des moindres valeurs absolues en utilisant la stratégie vue dans l'exercice du TD I. Comparez avec les estimateurs des moindres carrés.
-
+	\noindent L'objectif du TP est d'effectuer une régression linéaire simple sur un jeu de données. Nous allons traiter des données journalières de concentration en ozone (en microgrammes par millilitre) dans l'air. Les données se trouvent dans le fichier \texttt{ozone.txt} disponible sur Moodle. La variable à expliquer est le taux maximal journalier en ozone, notée \texttt{maxO3}, et la variable explicative est la température à midi, notée \texttt{T12}.\\
+	
+	
+	\begin{enumerate}
+		\item Représenter les données. On tracera \texttt{maxO3} en fonction de \texttt{T12}. Une régression linéaire simple semble-t-elle justifiée graphiquement ?
+		
+	\subsubsection*{Estimation}
+		
+		\item Calculer les estimateurs $\hat \beta_0$ et $\hat \beta_1$, puis ajouter la droite de régression sur le graphique précédent. Ajouter les valeurs ajustées $\hat y_i$ sur le graphe.
+		
+		\item Calculer les résidus. Représenter-les sous forme d'un histogramme. Vérifier qu'ils sont bien centrés.
+		
+		\item Déterminer l'estimateur $\hat \sigma$ de $\sigma$. En déduire un estimateur de l'écart-type de $\hat \beta_0$ et $\hat \beta_1$. Commenter.
+		
+		\item Calculer la valeur des SCE, SCR, et SCT. En déduire la valeur du coefficient de détermination $R^2$. Retrouver cette valeur en calculant le coefficient de corrélation empirique  $\rho_{x, y}$.
+		
+		\item En fait tout est déjà codé dans la commande \texttt{lm} : entrer la commande
+		\begin{verbatim}
+			reg <- lm(maxO3~T12, data=ozone)
+		\end{verbatim}
+	et consulter les résultats à l'aide de la commande \texttt{summary()}. Retrouver les résultats des questions 2 à 5.
+	
+	Quels sont les autres résultats donnés par la commande \texttt{lm} ?
+	
+	En particulier, la ligne \texttt{Adjusted R-squared} donne le $R^2$ ajusté. Retrouver ce résultat par le calcul.
+		
+	\subsubsection*{Intervalles de confiance et région de confiance}
+		\item Déterminer les intervalles de confiance pour $\hat \beta_0$ et $\hat \beta_1$. On pourra utiliser la fonction \texttt{coef()} qui permet d'extraire la valeur de ces estimateurs et leurs écarts-types empiriques.
+	
+		Retrouver ces valeurs à l'aide de la fonction \texttt{confint()}.
+	
+		Commenter en particulier l'intervalle de confiance de l'ordonnée à l'origine.
+		
+		Sur le nuage de points des données, ajouter deux droites correspondant à l'intervalle de confiance.
+	%		\begin{minted}[bgcolor=blue!4,fontsize=\footnotesize,mathescape,tabsize=4,escapeinside=||, linenos, breaklines]{R}
+	%			> seuil<-qt(0.975, df =reg$df.res)
+	%			> beta1min<-coef(resume)[1,1] - seuil * coef(resume)[1,2]
+	%			> beta1max<-coef(resume)[1,1] + seuil * coef(resume)[1,2]
+	%			> beta2min<-coef(resume)[2,1] - seuil * coef(resume)[2,2]
+	%			> beta2max<-coef(resume)[2,1] + seuil * coef(resume)[2,2]
+	%		\end{minted}
+	
+		\item Pour être plus précis et tenir compte de la dépendance entre les deux coefficients, on peut aussi construire une région de confiance qui se présente sous forme d'une ellipse. On utilisera le package \texttt{ellipse}.
+		
+		Tracer l'ellipse de confiance à un niveau $0.95$. On pourra utiliser la commande
+		\begin{verbatim}
+			plot(ellipse(reg, level=0.95))
+		\end{verbatim}
+		et préciser quelques arguments supplémentaire.
+		
+		Ajouter sur le graphe le point $(\hat \beta_0, \hat \beta_1)$, puis les deux intervalles de confiance sous forme de rectangle.
+		
+		\item Déterminer un intervalle de confiance pour $\sigma^2$.
+	%		\begin{minted}[bgcolor=blue!4,fontsize=\footnotesize,mathescape,tabsize=4,escapeinside=||, linenos, breaklines]{R}
+	%			> library(ellipse)
+	%			> plot(ellipse(reg, level=0.95), type="l", xlab="beta1", ylab="beta2")
+	%			> points(coef(reg)[1], coef(reg)[2], pch=3)
+	%			> lines(c(beta1min, beta1min, beta1max, beta1max, beta1min), c(beta2min, beta2max, beta2max, beta2min, beta2min), lty=2)
+	%		\end{minted}
+	
+	
+	\subsubsection*{Prévision}
+		\item On souhaite à présent prévoir des valeurs de \texttt{maxO3}, par exemple pour une température de $40$ degrés. Entrer les commandes
+		\begin{verbatim}
+			predict(reg, new=data.frame(T12=40))
+			predict(reg, new=data.frame(T12=40), interval="confidence", level=0.95)
+		\end{verbatim}
+		et commenter les sorties.
+		
+		\item Créer un vecteur \texttt{T12} de taille $100$ équiréparti entre \texttt{min(ozone\$T12)} et \texttt{max(ozone\$T12)}. Tracer l'estimation de la droite de régression ainsi qu'un intervalle de confiance à $95 \%$ pour la prévision.
+%		\begin{verbatim}
+%			> T12_seq <- seq(min(ozone[,"T12"]), max(ozone[,"T12"]), length=100)
+%			> grille <- data.frame(T12_seq)
+%			> ICdte <- predict(reg, new=grille, interval="confidence", level=0.95)
+%			> matlines(grille$T12_seq, cbind(ICdte), lty=c(1,2,2),col=1)
+%		\end{verbatim}
+%		\begin{minted}[bgcolor=blue!4,fontsize=\footnotesize,mathescape,tabsize=4,escapeinside=||, linenos, breaklines]{R}
+%			> plot(maxO3~T12,data=ozone)
+%			> T12 <- seq(min(ozone[,"T12"]), max(ozone[,"T12"]), length=100)
+%			> grille <- data.frame(T12)
+%			> ICdte <- predict(reg, new=grille, interval="confidence", level=0.95)
+%			> matlines(grille$T12, cbind(ICdte), lty=c(1,2,2),col=1)
+%		\end{minted}
+		%Décrire précisément ce que font chaque ligne de code.
+		
+		Ce graphique permet de vérifier visuellement l'ajustement des données au modèle de régression proposé. Commenter.
+		\item On s'intéresse à présent à la qualité de prévision du modèle. Pour cela, tracer un intervalle de prédiction en adaptant le code de la question 10. Commenter.
+		
+		\item Retrouver les deux intervalles précédents par le calcul.
+	
+	\subsubsection*{Un autre modèle linéaire}
+		\item On souhaite à présent modéliser le taux d'ozone par la température au carré. Estimer les paramètres de ce modèle et le comparer au modèle initial.
+	\end{enumerate}
+	
+	%\exo{Estimateurs des moindres valeurs absolues}
+	%Calculez, pour le même jeu de données, les estimateurs des moindres valeurs absolues en utilisant la stratégie vue dans l'exercice du TD I. Comparez avec les estimateurs des moindres carrés.
+	
 \end{document}
 
