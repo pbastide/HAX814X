@@ -1,4 +1,4 @@
-\documentclass{td_um}
+\documentclass{../td_um}
 \input{../header_td.tex}
 
 \def\version{eno}
@@ -9,106 +9,149 @@
 
 \providecommand{\T}{\mathbb{T}}
 \providecommand{\1}{\mathds{1}}
-\title{TD II}
+\title{TD 2 : Régression linéaire multiple}
 
 
 \newcommand{\miniscule}{\@setfontsize\miniscule{5}{6}}
 %-----------------------------------------------------------------------------
 \begin{document}
-\maketitle
+	\maketitle
+	
+	
+	\exo{Rappels de cours}
+	
+	\begin{enumerate}
+		\item Rappeler le principe d'une régression linéaire multiple. Préciser les hypothèses.
+		\item Faire un schéma pour donner une interprétation géométrique à la régression linéaire multiple.
+		\item Donner l'expression de la matrice de projection $\mathbf{P}^{\mathbf{X}}$ et de l'estimateur $\hat \beta$. Vérifier que $\mathbf{P}^{\mathbf{X}}$ est bien une matrice de projection.
+		\item Quelles sont les hypothèses supplémentaires dans le cas gaussien ?
+	\end{enumerate}
+	\textit{On conseille de toujours faire attention à la dimension des objets (matrices et vecteurs) qu'on manipule.}
+	
+	
+	\exo{Régression simple vs régression multiple}
+	\begin{enumerate}
+		\item Rappeler les expressions de $\hat \beta_0$ et $\hat \beta_1$ dans le cas d'une régression simple.
+		\item Rappeler l'expression de $\hat \beta$ dans le cas d'une régression multiple.
+		\item Retrouver le résultat de la question 1. à partir de celui de la question 2.
+		\item Rappeler les expressions des variances et covariance de $\hat \beta_0$ et $\hat \beta_1$ dans le cas d'une régression simple.
+		\item Rappeler l'expression de la matrice de variance-covariance de $\hat \beta$ dans le cas d'une régression multiple.
+		\item Retrouver le résultat de la question 4. à partir de celui de la question 5.
+	\end{enumerate}
 
+	\cor{\newpage}
 
-\exo{}  Soit $\theta_{1}$ et $\theta_{2}$ deux paramètres réels inconnus et soit:
-\begin{itemize}
-    \item    $Y_{1}$ un estimateur sans biais de $\theta_{1}+\theta_{2}$ et de variance $\sigma^{2}$
-    \item    $Y_{2}$ un estimateur sans biais de $2 \theta_{1}-\theta_{2}$ et de variance $4 \sigma^{2}$ 
-    \item    $Y_{3}$ un estimateur sans biais de $6 \theta_{1}+3 \theta_{2}$ et de variance $9 \sigma^{2}$ 
-\end{itemize}
-Les estimateurs $Y_{1}, Y_{2}$ et $Y_{3}$ étant indépendants, nous cherchons les estimateurs sans biais de $\theta_{1}$ et $\theta_{2}$, linéaires en $Y_{1}, Y_{2}$ et $Y_{3},$ et de variance minimale.
-\begin{enumerate}
-    \item Notons $\tilde{\theta}=\alpha Y_{1}+\beta Y_{2}+\gamma Y_{3}$.
-        \begin{enumerate}
-            \item Quelles sont les équations à satisfaire pour que $\tilde{\theta}$ soit un estimateur sans biais de $\theta_{1} ?$
-            \item Dans ce cas-là, exprimer la variance de $\tilde{\theta}$ et la minimiser.
-            \item Idem pour $\theta_{2}$.
-        \end{enumerate}
-            \item Notons $Z_{1}=Y_{1}, Z_{2}=Y_{2} / 2, Z_{3}=Y_{3} / 3, Z=\left(Z_{1}, Z_{2}, Z_{3}\right)^{\prime}$ et $\theta=\left(\theta_{1}, \theta_{2}\right)^{\prime}$
-        \begin{enumerate}
-    \item Trouver la matrice $X$ telle que $\mathbb{E}(Z)=X \theta$.
-            \item Que vaut $\mathbb{V}(Z) ?$
-            \item On peut alors écrire $Z=X \theta+\varepsilon .$ Retrouver les estimateurs de $\theta_{1}$ et $\theta_{2}$ calculés question 1.
-    \end{enumerate}
-\end{enumerate}
+	\exo{} On étudie l'évolution d'une variable $y$ en fonction de deux variables $x$ et $z$. On dispose de $n$ observations de ces variables. On note $X=\begin{pmatrix}\1 & x & z\end{pmatrix}$, où $\1$ est le vecteur constant, et $x$ et $z$ sont les vecteurs des variables explicatives.
+		\begin{enumerate}
+			\item Nous avons obtenu les résultats suivants:
+			\[
+			X^T X=\begin{pmatrix}
+				30 & 0 & 0 \\
+				? & 10 & 7 \\
+				? & ? & 15
+			\end{pmatrix}\,.
+			\]
+			\begin{enumerate}
+				\item Donner les valeurs manquantes. Que vaut $n$ ?
+				\item Calculer le coefficient de corrélation empirique entre $x$ et $z$.
+			\end{enumerate}
+			\item La régression linéaire de $Y$ sur $\1 , x, z$ donne
+			\[
+			y=-2 \1 + x + 2 z + \hat{\varepsilon}\,, \quad S C R = \|\hat{\varepsilon}\|^{2} = 12\,.
+			\]
+			\begin{enumerate}
+				\item Calculer $\sum_{i=1}^n \hat \varepsilon_i$, puis en déduire la valeur de la moyenne arithmétique $\bar{y}$.
+				\item Calculer la somme des carrés expliquée (SCE), la somme des carrés totale (SCT) et le coefficient de détermination $R^{2}$. %que l'on notera $R_{\1,x,y}$.
+			\end{enumerate}
+		\item 
+		\begin{enumerate}
+			\item Calculer $X^T y$ en utilisant la valeur de $\hat{\beta}$, puis en déduire $\sum x_{i} y_{i}$ et $\sum z_{i} y_{i}$.
+			\item Calculer les coefficients de corrélation $\rho_{x,y}$ et $\rho_{z,y}$. En déduire la valeur du $R^{2}$ pour le modèle de régression de $y$ par $\1 $ et $x$, puis de $y$ par $\1 $ et $z$.% On les note $R^2_{\1,x}$ et $R^2_{\1,y}$ respectivement.
+		\end{enumerate}
+	\end{enumerate}
+
+\cor{\newpage}
+	
+	\exo{}
+	\begin{enumerate}
+		\item Nous avons une variable $Y$ à expliquer par une variable $X$. Nous avons effectué $n=2$ mesures et trouvé
+		\[
+		\left(x_{1}, y_{1}\right)=(4,5) \text { et }\left(x_{2}, y_{2}\right)=(1,5)
+		\]
+		Représenter les variables, estimer $\beta$ dans le modèle $y_{i}=\beta x_{i}+\varepsilon_{i}$ et représenter $\hat{Y}$.
+		\item Nous avons maintenant une variable $Y$ à expliquer par deux variables $X_{1}$ et $X_{2}$. Nous avons effectué $n=3$ mesures et trouvé
+		\[
+		(x_{1,1}, x_{1,2},y_{1})=(3,2,0),\,\quad
+		(x_{2,1}, x_{2,2}, y_{2})=(3,3,5),\,\quad
+		(x_{3,1}, x_{3,2}, y_{3})=(0,0,3)\,.
+		\]
+		Représenter les variables, estimer $\beta$ dans le modèle $y_{i}=\beta_{1} x_{i, 1}+\beta_{2} x_{i, 2}+\varepsilon_{i}$ et représenter $\hat{Y}$.
+	\end{enumerate}
+	
+	\cor{\newpage}
+	
+	\exo{} Soit $X$ une matrice de taille $n \times p$ composée de $p$ vecteurs indépendants de $\mathbb{R}^{n}$. Nous notons $Z$ la matrice composée des $q < p$ premiers vecteurs de $X$. Nous avons les deux modèles suivants :
+	\[
+	(1) \quad Y=X \beta+\varepsilon \quad \text { et } \quad (2) \quad Y=Z \tilde \beta+\psi\,.
+	\]
+	Comparer les $R^{2}$ dans les deux modèles.
 
 \cor{\newpage}
 
-\exo{}
-\begin{enumerate}
-    \item Nous avons une variable $Y$ à expliquer par une variable $X$. Nous avons effectué $n=2$ mesures et trouvé
-        $$
-        \left(x_{1}, y_{1}\right)=(4,5) \text { et }\left(x_{2}, y_{2}\right)=(1,5)
-        $$
-        Représenter les variables, estimer $\beta$ dans le modèle $y_{i}=\beta x_{i}+\varepsilon_{i}$ et représenter $\hat{Y}$
-    \item Nous avons maintenant une variable $Y$ à expliquer par deux variables $X_{1}$ et $X_{2}$. Nous avons effectué $n=3$ mesures et trouvé
-        $$
-        \left(x_{1,1}, x_{1,2}, y_{1}\right)=(3,2,0),\left(x_{2,1}, x_{2,2}, y_{2}\right)=(3,3,5) \text { et }\left(x_{3,1}, x_{3,2}, y_{3}\right)=(0,0,3)
-        $$
-        Représenter les variables, estimer $\beta$ dans le modèle $y_{i}=\beta_{1} x_{i .1}+\beta_{2} x_{i, 2}+\varepsilon_{i}$ et représenter $\hat{Y}$.
-\end{enumerate}
-
-\cor{\newpage}
-
-\exo{} Soit $X$ une matrice de taille $n \times p$ composée de $p$ vecteurs indépendants de $\mathbb{R}^{n}$. Nous notons $X_{q}$ la matrice composée des $q(q<p)$ premiers vecteurs de $X$. Nous avons les deux modèles suivants :
-$$
-Y=X \beta+\varepsilon \quad \text { et } \quad Y=X_{q} \beta_{q}+\psi
-$$
-Comparer les $R^{2}$ dans les deux modèles.
-
-\cor{\newpage}
-
-\exo{} On examine l'évolution d'une variable $Y$ en fonction de deux variables $x$ et $z$. On dispose de $n$ observations de ces variables. On note $X=\begin{pmatrix}\1 & x & z\end{pmatrix}$ où $\1$ est le vecteur constant et $x, z$ sont les vecteurs des variables explicatives.
-\begin{enumerate}
-    \item Nous avons obtenu les résultats suivants:
-        $$
-        X^{\prime} X=\begin{pmatrix}
-                30 & 0 & 0 \\
-                ? & 10 & 7 \\
-                ? & ? & 15
-        \end{pmatrix}
-        $$
-        \begin{enumerate}
-            \item  Donner les valeurs manquantes?
-            \item  Que vaut $n$ ?
-            \item  Calculer le coefficient de corrélation linéaire empirique entre $x$ et $z$.
-        \end{enumerate}
-    \item  La régression linéaire empirique de $Y$ sur $\1 , x, z$ donne
-        $$
-        Y=-2 \1 +x+2 z+\hat{\varepsilon}, \quad S C R=\|\hat{\varepsilon}\|^{2}=12
-        $$
-        \begin{enumerate}
-            \item Déterminer la moyenne arithmétique $\bar{Y}$.
-            \item Calculer la somme des carrés expliquée (SCE), la somme des carrés totale (SCT) et le coefficient de détermination $R^{2}$ que l'on notera $R_{\1,x,y}$.
-        \end{enumerate}
-    \item 
-        \begin{enumerate}
-            \item Calculer $X^{\prime} Y$ en utilisant la valeur de $\hat{\beta}$. En déduire $\sum x_{i} y_{i}$ et $\sum z_{i} y_{i}$.
-            \item Calculer les coefficients linéaires $\rho(x, y)$ et $\rho(z, y)$. En déduire la valeur du $R^{2}$ pour le modèle de régression de $y$ par $\1 $ et $x$ puis de $y$ par $\1 $ et $z$. On les note $R^2_{\1,x}$ et $R^2_{\1,y}$ respectivement.
-        \end{enumerate}
-\end{enumerate}
-
-\cor{\newpage}
-
-\exo{} Régression sur données agrégées par groupes. On suppose le modèle de régression $Y=X \beta+\varepsilon, \mathbb{E}(\varepsilon)=0, \mathbb{V}(\varepsilon)=\sigma^{2} I_{n},$ valide
-mais les données individuelles $\left(x_{i 1}, \cdots, x_{i p}, y_{i}\right)$ ne sont pas disponibles. On observe seulement les moyennes sur $I$ groupes, notés $C_{1}, \cdots, C_{I},$ d'effectifs $n_{1}, \cdots, n_{I}:$
-$$
-\bar{y}_{k}=\frac{1}{n_{k}} \sum_{i \in C_{k}} y_{i} \text { et } \bar{x}_{k j}=\frac{1}{n_{k}} \sum_{i \in C_{k}} x_{i j}
-$$
-En notant $\bar{\varepsilon}_{k}=\frac{1}{n_{k}} \sum_{i \in C_{k}} \varepsilon_{i},$ on a $\bar{Y}=\bar{X} \beta+\bar{\varepsilon} .$
-\begin{enumerate}
-    \item  Calculer $\mathbb{E}(\bar{\varepsilon})$ et $\mathbb{V}(\bar{\varepsilon})$.
-    \item  Notons $M=\operatorname{diag}\left(\sqrt{n_{1}}, \cdots, \sqrt{n_{I}}\right), Y^{*}=M \bar{Y}, X^{*}=M \bar{X}$ et $\varepsilon^{*}=M \bar{\varepsilon}$. Quelle est la relation entre $Y^{*}, X^{*}$ et $\varepsilon^{*} ?$ Calculer $\mathbb{E}\left(\varepsilon^{*}\right)$ et $\mathbb{V}\left(\varepsilon^{*}\right) ?$
-    \item  En déduire un estimateur de $\beta$.
-    \item  Application numérique $: I=3$ avec $n_{1}=1$ et $n_{2}=n_{3}=2$. $\bar{X}_{1}^{\prime}=(1,1,1), \bar{X}_{2}^{\prime}=(7,12,5)$ et $\bar{Y}^{\prime}=(15,25,10)$
-\end{enumerate}
+	\exo{}  Soit $\theta_{1}$ et $\theta_{2}$ deux paramètres réels inconnus et soit :
+	\begin{itemize}
+			\item $Y_{1}$ un estimateur sans biais de $\theta_{1} + \theta_{2}$ et de variance $\sigma^{2}$
+			\item $Y_{2}$ un estimateur sans biais de $2 \theta_{1} - \theta_{2}$ et de variance $4 \sigma^{2}$ 
+			\item $Y_{3}$ un estimateur sans biais de $6 \theta_{1} + 3 \theta_{2}$ et de variance $9 \sigma^{2}$ 	
+	\end{itemize}
+		Les estimateurs $Y_{1}$, $Y_{2}$ et $Y_{3}$ étant indépendants, nous cherchons les estimateurs sans biais de $\theta_{1}$ et $\theta_{2}$, linéaires en $Y_{1}$, $Y_{2}$ et $Y_{3},$ et de variance minimale.
+	\begin{enumerate}
+		\item Notons $\tilde{\theta} = \alpha Y_{1} + \beta Y_{2} + \gamma Y_{3}$.
+		\begin{enumerate}
+			\item Quelles sont les équations à satisfaire pour que $\tilde{\theta}$ soit un estimateur sans biais de $\theta_{1} ?$
+			\item Dans ce cas-là, exprimer la variance de $\tilde{\theta}$ et la minimiser.
+			\item Idem pour $\theta_{2}$.
+		\end{enumerate}
+		\item On pose $Z_{1} = Y_{1}$, $Z_{2} = Y_{2} / 2$, et $Z_{3} = Y_{3} / 3$, et on note $Z=\left(Z_{1}, Z_{2}, Z_{3}\right)^T$ et $\theta=\left(\theta_{1}, \theta_{2}\right)^T$.
+		\begin{enumerate}
+			\item Trouver la matrice $X$ telle que $\mathbb{E}[Z]=X \theta$.
+			\item Que vaut la matrice de variance-covariance de $Z$ ?
+			\item On peut alors écrire $Z=X \theta+\varepsilon$. Retrouver les estimateurs de $\theta_{1}$ et $\theta_{2}$ calculés question 1.
+		\end{enumerate}
+	\end{enumerate}
+	
+	\cor{\newpage}
+	
+	\exo{Régression sur données agrégées par groupes} On suppose le modèle de régression
+	\[
+	Y = X \beta + \varepsilon\,,
+	\quad \text{avec} \quad
+	\mathbb{E}[\varepsilon]=0
+	\quad \text{et} \quad \text{Var}(\varepsilon)=\sigma^{2} I_{n}\,.
+	\]
+	Les données individuelles $\left(x_{i 1}, \ldots, x_{i p}, y_{i}\right)$ ne sont cependant pas disponibles. On observe seulement les moyennes sur $I$ groupes, notés $C_{1}, \ldots, C_{I},$ d'effectifs $n_{1}, \ldots, n_{I}$ :
+	\[
+	\bar{y}_{k}=\frac{1}{n_{k}} \sum_{i \in C_{k}} y_{i}
+	\quad \text { et } \quad
+	\bar{x}_{k j}=\frac{1}{n_{k}} \sum_{i \in C_{k}} x_{i j}\,.
+	\]
+	En notant $\bar{\varepsilon}_{k}=\frac{1}{n_{k}} \sum_{i \in C_{k}} \varepsilon_{i},$ on a alors $\bar{Y}=\bar{X} \beta+\bar{\varepsilon}$.
+	\begin{enumerate}
+		\item Calculer $\mathbb{E}[\bar{\varepsilon}]$ et $\text{Var}(\bar{\varepsilon})$.
+		\item On pose
+		\[
+		M = \operatorname{diag}(\sqrt{n_{1}}, \ldots, \sqrt{n_{I}})\,,
+		\quad
+		Y^{*} = M \bar{Y}\,,
+		\quad
+		X^{*} = M \bar{X}\,,
+		\quad
+		\varepsilon^{*}=M \bar{\varepsilon}\,.
+		\]
+		Quelle est la relation entre $Y^{*}$, $X^{*}$ et $\varepsilon^{*}$ ? Calculer $\mathbb{E}[\varepsilon^{*}]$ et $\text{Var}(\varepsilon^{*})$.
+		\item En déduire un estimateur de $\beta$.
+		\item Application numérique $: I=3$ avec $n_{1}=1$ et $n_{2}=n_{3}=2$. $\bar{X}_{1}^T=(1,1,1), \bar{X}_{2}^T=(7,12,5)$ et $\bar{Y}^T=(15,25,10)$.
+	\end{enumerate}
 \end{document}
+
 
