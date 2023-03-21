@@ -1523,7 +1523,7 @@ We have:
 $$
 C_i
 = \frac{h_{ii}(y_{i} - \hat{y}_{i}^P)^2}{p\hat{\sigma}^2}
-= \frac{h_{ii}}{p(1-h_{ii})^2}\frac{\hat{\epsilon}_i}{\hat{\sigma}^2}
+= \frac{h_{ii}}{p(1-h_{ii})^2}\frac{\hat{\epsilon}_i^2}{\hat{\sigma}^2}
 = \frac{h_{ii}}{p(1-h_{ii})}t_i^2
 $$
 
@@ -1535,7 +1535,7 @@ Cook "distance" is actually the square of a distance.
 $$
 C_i
 = \frac{h_{ii}(y_{i} - \hat{y}_{i}^P)^2}{p\hat{\sigma}^2}
-= \frac{h_{ii}}{p(1-h_{ii})^2}\frac{\hat{\epsilon}_i}{\hat{\sigma}^2}
+= \frac{h_{ii}}{p(1-h_{ii})^2}\frac{\hat{\epsilon}_i^2}{\hat{\sigma}^2}
 = \frac{h_{ii}}{p(1-h_{ii})}t_i^2
 $$
 
@@ -1751,7 +1751,7 @@ $$
 hence:
 $$
 C_i
-= \frac{h_{ii}}{p(1-h_{ii})^2}\frac{\hat{\epsilon}_i}{\hat{\sigma}^2}
+= \frac{h_{ii}}{p(1-h_{ii})^2}\frac{\hat{\epsilon}_i^2}{\hat{\sigma}^2}
 = \frac{h_{ii}}{p(1-h_{ii})}t_i^2
 $$
 
