@@ -385,7 +385,7 @@ $$
 
 >* If $\|\hat{\boldsymbol{\epsilon}}\|^2$ is **small**, then the error is **small**,  
 and $F$ tends to be **large**, i.e. we tend to **reject** $\mathcal{H}_0$:  
-the model is usefull.
+the model is useful.
 
 >* If $\|\hat{\boldsymbol{\epsilon}}\|^2$ is **large**, then the error is **large**,  
 and $F$ tends to be **small**, i.e. we tend to **not reject** $\mathcal{H}_0$:  
