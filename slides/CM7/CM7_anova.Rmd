@@ -1757,6 +1757,364 @@ plot(fit_species)
 
 
 <!-- ************************************************************************ -->
+# From ANOVA to Mixed Models
+<!-- ************************************************************************ -->
+
+## Sleep Study {.smaller}
+
+```{r, message = FALSE}
+library(lme4)
+kable(head(sleepstudy))
+```
+
+## Sleep Study {.smaller}
+
+```{r, message = FALSE, echo = FALSE}
+library(ggplot2)
+ggplot(sleepstudy, aes(x = Days, y = Reaction)) +
+  geom_point() +
+  facet_wrap(vars(Subject), nrow = 2) +
+  geom_smooth(method = lm, se = FALSE) + 
+  theme_minimal()
+```
+
+## ANCOVA
+
+For observation $i$ of group $k$:
+$$
+y_{i,k} = \mu + \alpha_k + (\beta + \gamma_k) \times x_{i}  + \epsilon_i
+$$
+
+* $\mu$ the intercept
+* $\alpha_k$ the specific effect of group $k$ on the intercept
+* $\gamma_k$ the specific effect of group $k$ on the slope
+* $\epsilon_{ik} \sim \mathcal{N}(0, \sigma^2)$ iid noise.
+
+**Problem**:
+What if there are many groups, with few observations?  
+$\to$ Estimation problem.
+
+## ANCOVA {.smaller}
+
+```{r}
+fit_ancova <- lm(Reaction ~ Days * Subject, data = sleepstudy)
+summary(fit_ancova)
+```
+
+## Mixed Model
+
+For observation $i$ of group $k$:
+$$
+y_{i,k} = \mu + A_{k} + (\beta + G_k) \times x_{i}  + \epsilon_i
+$$
+
+* $\mu$ the intercept
+* $A_k \sim \mathcal{N}(0, s_A^2)$ iid effect of group $k$ on the intercept
+* $G_k \sim \mathcal{N}(0, s_G^2)$ iid effect of group $k$ on the slope
+* $\epsilon_{ik} \sim \mathcal{N}(0, \sigma^2)$ iid noise.
+
+## Mixed Model - Simple Case
+
+For observation $i$ of group $k$:
+$$
+y_{i,k} = \mu + A_{k}  + \epsilon_i
+$$
+
+* $A_k \sim \mathcal{N}(0, s_A^2)$ iid
+* $\epsilon_{ik} \sim \mathcal{N}(0, \sigma^2)$ iid noise.
+
+$$
+\mathbb{E}[y_{i,k}] = \mu
+$$
+
+$$
+\mathbb{V}[y_{i,k}] = s_A^2 + \sigma^2
+$$
+
+$$
+\mathbb{C}[y_{i,k}, y_{i',k'}] =
+\begin{cases}
+s_A^2 & \text{if } k = k' \\
+0 & \text{otherwise.}
+\end{cases}
+$$
+
+## Mixed Model - Simple Case
+
+**ANOVA**
+$$
+y_{i,k} = \mu + \alpha_{k}  + \epsilon_{ik} 
+\quad \epsilon_{i,k} \sim \mathcal{N}(0, \sigma^2) ~ iid
+$$
+
+$$
+\mathcal{H}_0: \alpha_1 = \cdots = \alpha_K = 0
+$$
+
+**Mixed Model**
+$$
+y_{i,k} = \mu + A_{k}  + \epsilon_{ik}
+\quad A_k \sim \mathcal{N}(0, s_A^2) ~ iid
+\quad \epsilon_{i,k} \sim \mathcal{N}(0, \sigma^2) ~ iid
+$$
+
+$$
+\mathcal{H}_0: s_A^2 = 0
+$$
+
+
+$$~$$
+
+$\to$ We can use the same $F$ test (exercise).
+
+
+## Mixed Model - Simple Case {.smaller}
+
+$$
+y_{i,k} = \mu + A_{k}  + \epsilon_i
+$$
+
+$$
+\mathbf{y} = \mu\mathbf{1}_{nK} + \mathbf{Z}\mathbf{U}  + \boldsymbol{\epsilon}
+$$
+
+$$
+\mathbf{y} 
+= \text{vec}((y_{i,k})_{i, k})
+= \begin{pmatrix}
+y_{1,1}\\
+y_{2,1}\\
+\vdots\\
+y_{n, 1}\\
+y_{1, 2}\\
+\vdots\\
+y_{n, 2}\\
+\vdots\\
+y_{n, K}
+\end{pmatrix}
+\qquad
+\mathbf{Z}
+=
+\begin{pmatrix}
+1 & 0 & \cdots & 0\\
+1 & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots\\
+1 & 0 & \cdots & 0\\
+0 & 1 & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots\\
+0 & 1 & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots\\
+0 & 0 & \cdots & 1\\
+\end{pmatrix}
+\qquad
+\begin{aligned}
+\mathbf{U} &\sim \mathcal{N}(\mathbf{0}, s_A^2\mathbf{I}_{K}) \\
+\boldsymbol{\epsilon} &\sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_{nK})
+\end{aligned}
+$$
+
+
+## Mixed Model - Simple Case {.smaller}
+
+$$
+y_{i,k} = \mu + A_{k}  + \epsilon_i
+$$
+
+$$~$$
+
+$$
+\mathbf{y} = \mu\mathbf{1}_{nK} + \mathbf{E}
+\qquad 
+\mathbf{E} \sim \mathcal{N}(\mathbf{0}, \mathbf{\Sigma})
+$$
+
+$$~$$
+
+$$
+\mathbf{\Sigma}
+=
+\begin{pmatrix}
+\mathbf{R} & \mathbf{0} & \cdots & \mathbf{0}\\
+\mathbf{0} & \ddots & \ddots & \vdots\\
+\vdots & \ddots & \ddots & \mathbf{0}\\
+\mathbf{0} & \cdots & \mathbf{0} & \mathbf{R}\\
+\end{pmatrix}
+\qquad
+\mathbf{R}
+=
+\begin{pmatrix}
+\sigma^2 + s_A^2 & s_A^2 & \cdots & s_A^2\\
+s_A^2 & \ddots & \ddots & \vdots\\
+\vdots & \ddots & \ddots & s_A^2\\
+s_A^2 & \cdots & s_A^2 & \sigma^2 + s_A^2\\
+\end{pmatrix}
+$$
+
+## Mixed Model - General Case
+
+**Linear Model**
+$$
+\mathbf{y} \sim \mathcal{N}(\mathbf{X}\boldsymbol{\beta}, \sigma^2 \mathbf{I}_n)
+$$
+
+$$~$$
+
+**Mixed Model**
+$$
+\mathbf{y} \sim \mathcal{N}(\mathbf{X}\boldsymbol{\beta}, \mathbf{\Sigma})
+$$
+
+$$~$$
+with $\mathbf{\Sigma}$ structured covariance matrix.
+
+## Mixed Model - Sleep
+
+For observation $i$ of group $k$:
+$$
+y_{i,k} = \mu + A_{k} + (\beta + G_k) \times x_{i}  + \epsilon_i
+$$
+
+* $A_k \sim \mathcal{N}(0, s_A^2)$ iid effect of group $k$ on the intercept
+* $G_k \sim \mathcal{N}(0, s_G^2)$ iid effect of group $k$ on the slope
+* $\epsilon_{ik} \sim \mathcal{N}(0, \sigma^2)$ iid noise.
+
+$$
+\mathbb{E}[y_{i,k}] = \mu + \beta x_i
+$$
+
+$$
+\mathbb{V}[y_{i,k}] = s_A^2 + s_G^2x_i^2 + \sigma^2
+$$
+
+$$
+\mathbb{C}[y_{i,k}, y_{i',k'}] =
+\begin{cases}
+s_A^2 + s_G^2 x_i x_{i'}& \text{if } k = k' \\
+0 & \text{otherwise.}
+\end{cases}
+$$
+
+## Mixed Model - Sleep {.smaller}
+
+$$
+y_{i,k} = \mu + A_{k} + (\beta + G_k) \times x_{i}  + \epsilon_i
+$$
+
+$$
+\mathbf{y} = \mu\mathbf{1}_{nK} + \beta \mathbf{x}
++ \mathbf{Z}_1\mathbf{U}_1 
++ \mathbf{Z}_2\mathbf{U}_2  + \boldsymbol{\epsilon}
+$$
+
+$$
+\mathbf{y} 
+= \begin{pmatrix}
+y_{1,1}\\
+y_{2,1}\\
+\vdots\\
+y_{n, 1}\\
+y_{1, 2}\\
+\vdots\\
+y_{n, 2}\\
+\vdots\\
+y_{n, K}
+\end{pmatrix}
+\qquad
+\mathbf{Z}_2
+=
+\begin{pmatrix}
+x_1 & 0 & \cdots & 0\\
+x_2 & 0 & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots\\
+x_n & 0 & \cdots & 0\\
+0 & x_1 & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots\\
+0 & x_2 & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots\\
+0 & 0 & \cdots & x_n\\
+\end{pmatrix}
+\qquad
+\begin{aligned}
+\mathbf{U}_1 &\sim \mathcal{N}(\mathbf{0}, s_A^2\mathbf{I}_{K}) \\
+\mathbf{U}_2 &\sim \mathcal{N}(\mathbf{0}, s_G^2\mathbf{I}_{K}) \\
+\boldsymbol{\epsilon} &\sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_{nK})
+\end{aligned}
+$$
+
+
+## Mixed Model - Sleep {.smaller}
+
+$$
+y_{i,k} = \mu + A_{k} + (\beta + G_k) \times x_{i}  + \epsilon_i
+$$
+
+$$
+\mathbf{y} = \mu\mathbf{1}_{nK} + \beta \mathbf{x}
++ \mathbf{Z}_1\mathbf{U}_1 
++ \mathbf{Z}_2\mathbf{U}_2  + \boldsymbol{\epsilon}
+$$
+
+$$
+\mathbf{y} = \mu\mathbf{1}_{nK} + \beta\mathbf{x} + \mathbf{E}
+\qquad 
+\mathbf{E} \sim \mathcal{N}(\mathbf{0}, \mathbf{\Sigma})
+$$
+
+$$
+\mathbf{\Sigma}
+=
+\sigma^2 \mathbf{I} 
++ s_A^2 \mathbf{Z}_1^T \mathbf{Z}_1
++ s_G^2 \mathbf{Z}_2^T \mathbf{Z}_2
+=
+\begin{pmatrix}
+\mathbf{R} & \mathbf{0} & \cdots & \mathbf{0}\\
+\mathbf{0} & \ddots & \ddots & \vdots\\
+\vdots & \ddots & \ddots & \mathbf{0}\\
+\mathbf{0} & \cdots & \mathbf{0} & \mathbf{R}\\
+\end{pmatrix}
+$$
+
+$$
+\mathbf{R}
+=
+\begin{pmatrix}
+\sigma^2 + s_A^2 + s_G^2 x_1^2 & s_A^2 + s_G^2 x_2x_1 & \cdots & s_A^2 + s_G^2 x_nx_1\\
+s_A^2 + s_G^2 x_1x_2 & \ddots & \ddots & \vdots\\
+\vdots & \ddots & \ddots & s_A^2 + s_G^2 x_{n-1}x_n\\
+s_A^2 + s_G^2 x_1x_n & \cdots & s_A^2 + s_G^2 x_nx_{n-1} & \sigma^2 + s_A^2 + s_G^2 x_nx_n\\
+\end{pmatrix}
+$$
+
+
+## Sleep {.smaller}
+
+```{r}
+fit_lmer <- lmer(Reaction ~ Days + (Days | Subject), data = sleepstudy)
+fit_lmer
+```
+
+## Mixed Model - General Case
+
+**Linear Model**
+$$
+\mathbf{y} \sim \mathcal{N}(\mathbf{X}\boldsymbol{\beta}, \sigma^2 \mathbf{I}_n)
+$$
+
+$$~$$
+
+**Mixed Model**
+$$
+\mathbf{y} \sim \mathcal{N}(\mathbf{X}\boldsymbol{\beta}, \mathbf{\Sigma})
+$$
+
+$$~$$
+with $\mathbf{\Sigma}$ structured covariance matrix.
+
+$$~$$
+$\to$ General fit and tests more difficult
+
+<!-- ************************************************************************ -->
 # Perspectives
 <!-- ************************************************************************ -->
 
@@ -1819,7 +2177,3 @@ T. Hastie, R. Tibshirani, J. Friedman
 
 <center><img src="IJALM.png" height="450px" /></center>
 
-$~$
-
-If it's printed on a [t-shirt](https://www.redbubble.com/i/t-shirt/Machine-Learning-Meme-Linear-Regression-Data-Science-by-teemixer/55989750.IJ6L0)
-then it must be true.
