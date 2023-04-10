@@ -1386,7 +1386,7 @@ Last point is consistent with the other observations.
 
 But its $x$ value is high $\to$ high leverage point.
 
-## Outlier vs Hight Leverage {.smaller}
+## Outlier vs High Leverage {.smaller}
 
 <div class="columns-2">
 
