@@ -1529,7 +1529,7 @@ We can use:
 $$
 \begin{aligned}
 F 
-&= \frac{n - KL}{L - 1}\frac{RSS_{\mu, \alpha, \beta} - RSS_{\mu, \alpha, \beta, \gamma}}{RSS}\\
+&= \frac{n - KL}{(L - 1)(K - 1)}\frac{RSS_{\mu, \alpha, \beta} - RSS_{\mu, \alpha, \beta, \gamma}}{RSS}\\
 &= \frac{R(\gamma | \mu, \alpha, \beta) / ((K - 1)(L - 1))}{\hat{\sigma}^2}\\
 &\underset{\mathcal{H}_0}{\sim}
 \mathcal{F}^{(K - 1)(L - 1)}_{n - KL}.
@@ -1865,8 +1865,6 @@ $$
 
 $$~$$
 
-$\to$ We can use the same $F$ test (exercise).
-
 
 ## Mixed Model - Simple Case {.smaller}
 
@@ -2113,6 +2111,177 @@ with $\mathbf{\Sigma}$ structured covariance matrix.
 
 $$~$$
 $\to$ General fit and tests more difficult
+
+## Mixed Model - Longitudinal
+
+**Repeated Measures**
+$$
+y_{ikt} = \mu + \alpha_k + \beta_t + \gamma_{kt} + \epsilon_{ikt}
+$$
+
+* Animal $i$
+* Food $k$
+* Time $t$
+
+$$
+\mathbb{C}[y_{i,k,t}, y_{i',k',t'}] =
+\begin{cases}
+\sigma^2 \rho & \text{if } (i,k) = (i',k') \\
+0 & \text{otherwise.}
+\end{cases}
+$$
+$$~$$
+$\to$ Constant covariance between time measures.
+
+## Mixed Model - Longitudinal
+
+**Repeated Measures**
+$$
+y_{ikt} = \mu + \alpha_k + \beta_t + \gamma_{kt} + \epsilon_{ikt}
+$$
+
+* Animal $i$
+* Food $k$
+* Time $t$
+
+$$
+\mathbb{C}[y_{i,k,t}, y_{i',k',t'}] =
+\begin{cases}
+\sigma^2 \rho^{|t-t'|} & \text{if } (i,k) = (i',k') \\
+0 & \text{otherwise.}
+\end{cases}
+$$
+$$~$$
+$\to$ AR(1) (with $|\rho| < 1$)
+
+## Mixed Model - Spatial
+
+**Spatial Measures**
+$$
+\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}
+$$
+
+$$
+\mathbb{C}[y_{i}, y_{i'}] =
+\begin{cases}
+\gamma^2 e^{-d(i,i')/\rho} & \text{if } i \neq i' \\
+\sigma^2 + \gamma^2 & \text{if } i = i'
+\end{cases}
+$$
+
+* $d(i,i')$: distance between locations $i$ and $i'$
+* $\rho$: range (larger implies more correlations)
+* $\gamma^2$ spatial variance
+* $\sigma^2$ nugget
+
+## Mixed Model - General Case
+
+**Mixed Model**
+$$
+\mathbf{y} \sim \mathcal{N}(\mathbf{X}\boldsymbol{\beta},
+\mathbf{\Sigma}(\boldsymbol{\psi}))
+$$
+with $\mathbf{\Sigma}(\psi)$ depends on paramaters $\boldsymbol{\psi}$
+
+## Mixed Model - Simple Case
+
+$$
+\mathbf{y} \sim \mathcal{N}(\mathbf{X}\boldsymbol{\beta},
+\mathbf{\Sigma})
+$$
+
+Special case:
+$$
+\mathbf{\Sigma} = \sigma^2 \mathbf{C}
+$$
+with $\mathbf{C}$ known.
+
+Then:
+$$
+\hat{\boldsymbol{\beta}} = 
+(\mathbf{X}^{T}\mathbf{C}^{-1}\mathbf{X})^{-1}\mathbf{X}^{T}\mathbf{C}^{-1}\mathbf{y}
+$$
+
+$$
+\hat{\sigma}^2 = 
+\frac{\|\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}} \|^2_{\mathbf{C}^{-1}}}{n-p}
+=
+\frac{(\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}})^T \mathbf{C}^{-1}(\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}})}{n-p}
+$$
+
+*Proof*: Use Cholesky decomposition.
+
+## Mixed Model - General Case {.build}
+
+**Mixed Model**
+$$
+\mathbf{y} \sim \mathcal{N}(\mathbf{X}\boldsymbol{\beta},
+\mathbf{\Sigma}(\boldsymbol{\psi}))
+$$
+
+Maximum-Likelihood Estimators:
+$$
+\hat{\boldsymbol{\beta}}, \hat{\boldsymbol{\psi}}
+=
+\underset{\boldsymbol{\beta}, \boldsymbol{\psi}}{\operatorname{argmax}} 
+\log L(\boldsymbol{\beta}, \sigma^2 | \mathbf{y})
+$$
+
+$$
+\hat{\boldsymbol{\beta}}, \hat{\boldsymbol{\psi}}
+=
+\underset{\boldsymbol{\beta}, \boldsymbol{\psi}}{\operatorname{argmin}} 
+\left\{
+n \log |\mathbf{\Sigma}(\boldsymbol{\psi})| + 
+(\mathbf{y} - \mathbf{X}\boldsymbol{\beta})^T \mathbf{\Sigma}(\boldsymbol{\psi})^{-1}(\mathbf{y} - \mathbf{X}\boldsymbol{\beta})
+\right\}
+$$
+
+$$
+S(\boldsymbol{\beta})
+=
+(\mathbf{y} - \mathbf{X}\boldsymbol{\beta})^T \mathbf{\Sigma}(\boldsymbol{\psi})^{-1}(\mathbf{y} - \mathbf{X}\boldsymbol{\beta})
+$$
+
+## Mixed Model - General Case {.build}
+
+$$
+S(\boldsymbol{\beta})
+=
+(\mathbf{y} - \mathbf{X}\boldsymbol{\beta})^T \mathbf{\Sigma}(\boldsymbol{\psi})^{-1}(\mathbf{y} - \mathbf{X}\boldsymbol{\beta})
+$$
+
+$$ 
+\nabla S(\hat{\boldsymbol{\beta}})
+= 2 \mathbf{X}^T\mathbf{\Sigma}(\boldsymbol{\psi})^{-1}\mathbf{X}\hat{\boldsymbol{\beta}}
+- 2 \mathbf{X}^T\mathbf{\Sigma}(\boldsymbol{\psi})^{-1}\mathbf{y}
+= 0
+$$
+
+$$ 
+\hat{\boldsymbol{\beta}}
+= h(\boldsymbol{\psi})
+= (\mathbf{X}^T\mathbf{\Sigma}(\boldsymbol{\psi})^{-1}\mathbf{X})^{-1} \mathbf{X}^T\mathbf{\Sigma}(\boldsymbol{\psi})^{-1}\mathbf{y}
+$$
+
+Maximisation:
+
+$$
+\hat{\boldsymbol{\psi}}
+=
+\underset{\boldsymbol{\psi}}{\operatorname{argmin}} 
+\left\{
+n \log |\mathbf{\Sigma}(\boldsymbol{\psi})| + 
+(\mathbf{y} - \mathbf{X}h(\boldsymbol{\psi}))^T \mathbf{\Sigma}(\boldsymbol{\psi})^{-1}(\mathbf{y} - \mathbf{X}h(\boldsymbol{\psi}))
+\right\}
+$$
+
+$$
+\hat{\boldsymbol{\beta}}
+= h(\hat{\boldsymbol{\psi}})
+$$
+
+$\to$ Optimization in $\boldsymbol{\psi}$ can be complex.
 
 <!-- ************************************************************************ -->
 # Perspectives
