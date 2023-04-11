@@ -1,67 +1,145 @@
-\documentclass{td_um}
+\documentclass{../td_um}
 \input{../header_td.tex}
 
 \def\version{eno}
 %\def\version{cor}
 
 \usepackage{hyperref}
-\ue{HMMA201}
+\ue{HAX814X}
 
 \providecommand{\T}{\mathbb{T}}
 \providecommand{\1}{\mathds{1}}
-\title{TD III}
+\title{TD 3 : Sélection de variables}
 
 
 \newcommand{\miniscule}{\@setfontsize\miniscule{5}{6}}
 %-----------------------------------------------------------------------------
 \begin{document}
-\maketitle
+	\maketitle
+	
+	\exo{Fisher global}
+	\begin{enumerate}
+		\item Rappeler la définition des lois du chi-deux, de Student, et de Fisher.
+		\item On se place dans le cadre d'une régression linéaire gaussienne multiple $Y = X \beta + \varepsilon$. Rappeler les expressions et les lois de $\hat \beta$ et $\hat \sigma$.
+		\item En déduire que la statistique de test de Fisher global
+		\[
+		F = \dfrac{1}{p \hat \sigma^2} \hat \beta^T (X^TX) \hat \beta
+		\]
+		suit sous $H_0$ une loi de Fisher de paramètre $p$, $n-p$.
+		
+		On rappelle que si $N \sim \mathcal{N}(\mu, \Sigma)$ est un vecteur gaussien dans $\R^k$ avec $\Sigma$ inversible, alors $(N-\mu)^T \Sigma^{-1} (N-\mu)$ suit une loi du chi-deux à $k$ degrés de liberté.
+		\item Réécrire $F$ en fonction de $Y$ et $\hat Y$.
+		\item Que teste cette statistique ? Que peut-on en dire en pratique ?
+	\end{enumerate}
 
 
-\exo{}  Montrer que la statistique de test $F$, introduite en cours pour tester la validité d'un modèle emboîté, peut s'écrire
-\[
-F=\frac{n-p}{q} \frac{R^{2}-R_{0}^{2}}{1-R^{2}}
-\]
-où $R^{2}$ et $R_{0}^{2}$ sont les coefficients de détermination associés respectivement au modèle complet et au modèle emboîté.
+	\exo{Fisher emboîté}
+	
+	\begin{enumerate}
+		\item Rappeler le test entre modèles emboîtés et donner la statistique de test $F$ en fonction de $Y$, $\hat Y$, et $\hat Y_0$. Dans quel contexte retrouve-t-on l'expression de l'exercice 1 ?
+		\item Réécrire cette quantité en fonction de $SCR$ et $SCR_0$.
+		\item Montrer que
+		\[
+		F = \dfrac{n-p}{q} \dfrac{R^2 - R_0^2}{1-R^2}\,,
+		\]
+		où $R^2$ et $R_0^2$ sont les coefficients de détermination associés respectivement au modèle complet et au modèle emboîté.
+	\end{enumerate}
 
-%\newpage
-
-\exo{} Dans le modèle de régression linéaire, il arrive parfois que l'on souhaite imposer des contraintes linéaires à $\beta$, par exemple que sa première coordonnée soit égale à $1$. Nous supposerons en général que nous imposons $q$ contraintes linéairement indépendantes à $\beta$, ce qui s'écrit sous la forme : $R \beta=r$, où $R$ est une matrice $q \times p$ de rang $q<p$ et $r$ un vecteur de taille $q$. Montrer que l'estimateur des moindres carrés sous contraintes s'écrit:
-\[
-\hat{\beta}_{c}=\hat{\beta}+\left(X^{t} X\right)^{-1} R^{t}\left[R\left(X^{t} X\right)^{-1} R^{t}\right]^{-1}(r-R \hat{\beta}).
-\]
-Calculer  $\mathbb{E}\left(\hat{\beta}_{c}\right)$ et  $\mathbb{V}\left(\hat{\beta}_{c}\right)$
-
-%\newpage
-
-\exo{Modèle de Cobb-Douglas} Nous disposons pour $n$ entreprises de la valeur du capital $K_{i},$ de l'emploi $L_{i}$ et de la valeur ajoutée $V_{i}$. Nous supposons que la fonction de production de ces entreprises est du type Cobb-Douglas:
-\[
-V_{i}=\lambda L_{i}^{\alpha} K_{i}^{\gamma}
-\]
-\begin{enumerate}
-\item Comment se ramène-t-on à un modèle de régression linéaire?
-\item Pour $n=1658$ entreprises, nous avons obtenu les estimateurs suivants :
-\[
-    \hat{\beta}=\begin{pmatrix}3,136 \\ 0,738 \\ 0,282\end{pmatrix}
-\]
-avec $R^{2}=0,945$ et $S C R=148,27$. Nous donnons aussi
-\[
-    \left(X^{t} X\right)^{-1}=\left(\begin{array}{ccc}
-            0,0288 & 0,0012 & -0,0034 \\
-            0,0012 & 0,0016 & -0,0010 \\
-            -0,0034 & -0,0010 & 0,0009
-    \end{array}\right) \text { et } X^{t} X=\left(\begin{array}{ccc}
-            423 & 2231 & 4077 \\
-            2231 & 13808 & 23769 \\
-            4077 & 23769 & 42923
-    \end{array}\right)
-\]
-Calculer $\hat{\sigma}^{2}$ et une estimation de $\mathbb{V}(\hat{\beta})$.
-\item Donner un intervalle de confiance au niveau $95 \%$ pour $\alpha$. Idem pour $\gamma$.
-\item Tester au niveau $5 \%$ l'hypothèse $H_{0}: \gamma=0,$ contre $H_{1}: \gamma>0$.
-\item Nous voulons tester l'hypothèse selon laquelle les rendements d'échelle sont constants (une fonction de production $F$ est à rendement d'échelle constant si $\left.\forall \theta \in \mathbb{R}^{+}, F(\theta L, \theta K)=\theta F(L, K)\right)$. Quelles sont les contraintes verifiées par le modèle lorsque les rendements d'échelle sont constants? Tester au niveau $5 \%$ l'hypothèse  $H_{0}:$ "les rendements sont constants", contre $H_{1}:$ "les rendements sont croissants".
-    \end{enumerate}
-
-
+	\exo{Équivalence des tests de Student et de Fisher}
+	
+	On souhaite montrer l'équivalence entre les tests de Student et de Fisher pour la nullité d'un paramètre. On considère le modèle
+	\[
+	Y = X \beta + \varepsilon\,,
+	\]
+	et on souhaite tester la nullité du dernier coefficient $\beta_p$.
+	\begin{enumerate}
+		\item Rappeler la statistique de test T du test de Student sous l'hypothèse $H_0$ : $\beta_p = 0$.
+		\item Rappeler la statistique de test F du test de Fisher pour les modèles emboîtés.
+		\item Montrer que si $T_n$ est une variable aléatoire de loi de Student à $n$ degrés de liberté, alors $T_n^2$ suit une loi de Fisher. Avec quels degrés de liberté ?
+		\item En notant la matrice $X$ par blocs sous la forme $X = [X_0 | X_p]$, avec $X_0 = [X_1 | \cdots | X_{p-1}]$ les $p-1$ premières colonnes de $X$, donner sous forme de blocs l'expression de la matrice $X^T X$.
+		\item Soit $M$ une matrice inversible écrite sous forme de blocs :
+		\[
+		M =\left (
+		\begin{array}{c|c}
+			T & U \\
+			\hline
+			V & W\\ 
+		\end{array}
+		\right)
+		\]
+		avec $T$ inversible. Alors $Q = W - VT^{-1}U$ est inversible et l'inverse de $M$ est
+		\[
+		M^{-1} = \left (
+		\begin{array}{c|c}
+			T^{-1} + T^{-1}UQ^{-1}VT^{-1} & -T^{-1}UQ^{-1} \\
+			\hline
+			-Q^{-1}VT^{-1} & Q^{-1}\\ 
+		\end{array}
+		\right)
+		\]
+		À l'aide de ce résultat, montrer que
+		\[
+		[(X^T X)^{-1}]_{pp} = (X_p^T (I_n - P_0) X_p)^{-1}\,,
+		\]
+		où $P_0$ est la matrice $n \times n$ de projection orthogonale sur l'espace $\mathcal{M}_0$ engendré par les colonnes de $X_0$.
+		\item On note $\hat Y$ (resp. $\hat Y_0$) le projeté orthogonal de $Y$ sur $\mathcal{M}$ (resp. $\mathcal{M}_0$). Montrer que
+		\[
+		\hat Y - \hat Y_0 = \hat \beta_p (I_n - P_0) X_p\,.
+		\]
+		\item En déduire que $F = T^2$ et conclure.
+	\end{enumerate}
+	
+	\exo{Estimation sous contrainte} Dans le modèle de régression linéaire, il arrive parfois que l'on souhaite imposer des contraintes linéaires à $\beta$, par exemple que sa première coordonnée soit égale à $1$. Nous supposerons en général que nous imposons $q$ contraintes linéairement indépendantes à $\beta$, ce qui s'écrit sous la forme : $R \beta=r$, où $R$ est une matrice $q \times p$ de rang $q<p$ et $r$ un vecteur de taille $q$. Montrer que l'estimateur des moindres carrés sous contraintes s'écrit:
+	\[
+	\hat \beta_c = \hat \beta + (X^T X)^{-1} R^T  \big[ R (X^T X)^{-1} R^T \big]^{-1} (r - R \hat \beta)\,.
+	\]
+	% Calculer  $\mathbb{E}\left(\hat{\beta}_{c}\right)$ et $\mathbb{V}\left(\hat{\beta}_{c}\right)$
+	
+	%\newpage
+	
+	\exo{Modèle de Cobb-Douglas} Nous disposons pour $n$ entreprises de la valeur du capital $K_i$, de l'emploi $L_i$, et de la valeur ajoutée $V_i$. Nous supposons que la fonction de production de ces entreprises est du type Cobb-Douglas :
+	\[
+	V_i =\lambda L_i^\beta K_i^\gamma\,.
+	\]
+	\begin{enumerate}
+		\item Comment se ramène-t-on à un modèle de régression linéaire ?
+		\item Pour $n=1658$ entreprises, nous avons obtenu les estimateurs suivants :
+		\[
+		\hat \beta =
+		\begin{pmatrix}
+			3.136 \\
+			0.738 \\
+			0.282
+		\end{pmatrix}\,,
+		\]
+		avec $R^2 = 0.945$ et $S C R = 148.27$. Nous donnons aussi
+		\[
+		(X^T X)^{-1} =
+		\left(\begin{array}{ccc}
+			0.0288 & 0.0012 & -0.0034 \\
+			0.0012 & 0.0016 & -0.0010 \\
+			-0.0034 & -0.0010 & 0.0009
+		\end{array}\right)
+		\text { et }
+		X^T X =
+		\left(\begin{array}{ccc}
+			423 & 2231 & 4077 \\
+			2231 & 13808 & 23769 \\
+			4077 & 23769 & 42923
+		\end{array}\right)\,.
+		\]
+		Calculer $\hat{\sigma}^{2}$ et une estimation de la variance de $\hat \beta$.
+		\item Donner un intervalle de confiance au niveau $95 \%$ pour $\beta$. Même question pour $\gamma$.
+		\item Tester au niveau $5 \%$ l'hypothèse $H_{0}: \gamma=0$ contre $H_{1}: \gamma>0$.
+		\item Nous voulons tester l'hypothèse selon laquelle les rendements d'échelle sont constants (une fonction de production $F$ est à rendement d'échelle constant si pour tout $\beta \geq 0$,
+		\[
+		F(\theta L, \theta K)=\theta F(L, K)\,.
+		\]
+		Quelles sont les contraintes vérifiées par le modèle lorsque les rendements d'échelle sont constants ? Tester au niveau $5 \%$
+		\[
+		H_0 : \text{ les rendements sont constants} \quad \text{ vs } \quad H_1 : \text{ les rendements sont croissants.}
+		\]
+	\end{enumerate}
+	
+	
 \end{document}
-
