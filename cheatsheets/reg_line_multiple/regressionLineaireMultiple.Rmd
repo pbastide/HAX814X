@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ## [Introduction]
 
-En statistique, la régression linéaire multiple est une méthode de régression mathématique étendant la régression linéaire simple pour décrire les variations d'une variable endogène associée aux variations de plusieurs variables indépendantes. Cette fiche est fortement inspirée du polycopié de cours d'Arnaud Guyader disponible sur le moodle du cours de modèle linéaire ( https://moodle.umontpellier.fr/course/view.php?id=25368 ). Si vous avez des questionnements vous y trouverez donc surement des réponses supplémentaires. 
+En statistique, la régression linéaire multiple est une méthode de régression mathématique étendant la régression linéaire simple pour décrire les variations d'une variable endogène associée aux variations de plusieurs variables indépendantes. Cette fiche est fortement inspirée du polycopié de cours d'Arnaud Guyader disponible sur le moodle du cours de modèle linéaire ( https://moodle.umontpellier.fr/course/view.php?id=25368 ). Si vous avez des questionnements vous y trouverez donc sûrement des réponses supplémentaires. 
 
 ## [1. Modélisation]{.underline}
 
@@ -158,7 +158,7 @@ $$
 
 D'après le résultat précédent qui n'est autre qu'une généralisation de
 celui vu en régression linéaire simple, on observe que l'estimateur des
-MCO est optimal en au sens de Gauss-Markov.
+MCO est optimal au sens de Gauss-Markov.
 
 
 #### **Théorème de Gauss-Markov :**
@@ -174,7 +174,7 @@ Remarques :
 
 1.  Linéaire signifie "linéaire par rapport à $Y$", c'est-à-dire de la
     forme $AY$ où $A$ est une matrice $(p,n)$ : en ce sens, l'estimateur
-    $\hat{\beta}$ des MCO est bien linéaire puisuqe
+    $\hat{\beta}$ des MCO est bien linéaire puisque
     $\hat{\beta}=(X'X)^{-1}X'Y$.
 
 2.  Rappelons qu'il existe une relation d'ordre partielle entre matrices
@@ -268,7 +268,7 @@ summary(fit2)
 
 Ici typiquement nous avons décidé de créer un modèle de régression
 multiple (**y_sim).** On analyse ensuite le $R^2$ et le $R^2_\alpha$ de
-cette échantillon en prenant en compte toutes les variables. On observe
+cet échantillon en prenant en compte toutes les variables. On observe
 que le $R^2$ ajusté est plus petit que le $R^2$ mais en est relativement
 proche.
 
