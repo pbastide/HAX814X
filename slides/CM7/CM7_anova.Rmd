@@ -2211,7 +2211,7 @@ $$
 
 *Proof*: Use Cholesky decomposition.
 
-## Mixed Model - General Case {.build}
+## Mixed Model - Maximum Likelihood {.build}
 
 **Mixed Model**
 $$
@@ -2232,7 +2232,7 @@ $$
 =
 \underset{\boldsymbol{\beta}, \boldsymbol{\psi}}{\operatorname{argmin}} 
 \left\{
-n \log |\mathbf{\Sigma}(\boldsymbol{\psi})| + 
+\log |\mathbf{\Sigma}(\boldsymbol{\psi})| + 
 (\mathbf{y} - \mathbf{X}\boldsymbol{\beta})^T \mathbf{\Sigma}(\boldsymbol{\psi})^{-1}(\mathbf{y} - \mathbf{X}\boldsymbol{\beta})
 \right\}
 $$
@@ -2243,7 +2243,7 @@ S(\boldsymbol{\beta})
 (\mathbf{y} - \mathbf{X}\boldsymbol{\beta})^T \mathbf{\Sigma}(\boldsymbol{\psi})^{-1}(\mathbf{y} - \mathbf{X}\boldsymbol{\beta})
 $$
 
-## Mixed Model - General Case {.build}
+## Mixed Model - Maximum Likelihood {.build}
 
 $$
 S(\boldsymbol{\beta})
@@ -2271,7 +2271,7 @@ $$
 =
 \underset{\boldsymbol{\psi}}{\operatorname{argmin}} 
 \left\{
-n \log |\mathbf{\Sigma}(\boldsymbol{\psi})| + 
+\log |\mathbf{\Sigma}(\boldsymbol{\psi})| + 
 (\mathbf{y} - \mathbf{X}h(\boldsymbol{\psi}))^T \mathbf{\Sigma}(\boldsymbol{\psi})^{-1}(\mathbf{y} - \mathbf{X}h(\boldsymbol{\psi}))
 \right\}
 $$
@@ -2282,6 +2282,82 @@ $$
 $$
 
 $\to$ Optimization in $\boldsymbol{\psi}$ can be complex.
+
+
+## Mixed Model - Restricted Likelihood {.build}
+
+**Linear Model**
+$$
+\hat{\sigma}^2_{ML} 
+= \frac{\|\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}} \|^2}{n}
+\qquad \text{vs} \qquad 
+\hat{\sigma}^2_{REML} 
+= \frac{\|\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}} \|^2}{n-p}
+$$
+$$
+\hat{\sigma}^2_{REML} 
+=
+\underset{\sigma^2}{\operatorname{argmax}} 
+\log L(0, \sigma^2 | \mathbf{P}^{\mathbf{X}^\bot}\mathbf{y})
+$$
+
+$$
+\mathbf{P}^{\mathbf{X}^\bot}\mathbf{y} = \hat{\boldsymbol{\epsilon}}
+\sim
+\mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{P}^{\mathbf{X}^\bot})
+$$
+
+$$
+\hat{\sigma}^2_{REML} 
+=
+\underset{\sigma^2}{\operatorname{argmax}} 
+\left\{
+\log |\sigma^2 \mathbf{P}^{\mathbf{X}^\bot}| + 
+(\mathbf{P}^{\mathbf{X}^\bot}\mathbf{y})^T (\sigma^2 \mathbf{P}^{\mathbf{X}^\bot})^{-1}(\mathbf{P}^{\mathbf{X}^\bot}\mathbf{y})
+\right\}
+$$
+
+$$
+\hat{\sigma}^2_{REML} 
+=
+\underset{\sigma^2}{\operatorname{argmax}} 
+\left\{
+(n-p) \log(\sigma^2) + \frac{1}{\sigma^2}
+\|\mathbf{P}^{\mathbf{X}^\bot}\mathbf{y}\|^2
+\right\}
+$$
+
+
+## Mixed Model - Restricted Likelihood {.build}
+
+**Mixed Model**
+$$
+\mathbf{y} \sim \mathcal{N}(\mathbf{X}\boldsymbol{\beta},
+\mathbf{\Sigma}(\boldsymbol{\psi}))
+$$
+
+Let $\mathbf{T}$ a $(n-p)\times n$ such that $\mathbf{T}\mathbf{X}=\mathbf{0}$.
+$$
+\tilde{\mathbf{y}} = 
+\mathbf{T}\mathbf{y} 
+\sim 
+\mathcal{N}(\mathbf{0},
+\mathbf{T}^T\mathbf{\Sigma}(\boldsymbol{\psi})\mathbf{T})
+$$
+
+$$
+\hat{\boldsymbol{\psi}}_{REML}
+=
+\underset{\boldsymbol{\psi}}{\operatorname{argmax}} 
+\log L(\boldsymbol{\psi} | \tilde{\mathbf{y}})
+$$
+
+$\to$ Independent from $\boldsymbol{\beta}$.
+
+$\to$ Independent from the choice of $\mathbf{T}$.
+
+$\to$ Often, $\mathbf{T} = \mathbf{P}^{\mathbf{X}^\bot}$.
+
 
 <!-- ************************************************************************ -->
 # Perspectives
