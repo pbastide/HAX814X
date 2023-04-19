@@ -225,6 +225,8 @@ et $rg(\mathbf{X}_0) = p_0$.
 
 Pour cela, on utilise la statistique de Fisher suivante :
 
+$~$
+
 $$
 F = \frac{
 \|\hat{\mathbf{y}} -  \hat{\mathbf{y}}_0\|^2 / (p - p_0)
@@ -234,6 +236,8 @@ F = \frac{
 \underset{\mathcal{H}_0}{\sim}
 \mathcal{F}^{p - p_0}_{n - p}
 $$
+
+$~$
 
 Remarque : $F = \frac{n - p}{p - p_0}\frac{SCR_0 - SCR}{SCR}$ où
 $SCR_0=\|\mathbf{y} - \hat{\mathbf{y}}_0\|^2$
