@@ -4,33 +4,34 @@ author: "AKKOUH Maryam & RENOIR Thamara"
 date: "15/04/2023"
 output:
   prettydoc::html_pretty:
-    theme: cayman
+    theme: hpstr
 editor_options: 
   markdown: 
     wrap: 72
 ---
 
-## Modèle Gaussien
+## 1. Modèle Gaussien
 
-### Modèle:
+#### a. Modèle
 
 $$
 \mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}
 $$
 
 -   $\mathbf{y}$ vecteur **aléatoire** de taille $n$
--   $\mathbf{X}$ **non aléatoire** $n\times p$ matrice des prédicteurs
--   $\boldsymbol{\epsilon}$ vecteur **aléatoire** $n$ des erreurs
--   $\boldsymbol{\beta}$ **non aléatoire,** vector **inconnu** des $p$
+-   $\mathbf{X}$ **non aléatoire,** matrice $n\times p$ des prédicteurs
+-   $\boldsymbol{\epsilon}$ vecteur **aléatoire** des erreurs de taille
+    $n$
+-   $\boldsymbol{\beta}$ **non aléatoire,** vecteur **inconnu** des $p$
     coefficients
 
-### Hypothèses:
+#### b. Hypothèses
 
 -   (H1) $rg(\mathbf{X}) = p$
 -   (H2)
     $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I}_n)$
 
-## Distribution des estimateurs
+#### c. Distribution des estimateurs
 
 Distribution de $\hat{\boldsymbol{\beta}}$: $$
 \hat{\boldsymbol{\beta}}
@@ -47,7 +48,7 @@ Distribution de $\hat{\sigma}^2$: $$
 \chi^2_{n-p}.
 $$
 
-## Student t tests
+#### d. Tests de Student (t tests)
 
 $$
 \text{Hypothèses:}
@@ -60,7 +61,7 @@ $$
 $$
 
 $$
-\text{Test Statistic:}
+\text{Statistique de test:}
 \qquad\qquad\qquad\qquad
 T_k 
 = \frac{\hat{\beta}_k}{\sqrt{\hat{\sigma}^2_k}}
@@ -68,9 +69,7 @@ T_k
 \mathcal{T}_{n-p}
 $$
 
-# Distribution jointe des coefficients
-
-## Distribution jointe de $\hat{\boldsymbol{\beta}}$
+#### e. Distribution jointe des coefficients
 
 Quand $\sigma^2$ est connu :
 
@@ -80,22 +79,21 @@ $$
 \mathcal{N}\left(
 \boldsymbol{\beta};
 \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
-\right).
+\right)
 $$
 
-Quand \$\\sigma\^2\$ est inconnu :$$
+Quand $\sigma^2$ est inconnu :$$
 \frac{1}{p\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
 \sim
 \mathcal{F}^p_{n-p}
 $$
 
-avec $\mathcal{F}^p_{n-p}$ la loi de Fisher.
+avec $\mathcal{F}^p_{n-p}$ la loi de Fisher à $p$ et $n-p$ degrés de
+liberté.
 
-# Test de Fisher Global (F-test):
+## 2. Test de Fisher Global (F-test)
 
-## Global Fisher F-test
-
-Hypothèse: $$
+Hypothèse : $$
 \mathcal{H}_0: \beta_1 = \cdots = \beta_p = 0
 \quad
 \text{vs}
@@ -103,38 +101,30 @@ Hypothèse: $$
 \mathcal{H}_1: \exists~k ~|~ \beta_k \neq 0
 $$
 
-Statistique de test: $$
+Remarque : sous $\mathcal H_0$ le modèle est inutile.
+
+Statistique de test : $$
 F
 = \frac{1}{p\hat{\sigma}^2}\hat{\boldsymbol{\beta}}^T (\mathbf{X}^T\mathbf{X})\hat{\boldsymbol{\beta}}
 \underset{\mathcal{H}_0}{\sim}
 \mathcal{F}^p_{n-p}
 $$
 
-## Fisher F-Test - Geometry
+#### a. Test de Fisher - Géométrie
+
+On peut également écrire :
 
 $$
 \begin{aligned}
-F
-&= \frac{1}{p\hat{\sigma}^2}\hat{\boldsymbol{\beta}}^T (\mathbf{X}^T\mathbf{X})\hat{\boldsymbol{\beta}}
-= \frac{(\mathbf{X}\hat{\boldsymbol{\beta}})^T (\mathbf{X}\hat{\boldsymbol{\beta}}) / p}{\|\hat{\boldsymbol{\epsilon}}\|^2 / (n - p)} \\
-&= \frac{\|\hat{\mathbf{y}}\|^2 / p}{\|\hat{\boldsymbol{\epsilon}}\|^2 / (n - p)}
-= \frac{\|\hat{\mathbf{y}}\|^2 / p}{\|\mathbf{y} -  \hat{\mathbf{y}}\|^2 / (n - p)} \\
+F = \frac{(\mathbf{X}\hat{\boldsymbol{\beta}})^T (\mathbf{X}\hat{\boldsymbol{\beta}}) / p}{\|\hat{\boldsymbol{\epsilon}}\|^2 / (n - p)}
+= \frac{\|\hat{\mathbf{y}}\|^2 / p}{\|\mathbf{y} -  \hat{\mathbf{y}}\|^2 / (n - p)}
 \end{aligned}
 $$
 
-*\>* $\mathcal{H}_0: \beta_1 = \cdots = \beta_p = 0$ i.e. le modèle est
-inutile.
-
-> -   If $\|\hat{\boldsymbol{\epsilon}}\|^2$ is **large**, then the
->     error is **large**,\
->     and $F$ tends to be **small**, i.e. we tend to **not reject**
->     $\mathcal{H}_0$:\
->     the model is rather useless.
-
-## Interprétation géométrique
+#### b. Interprétation géométrique
 
 ::: columns-2
-**Bon modèle**
+**Bon modèle :**
 
 ```{r proj2, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
 par(mar = c(0, 0, 0, 0) + 0.1)
@@ -168,11 +158,11 @@ text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
      labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
 ```
 
--   Si $\|\hat{\boldsymbol{\epsilon}}\|^2$ est petit alors l'erreur
-    l'est aussi et $F$ devient grande, autrement dit on rejetera
-    $\mathcal{H}_0$ : le modèle est alors utile.$~$
+Si $\|\hat{\boldsymbol{\epsilon}}\|^2$ est petit alors l'erreur l'est
+aussi et $F$ devient grande, autrement dit, on rejettera $\mathcal{H}_0$
+: le modèle est alors utile.$~$
 
-**Mauvais modèle**
+**Mauvais modèle :**
 
 ```{r proj1, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
 par(mar = c(0, 0, 0, 0) + 0.1)
@@ -206,14 +196,14 @@ text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
      labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
 ```
 
--   Si $\|\hat{\boldsymbol{\epsilon}}\|^2$ est grand alors l'erreur
-    l'est aussi et $F$ devient petite, autrement dit on ne rejetera pas
-    \$\\$\mathcal{H}_0$ : le modèle est alors inutile.
+Si $\|\hat{\boldsymbol{\epsilon}}\|^2$ est grand alors l'erreur l'est
+aussi et $F$ devient petite, autrement dit, on ne rejettera pas
+$\mathcal{H}_0$ : le modèle est alors inutile.
 :::
 
-# Modèles de Fisher emboîtés (F-test)
+## 3. Modèles de Fisher emboîtés (F-test)
 
-## Modèles emboîtés
+#### a. Modèles
 
 On veut tester : $$
 \begin{aligned}
@@ -226,25 +216,14 @@ c'est-à-dire, décider entre le modèle complet :$$
 \mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}
 $$
 
-et le modèle emboîté: $$
+et le modèle emboîté : $$
 \mathbf{y} = \mathbf{X}_0\boldsymbol{\beta}_0 + \boldsymbol{\epsilon}
 $$
 
 avec $\mathbf{X} = (\mathbf{X}_0 ~ \mathbf{X}_1)$, $rg(\mathbf{X}) = p$
 et $rg(\mathbf{X}_0) = p_0$.
 
-## Interprétation géométrique
-
-## Modèles emboîtés
-
-**On veut comparer**:
-
--   $\|\hat{\mathbf{y}} - \hat{\mathbf{y}}_0\|^2$ distance of
-    $\hat{\mathbf{y}}$ compared to $\hat{\mathbf{y}}_0$ to
-
--   $\|\mathbf{y} - \hat{\mathbf{y}}\|^2$ residual error.
-
-## L'expression de la statistique de test est :
+Pour cela, on utilise la statistique de Fisher suivante :
 
 $$
 F = \frac{
@@ -256,13 +235,17 @@ F = \frac{
 \mathcal{F}^{p - p_0}_{n - p}
 $$
 
-Remarque: $F = \frac{n - p}{p - p_0}\frac{SCR_0 - SCR}{SCR}$ où
+Remarque : $F = \frac{n - p}{p - p_0}\frac{SCR_0 - SCR}{SCR}$ où
 $SCR_0=\|\mathbf{y} - \hat{\mathbf{y}}_0\|^2$
 
-## Interprétation géométrique
+#### b. Interprétation géométrique
+
+On compare $\|\hat{\mathbf{y}} - \hat{\mathbf{y}}_0\|^2$ (la distance
+entre $\hat{\mathbf{y}}$ et $\hat{\mathbf{y}}_0$) et
+$\|\mathbf{y} - \hat{\mathbf{y}}\|^2$, l'erreur résiduelle.
 
 ::: columns-2
-**Bon modèle**
+**Bon modèle :**
 
 ```{r proj4, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
 par(mar = c(0, 0, 0, 0) + 0.1)
@@ -313,16 +296,14 @@ segments(x0 = ybaronev[1], y0 = ybaronev[2], x1 = yhatv[1], y1 = yhatv[2],
          col = "limegreen", lwd = 3, lty = 3)
 ```
 
--   Si $\|\hat{\mathbf{y}} - \hat{\mathbf{y}}_0\|^2$ est petit comparé à
-    $\|\mathbf{y} - \hat{\mathbf{y}}\|^2$ alors
-    "$\hat{\mathbf{y}} \approx \hat{\mathbf{y}}_0$" et le modèle nul est
-    suffisant.
-
--   F est petit.
+Si $\|\hat{\mathbf{y}} - \hat{\mathbf{y}}_0\|^2$ est petit comparé à
+$\|\mathbf{y} - \hat{\mathbf{y}}\|^2$ alors
+"$\hat{\mathbf{y}} \approx \hat{\mathbf{y}}_0$" alors F aussi et le
+modèle nul est suffisant.
 
 $~$
 
-**Mauvais modèle**
+**Mauvais modèle :**
 
 ```{r proj5, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
 par(mar = c(0, 0, 0, 0) + 0.1)
@@ -373,25 +354,12 @@ segments(x0 = ybaronev[1], y0 = ybaronev[2], x1 = yhatv[1], y1 = yhatv[2],
          col = "limegreen", lwd = 3, lty = 3)
 ```
 
--   Si \$\\\|\\hat{\\mathbf{y}} - \\hat{\\mathbf{y}}\_0\\\|\^2\$ est
-    grand par rapport à \$\\\|\\mathbf{y} - \\hat{\\mathbf{y}}\\\|\^2\$
-    alors le modèle complet est utile.
-
--   Ici F est grande.
+Si $\|\hat{\mathbf{y}} - \hat{\mathbf{y}}_0\|^2$ est grand par rapport à
+$\|\mathbf{y} - \hat{\mathbf{y}}\|^2$ alors F aussi et le modèle complet
+est utile.
 :::
 
-## Nested F test
-
-Pour ce test : $$
-\begin{aligned}
-\mathcal{H}_0&: \beta_{p_0 + 1} = \cdots = \beta_p = 0 &\text{vs}\\
-\mathcal{H}_1&: \exists~k\in \{p_0+1, \dotsc, p\} ~|~ \beta_k \neq 0
-\end{aligned}
-$$
-
-on utilise la statistique de Fisher ($F$)
-
-## Test complet $F$ :
+#### c. Test complet $F$
 
 Suivant l'hypothèse de l'existence de l'intercept on teste : $$
 \begin{aligned}
@@ -400,73 +368,68 @@ Suivant l'hypothèse de l'existence de l'intercept on teste : $$
 \end{aligned}
 $$
 
-La statistique associée $F$ est ($p_0 = 1$): $$
+La statistique $F$ associée est (pour $p_0 = 1$) : $$
 F = \frac{
 \|\hat{\mathbf{y}} -  \bar{y}\mathbb{1}\|^2 / (p - 1)
 }{
 \|\mathbf{y} - \hat{\mathbf{y}}\|^2 / (n - p)
 }
 \underset{\mathcal{H}_0}{\sim}
-\mathcal{F}^{p - 1}_{n - p}.
+\mathcal{F}^{p - 1}_{n - p}
 $$
 
 C'est le test par défaut effectué par `R`.
 
-Remarque : si $p_0 = p-1$, we test: $$
+Remarque : si $p_0 = p-1$, on teste : $$
 \begin{aligned}
 \mathcal{H}_0&: \beta_p = 0 &\text{vs} \qquad
 \mathcal{H}_1&: \beta_p \neq 0
 \end{aligned}
 $$ dans ce cas là le test de Fisher est équivalent au t-test.
 
-# Sélection de variable
+## 4. Sélection de variables
 
-On cherche les variables les plus informatives pour y. On veut choisir
-le "meilleur" modèle en trouvant un "score" pour évaluer sa qualité.\
+On cherche les variables les plus informatives pour $y$. On veut choisir
+le "meilleur" modèle en trouvant un "score" pour évaluer la qualité des
+modèles candidats.
 
-## Premier score - $R^2$
+### A. Premier score - $R^2$
 
 $$
 R^2 = 1 - \frac{SCR}{SCT}
 $$
 
-Le $R^2$ est croissant avec le nombre le predicteurs. Ce n'est donc pas
-un bon indicateur. On privilégie alors le $R^2$ ajusté noté $R^2_a$ . il
-pénalise le nombre de predicteurs. Le but est de le maximiser.
+Le $R^2$ est croissant avec le nombre le prédicteurs, ce n'est donc pas
+un bon indicateur. On privilégie alors le $R^2$ ajusté noté $R^2_a$ qui
+pénalise le nombre de prédicteurs. Le but est de le maximiser.
 
 $$
 R_a^2 = 1 - \frac{SCR / (n-p)}{SCT / (n-1)} 
 $$
 
-# Risque prédictif
+### B. Risque prédictif théorique
 
 Le but est de minimiser le risque prédictif.
 
-# Risque théorique
+Le vrai modèle est $y = \mu +\epsilon$ avec $\mu \in \mathbb{R}^n$.
 
-#### Vrai modèle :
-
-$y = \mu +\epsilon$ avec $\mu \in \mathbb{R}^n$
-
-#### Sous-mod**èles**:
-
-On conserve uniquement les predicteurs $\eta \subset \{1, \dotsc, p\}$
-$$
+Pour les sous modèles on conserve uniquement les prédicteurs
+$\eta \subset \{1, \dotsc, p\}$ $$
 \mathbf{y} = \mathbf{X}_{\eta} \boldsymbol{\beta}_{\eta} + \boldsymbol{\epsilon}_{\eta}
 \quad
 rg(\mathbf{X}_{\eta}) = |\eta|,
 \quad
-\boldsymbol{\epsilon}_{\eta} \sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_n).
+\boldsymbol{\epsilon}_{\eta} \sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_n)
 $$
 
-où $\mathbf{X}_{\eta}$ est une sous-matrice de $\mathbf{X}$: $$
+où $\mathbf{X}_{\eta}$ est une sous-matrice de $\mathbf{X}$ : $$
 \mathbf{X}_{\eta} = (\mathbf{x}_{\eta_1} ~ \mathbf{x}_{\eta_2} \cdots \mathbf{x}_{\eta_{|\eta|}})
 $$
 
-On suppose que $\boldsymbol{\mu}$ peut être approché par
+Remarque : on suppose que $\boldsymbol{\mu}$ peut être approché par
 $\mathbf{X}_{\eta} \boldsymbol{\beta}_{\eta}$.
 
-**Estimateurs:** $$ 
+Les estimateurs des sous modèles sont :$$ 
 \begin{aligned}
 \hat{\boldsymbol{\beta}}_\eta 
 & = \underset{\boldsymbol{\beta} \in \mathbb{R}^{|\eta|}}{\operatorname{argmin}} 
@@ -478,7 +441,7 @@ $\mathbf{X}_{\eta} \boldsymbol{\beta}_{\eta}$.
 \end{aligned}
 $$
 
-## Risque
+#### a. Interprétation géométrique
 
 ```{r fullproj2, echo=FALSE, fig.height=5.5, fig.width=5.5, fig.align='center'}
 par(mar = c(0, 0, 0, 0) + 0.1)
@@ -538,9 +501,7 @@ text((muv[1] + 2*yhatv[1])/3, (muv[2] + 2*yhatv[2])/3,
      labels =  expression(bold(mu) - hat(bold(y))[eta]), col = "goldenrod4", pos = 2)
 ```
 
-## Risque d'un estimateur (théorique)
-
-Risque d'un estimateur: $$
+Le risque théorique d'un estimateur est : $$
 R(\hat{\mathbf{y}}_\eta)
 = 
 \mathbb{E}\left[
@@ -548,10 +509,10 @@ R(\hat{\mathbf{y}}_\eta)
 \right]
 $$
 
-Remarque : $\mu$ est inconnue, le risque ne peut être calculé en
+Remarque : $\mu$ est inconnu, le risque ne peut être calculé en
 pratique. Il faut alors trouver un estimateur de ce risque.
 
-# Décomposition Biais-Variance
+#### b. Décomposition Biais-Variance
 
 $$
 R(\hat{\mathbf{y}}_\eta)
@@ -563,29 +524,25 @@ R(\hat{\mathbf{y}}_\eta)
 \|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2 + |\eta| \sigma^2
 $$
 
-> -   **Biais**: $\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2$
->     -   **Décroit** quand $\eta$ devient grand.
+**Biais** $\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2$ : il **décroit**
+quand $\eta$ devient grand.
 
-> -   **Variance**: $|\eta| \sigma^2$
->     -   **Augmente** quand $\eta$ devient grand.
+**Variance**: $|\eta| \sigma^2$ : elle **augmente** quand $\eta$ devient
+grand.
 
-Le rsique est alors un compromis entre le biais et la variance.
+Le risque est alors un compromis entre le biais et la variance.
 
 Remarque :
 $\eta \subset \eta' \Rightarrow R(\hat{\mathbf{y}}_{\eta'}) \geq R(\hat{\mathbf{y}}_\eta)$
 
-# Moindres carrés pénalisés
+#### c. Moindres carrés pénalisés
 
-## Estimateur Oracle :
-
-On veut trouver:
+On veut trouver :
 $$\eta_0 = \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} R(\hat{\mathbf{y}}_\eta)$$
 
 On veut minimiser un estimateur $\hat{R}(\hat{\mathbf{y}}_\eta)$ de
 $R(\hat{\mathbf{y}}_\eta)$
 :$$\hat{\eta} = \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta)$$
-
-## Espérance des SCR:
 
 Pour tout modèle $\eta$, l'espérance des SCR est : $$
 \mathbb{E}[\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2]
@@ -594,9 +551,9 @@ R(\hat{\mathbf{y}}_\eta) + n\sigma^2 - 2|\eta|\sigma^2
 $$
 
 On peut donc écrire
-$R(\hat{y}_{\eta}) =\mathbb{E}[\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2] - n\sigma^2 + 2|\eta|\sigma^2$
+$R(\hat{y}_{\eta}) =\mathbb{E}[\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2] - n\sigma^2 + 2|\eta|\sigma^2$.
 
-## $C_p$ de Mallow :
+#### d. $C_p$ de Mallow
 
 $$
 C_p(\hat{\mathbf{y}}_\eta) = \frac{1}{n} \left( \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2 \right)
@@ -604,12 +561,12 @@ $$
 
 Remarque : $C_p$ pénalise le nombre de paramètres $|\eta|$.
 
-> Si $\hat{\sigma}^2$ est sans biais alors : $$
-> \mathbb{E}[C_p(\hat{\mathbf{y}}_\eta)] 
-> = \frac{1}{n}R(\hat{\mathbf{y}}_\eta) + \sigma^2
-> $$
->
-> D'où :
+Si $\hat{\sigma}^2$ est sans biais alors : $$
+\mathbb{E}[C_p(\hat{\mathbf{y}}_\eta)] 
+= \frac{1}{n}R(\hat{\mathbf{y}}_\eta) + \sigma^2
+$$
+
+D'où :
 
 $$
 \hat{\eta} 
@@ -617,24 +574,19 @@ $$
 = \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta).
 $$
 
-Minimiser un estimateur sans biais du risque revient à minimiser le
+Minimiser un estimateur sans biais du risque revient donc à minimiser le
 $C_p$ de Mallow.
 
-# Log vraisemblance pénalisée
+### C. Log vraisemblance pénalisée
 
 La log vraisemblance maximisée est :
 
 $$
-\log L(\hat{\boldsymbol{\beta}}_\eta, \hat{\sigma}^2_{ML} | \mat})=
-- \frac{n}{2} \log\left(\frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2}{n}\right) 
-- \frac{n}{2} \log\left(2\pi\right) 
-- \frac{n}{2}
+\log L(\hat{\boldsymbol{\beta}}_\eta, \hat{\sigma}^2_{ML} | y) =- \frac{n}{2} \log\left(\frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2}{n}\right) - \frac{n}{2} \log\left(2\pi\right) - \frac{n}{2}
 $$
 
-## Croissance de la log vraisemblance {.build}
-
 Si $\eta \subset \eta'$ alors la
-$\log \hat{L}_{\eta} \leq \log \hat{L}_{\eta'}$
+$\log \hat{L}_{\eta} \leq \log \hat{L}_{\eta'}$.
 
 De la même manière qu'on a pénalisé le $R^2$ on ajoute une pénalité qui
 dépend de la taille du modèle.
@@ -643,60 +595,61 @@ On veut alors minimiser$$
 - \log \hat{L}_\eta + f(|\eta|) \qquad \text{avec f croissante}
 $$
 
-# AIC et BIC
+#### AIC et BIC
 
-## Akaike Information Criterion - AIC
+Akaike Information Criterion - AIC :
 
 $$
 AIC = - 2\log \hat{L}_\eta + 2 |\eta|
 $$
 
-$~$
-
-## Bayesian Information Criterion - BIC
+Bayesian Information Criterion - BIC :
 
 $$
 BIC = - 2\log \hat{L}_\eta + |\eta| \log(n)
 $$
 
-$~$
+-   $AIC$ et $BIC$ à minimiser, $BIC$ pénalise plus que le $AIC$.
 
--   $AIC$ et $BIC$ à minimiser, $BIC$ pénalise plus que le $AIC$
+-   Ils possèdent des justifications théoriques asymptotiques.
 
--   Possèdent des justifications théoriques asymptotiques.
+### D. Forward and Backward Search
 
-# Forward and Backward Search
-
-## Problème de combinatoire
+La recherche du meilleur modèle est un problème combinatoire :
 
 $$
-p \text{ predicteurs } \to 2^p \text{ modèles possibles}
+p \text{ prédicteurs } \to 2^p \text{ modèles possibles}
 $$
 
-Trop de modèles, on ne peut pas tous les tester. On peut utiliser les
-deux méthodes suivantes (pas très utilisées en pratique) :
+Il y a trop de modèles, on ne peut pas tous les tester. On peut utiliser
+les deux méthodes suivantes (plus très utilisées en pratique) :
 
-## Forward search
+#### a. Forward search (recherche en avant)
 
-> -   Commencer avec le modèle nul (sans predicteurs).
-> -   Ajouter un predicteur au modèle ($p$ modèles possibles).
-> -   Choisir le meilleur modèle parmi les $p$ modèles en utilisant les
->     critères AIC, BIC et $C_p$.
-> -   Recommencer jusqu'à ce qu'il n'y ait plus de predicteurs à
->     ajouter.
+-   Commencer avec le modèle nul (sans prédicteurs).
 
-## Backward search
+-   Ajouter un prédicteur au modèle ($p$ modèles possibles).
 
-> -   Commencer avec le modèle complet.
-> -   Enlever un predicteur au modèle ($p$ modèles possibles).
-> -   Choisir le meilleur modèle parmi les \$p\$ modèles en utilisant
->     les critères AIC, BIC et $C_p$.
-> -   Recommencer jusqu'à ce qu'il n'y ait plus de predicteurs à
->     enlever.
+-   Choisir le meilleur modèle parmi les $p$ modèles en utilisant les
+    critères AIC, BIC et $C_p$.
 
-## Forward and backward searches
+-   Recommencer jusqu'à ce qu'il n'y ait plus de prédicteurs à ajouter.
 
-> -   Ce sont des heuristiques sans garanties théoriques sur le modèle
->     sélectionné.
-> -   Pas de garantie de convergence vers le même modèle des deux
->     méthodes.
+#### b. Backward search (recherche en arrière)
+
+-   Commencer avec le modèle complet.
+
+-   Enlever un prédicteur au modèle ($p$ modèles possibles).
+
+-   Choisir le meilleur modèle parmi les $p$ modèles en utilisant les
+    critères AIC, BIC et $C_p$.
+
+-   Recommencer jusqu'à ce qu'il n'y ait plus de prédicteurs à enlever.
+
+#### c. Forward and backward searches
+
+-   Ce sont des heuristiques sans garanties théoriques sur le modèle
+    sélectionné.
+
+-   Pas de garantie de convergence vers le même modèle des deux
+    méthodes.
