@@ -1757,6 +1757,69 @@ plot(fit_species)
 
 
 <!-- ************************************************************************ -->
+# Perspectives
+<!-- ************************************************************************ -->
+
+## Hasty Summary
+
+$$
+\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}
+$$
+
+>* $\mathbf{y}$ **quantitative** response
+>* $\mathbf{X}$ matrix of predictors (quantitative or qualitative)
+>* $\boldsymbol{\beta}$ deterministic coefficient
+>* $\boldsymbol{\epsilon}$ random, centered, null covariance (Gaussian)
+
+## Hasty Summary
+
+>* **Fit**
+>   - OLS estimates of $\hat{\boldsymbol{\beta}}$ and $\hat{\sigma}^2$
+>   - ML estimates and CI when Gaussian
+>* **Model Selection**
+>   - $t$ test the hypothesis "$\boldsymbol{\beta}_k = 0$" (when Gaussian)
+>   - $F$ test of nested models (when Gaussian)
+>   - Penalized criteria (AIC, BIC, Mallow's C_p, ...)
+>* **Prediction**
+>   - New points $\hat{y}_{i}$, with CI (when Gaussian)
+>* **Diagnostics**
+>   - Analysis of the residuals (outliers, Gaussian, ...)
+>   - Analysis of the projection matrix (Leverage, Cook, ...)
+
+## Perspectives and key words
+
+>* Model Selection
+>    - hard to do when there are many predictors (see CM 5)  
+>    $\to$ **regularized models** (lasso, ...), **Bayesian Statistics**
+>
+>* No independence assumption
+>   - Observations are correlated (e.g. geography)  
+>   $\to$ **linear mixed models**
+>
+>* $\mathbf{y}$ is qualitative: classification
+>   - e.g. $\mathbf{y} = 0/1$ is the response to a treatment (dose, ...)  
+>   $\to$ **logistic regression**
+>
+>* No normal assumption
+>   - $\mathbf{y}$ qualitative, counts, positive, ...  
+>   $\to$ **Generalized Linear Models** (GLM)
+
+## Ressources
+
+* [An Introduction to Statistical Learning](https://statlearning.com/)  
+G. James, D. Witten, T. Hastie and R. Tibshirani
+
+* [Le modèle linéaire et ses extensions](https://www6.inrae.fr/mia-paris/content/download/4281/40718/version/1/file/ModeleLineaireEt_Extensions.pdf)  
+L. Bel, JJ. Daudin, M. Etienne, E. Lebarbier, T. Mary-Huard, S. Robin, C. Vuillet
+
+* [The Elements of Statistical Learning](https://web.stanford.edu/~hastie/ElemStatLearn/)  
+T. Hastie, R. Tibshirani, J. Friedman
+
+## Conclusion {.smaller}
+
+<center><img src="IJALM.png" height="450px" /></center>
+
+<!-- ************************************************************************ -->
 # From ANOVA to Mixed Models
 <!-- ************************************************************************ -->
 
@@ -2359,66 +2422,4 @@ $\to$ Independent from the choice of $\mathbf{T}$.
 $\to$ Often, $\mathbf{T} = \mathbf{P}^{\mathbf{X}^\bot}$.
 
 
-<!-- ************************************************************************ -->
-# Perspectives
-<!-- ************************************************************************ -->
-
-## Hasty Summary
-
-$$
-\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}
-$$
-
->* $\mathbf{y}$ **quantitative** response
->* $\mathbf{X}$ matrix of predictors (quantitative or qualitative)
->* $\boldsymbol{\beta}$ deterministic coefficient
->* $\boldsymbol{\epsilon}$ random, centered, null covariance (Gaussian)
-
-## Hasty Summary
-
->* **Fit**
->   - OLS estimates of $\hat{\boldsymbol{\beta}}$ and $\hat{\sigma}^2$
->   - ML estimates and CI when Gaussian
->* **Model Selection**
->   - $t$ test the hypothesis "$\boldsymbol{\beta}_k = 0$" (when Gaussian)
->   - $F$ test of nested models (when Gaussian)
->   - Penalized criteria (AIC, BIC, Mallow's C_p, ...)
->* **Prediction**
->   - New points $\hat{y}_{i}$, with CI (when Gaussian)
->* **Diagnostics**
->   - Analysis of the residuals (outliers, Gaussian, ...)
->   - Analysis of the projection matrix (Leverage, Cook, ...)
-
-## Perspectives and key words
-
->* Model Selection
->    - hard to do when there are many predictors (see CM 5)  
->    $\to$ **regularized models** (lasso, ...), **Bayesian Statistics**
->
->* No independence assumption
->   - Observations are correlated (e.g. geography)  
->   $\to$ **linear mixed models**
->
->* $\mathbf{y}$ is qualitative: classification
->   - e.g. $\mathbf{y} = 0/1$ is the response to a treatment (dose, ...)  
->   $\to$ **logistic regression**
->
->* No normal assumption
->   - $\mathbf{y}$ qualitative, counts, positive, ...  
->   $\to$ **Generalized Linear Models** (GLM)
-
-## Ressources
-
-* [An Introduction to Statistical Learning](https://statlearning.com/)  
-G. James, D. Witten, T. Hastie and R. Tibshirani
-
-* [Le modèle linéaire et ses extensions](https://www6.inrae.fr/mia-paris/content/download/4281/40718/version/1/file/ModeleLineaireEt_Extensions.pdf)  
-L. Bel, JJ. Daudin, M. Etienne, E. Lebarbier, T. Mary-Huard, S. Robin, C. Vuillet
-
-* [The Elements of Statistical Learning](https://web.stanford.edu/~hastie/ElemStatLearn/)  
-T. Hastie, R. Tibshirani, J. Friedman
-
-## Conclusion {.smaller}
-
-<center><img src="IJALM.png" height="450px" /></center>
 
