@@ -33,14 +33,22 @@ $$
 
 #### c. Distribution des estimateurs
 
-Distribution de $\hat{\boldsymbol{\beta}}$: $$
+Distribution de $\hat{\boldsymbol{\beta}}$ quand $\sigma^2$ est connu :
+$$
 \hat{\boldsymbol{\beta}}
 \sim
 \mathcal{N}\left(
 \boldsymbol{\beta};
 \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
 \right)
+$$ Quand $\sigma^2$ est inconnu :$$
+\frac{1}{p\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
+\sim
+\mathcal{F}^p_{n-p}
 $$
+
+avec $\mathcal{F}^p_{n-p}$ la loi de Fisher à $p$ et $n-p$ degrés de
+liberté.
 
 Distribution de $\hat{\sigma}^2$: $$
 \frac{(n-p) \hat{\sigma}^2}{\sigma^2}
@@ -67,29 +75,8 @@ T_k
 = \frac{\hat{\beta}_k}{\sqrt{\hat{\sigma}^2_k}}
 \underset{\mathcal{H}_0}{\sim}
 \mathcal{T}_{n-p}
-$$
-
-#### e. Distribution jointe des coefficients
-
-Quand $\sigma^2$ est connu :
-
-$$
-\hat{\boldsymbol{\beta}}
-\sim
-\mathcal{N}\left(
-\boldsymbol{\beta};
-\sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
-\right)
-$$
-
-Quand $\sigma^2$ est inconnu :$$
-\frac{1}{p\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
-\sim
-\mathcal{F}^p_{n-p}
-$$
-
-avec $\mathcal{F}^p_{n-p}$ la loi de Fisher à $p$ et $n-p$ degrés de
-liberté.
+$$ où $\hat\sigma^2_k$ est un estimateur de
+$\text{var} (\hat\beta_k) = \hat\sigma^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{k,k}$
 
 ## 2. Test de Fisher Global (F-test)
 
@@ -239,8 +226,15 @@ $$
 
 $~$
 
-Remarque : $F = \frac{n - p}{p - p_0}\frac{SCR_0 - SCR}{SCR}$ où
+Remarque 1 : $F = \frac{n - p}{p - p_0}\frac{SCR_0 - SCR}{SCR}$ où
 $SCR_0=\|\mathbf{y} - \hat{\mathbf{y}}_0\|^2$
+
+Remarque 2 : si $p_0 = p-1$, on teste : $$
+\begin{aligned}
+\mathcal{H}_0&: \beta_p = 0 &\text{vs} \qquad
+\mathcal{H}_1&: \beta_p \neq 0
+\end{aligned}
+$$ dans ce cas là le test de Fisher est équivalent au t-test de $\beta_p = 0 $.
 
 #### b. Interprétation géométrique
 
@@ -248,8 +242,7 @@ On compare $\|\hat{\mathbf{y}} - \hat{\mathbf{y}}_0\|^2$ (la distance
 entre $\hat{\mathbf{y}}$ et $\hat{\mathbf{y}}_0$) et
 $\|\mathbf{y} - \hat{\mathbf{y}}\|^2$, l'erreur résiduelle.
 
-::: columns-2
-**Bon modèle :**
+ **Bon modèle :**
 
 ```{r proj4, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
 par(mar = c(0, 0, 0, 0) + 0.1)
@@ -300,10 +293,9 @@ segments(x0 = ybaronev[1], y0 = ybaronev[2], x1 = yhatv[1], y1 = yhatv[2],
          col = "limegreen", lwd = 3, lty = 3)
 ```
 
-Si $\|\hat{\mathbf{y}} - \hat{\mathbf{y}}_0\|^2$ est petit comparé à
-$\|\mathbf{y} - \hat{\mathbf{y}}\|^2$ alors
-"$\hat{\mathbf{y}} \approx \hat{\mathbf{y}}_0$" alors F aussi et le
-modèle nul est suffisant.
+Si $\|\hat{\mathbf{y}} - \hat{\mathbf{y}}_0\|^2$ est grand par rapport à
+$\|\mathbf{y} - \hat{\mathbf{y}}\|^2$ alors F aussi et le modèle complet
+est utile.
 
 $~$
 
@@ -358,14 +350,15 @@ segments(x0 = ybaronev[1], y0 = ybaronev[2], x1 = yhatv[1], y1 = yhatv[2],
          col = "limegreen", lwd = 3, lty = 3)
 ```
 
-Si $\|\hat{\mathbf{y}} - \hat{\mathbf{y}}_0\|^2$ est grand par rapport à
-$\|\mathbf{y} - \hat{\mathbf{y}}\|^2$ alors F aussi et le modèle complet
-est utile.
-:::
+Si $\|\hat{\mathbf{y}} - \hat{\mathbf{y}}_0\|^2$ est petit comparé à
+$\|\mathbf{y} - \hat{\mathbf{y}}\|^2$ alors
+"$\hat{\mathbf{y}} \approx \hat{\mathbf{y}}_0$" alors F aussi et le
+modèle nul est suffisant.
 
 #### c. Test complet $F$
 
-Suivant l'hypothèse de l'existence de l'intercept on teste : $$
+Suivant l'hypothèse de l'existence de l'intercept (la première colonne
+de X est supposée être le vecteur 1) on teste : $$
 \begin{aligned}
 \mathcal{H}_0&: \beta_{2} = \cdots = \beta_p = 0 &\text{vs}\\
 \mathcal{H}_1&: \exists~k\in \{2, \dotsc, p\} ~|~ \beta_k \neq 0
@@ -384,12 +377,6 @@ $$
 
 C'est le test par défaut effectué par `R`.
 
-Remarque : si $p_0 = p-1$, on teste : $$
-\begin{aligned}
-\mathcal{H}_0&: \beta_p = 0 &\text{vs} \qquad
-\mathcal{H}_1&: \beta_p \neq 0
-\end{aligned}
-$$ dans ce cas là le test de Fisher est équivalent au t-test.
 
 ## 4. Sélection de variables
 
@@ -415,7 +402,7 @@ $$
 
 Le but est de minimiser le risque prédictif.
 
-Le vrai modèle est $y = \mu +\epsilon$ avec $\mu \in \mathbb{R}^n$.
+Le vrai modèle est $\mathbf{y} = \boldsymbol{\mu} +\boldsymbol{\epsilon}$ avec $\mu \in \mathbb{R}^n$ et $\boldsymbol\epsilon$ suivant une $\mathcal{N}(0,\sigma^2I_n)$. 
 
 Pour les sous modèles on conserve uniquement les prédicteurs
 $\eta \subset \{1, \dotsc, p\}$ $$
@@ -513,10 +500,11 @@ R(\hat{\mathbf{y}}_\eta)
 \right]
 $$
 
-Remarque : $\mu$ est inconnu, le risque ne peut être calculé en
-pratique. Il faut alors trouver un estimateur de ce risque.
+Remarque : $\boldsymbol\mu$ est inconnu, le risque ne peut être calculé en pratique. Il faut alors trouver un estimateur de ce risque.
 
 #### b. Décomposition Biais-Variance
+
+Cette décomposition est très utile pour estimer le risque d'un estimateur en faisant apparaître le biais et la  variance de celui-ci. 
 
 $$
 R(\hat{\mathbf{y}}_\eta)
@@ -528,11 +516,9 @@ R(\hat{\mathbf{y}}_\eta)
 \|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2 + |\eta| \sigma^2
 $$
 
-**Biais** $\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2$ : il **décroit**
-quand $\eta$ devient grand.
+**Biais** $\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2$ : il **décroit** quand $\eta$ devient grand.
 
-**Variance**: $|\eta| \sigma^2$ : elle **augmente** quand $\eta$ devient
-grand.
+**Variance**: $|\eta| \sigma^2$ : elle **augmente** quand $\eta$ devient grand.
 
 Le risque est alors un compromis entre le biais et la variance.
 
@@ -545,8 +531,7 @@ On veut trouver :
 $$\eta_0 = \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} R(\hat{\mathbf{y}}_\eta)$$
 
 On veut minimiser un estimateur $\hat{R}(\hat{\mathbf{y}}_\eta)$ de
-$R(\hat{\mathbf{y}}_\eta)$
-:$$\hat{\eta} = \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta)$$
+$R(\hat{\mathbf{y}}_\eta)$ :$$\hat{\eta} = \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta)$$
 
 Pour tout modèle $\eta$, l'espérance des SCR est : $$
 \mathbb{E}[\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2]
@@ -578,8 +563,7 @@ $$
 = \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta).
 $$
 
-Minimiser un estimateur sans biais du risque revient donc à minimiser le
-$C_p$ de Mallow.
+Minimiser le $C_p$ de Mallow revient donc à minimiser un estimateur sans biais du risque.
 
 ### C. Log vraisemblance pénalisée
 
@@ -592,8 +576,7 @@ $$
 Si $\eta \subset \eta'$ alors la
 $\log \hat{L}_{\eta} \leq \log \hat{L}_{\eta'}$.
 
-De la même manière qu'on a pénalisé le $R^2$ on ajoute une pénalité qui
-dépend de la taille du modèle.
+De la même manière qu'on a pénalisé le $R^2$ on ajoute une pénalité qui dépend de la taille du modèle.
 
 On veut alors minimiser$$
 - \log \hat{L}_\eta + f(|\eta|) \qquad \text{avec f croissante}
@@ -625,8 +608,7 @@ $$
 p \text{ prédicteurs } \to 2^p \text{ modèles possibles}
 $$
 
-Il y a trop de modèles, on ne peut pas tous les tester. On peut utiliser
-les deux méthodes suivantes (plus très utilisées en pratique) :
+Il y a trop de modèles, on ne peut pas tous les tester. On peut utiliser les deux méthodes suivantes (plus très utilisées en pratique) :
 
 #### a. Forward search (recherche en avant)
 
