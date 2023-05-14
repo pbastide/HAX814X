@@ -1782,7 +1782,7 @@ ggplot(sleepstudy, aes(x = Days, y = Reaction)) +
 
 For observation $i$ of group $k$:
 $$
-y_{i,k} = \mu + \alpha_k + (\beta + \gamma_k) \times x_{i}  + \epsilon_i
+y_{i,k} = \mu + \alpha_k + (\beta + \gamma_k) \times x_{i}  + \epsilon_{i, k}
 $$
 
 * $\mu$ the intercept
