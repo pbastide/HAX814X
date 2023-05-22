@@ -76,7 +76,7 @@ T_k
 \underset{\mathcal{H}_0}{\sim}
 \mathcal{T}_{n-p}
 $$ où $\hat\sigma^2_k$ est un estimateur de
-$\text{var} (\hat\beta_k) = \hat\sigma^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{k,k}$
+$\text{var}(\hat \beta_k)$, $\hat\sigma^2_k = \hat\sigma^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{k,k}$
 
 ## 2. Test de Fisher Global (F-test)
 
@@ -504,7 +504,13 @@ Remarque : $\boldsymbol\mu$ est inconnu, le risque ne peut être calculé en pra
 
 #### b. Décomposition Biais-Variance
 
-Cette décomposition est très utile pour estimer le risque d'un estimateur en faisant apparaître le biais et la  variance de celui-ci. 
+Cette décomposition permet de juger la qualité d'un estimateur. Ici, un estimateur qui minimise le resique théorie fait un "compromis biais-vairiance".
+
+Un "bon estimateur" :
+
+  - n'est pas trop biaisé, il est basé sur un modèle suffisamment complexe pour rendre compte des données
+  
+  - n'a pas trop de variance, il n'est pas trop complexe et car chaque paramètre supplémentaire à estimer induit de la varaiance supplémentaire
 
 $$
 R(\hat{\mathbf{y}}_\eta)
@@ -519,8 +525,6 @@ $$
 **Biais** $\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2$ : il **décroit** quand $\eta$ devient grand.
 
 **Variance**: $|\eta| \sigma^2$ : elle **augmente** quand $\eta$ devient grand.
-
-Le risque est alors un compromis entre le biais et la variance.
 
 Remarque :
 $\eta \subset \eta' \Rightarrow R(\hat{\mathbf{y}}_{\eta'}) \geq R(\hat{\mathbf{y}}_\eta)$
