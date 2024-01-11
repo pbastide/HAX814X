@@ -1,0 +1,645 @@
+---
+title: 'Régression Multiple - Sélection de Variable'
+author: "AKKOUH Maryam & RENOIR Thamara"
+date: "15/04/2023"
+output:
+  prettydoc::html_pretty:
+    theme: hpstr
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+## 1. Modèle Gaussien
+
+#### a. Modèle
+
+$$
+\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}
+$$
+
+-   $\mathbf{y}$ vecteur **aléatoire** de taille $n$
+-   $\mathbf{X}$ **non aléatoire,** matrice $n\times p$ des prédicteurs
+-   $\boldsymbol{\epsilon}$ vecteur **aléatoire** des erreurs de taille
+    $n$
+-   $\boldsymbol{\beta}$ **non aléatoire,** vecteur **inconnu** des $p$
+    coefficients
+
+#### b. Hypothèses
+
+-   (H1) $rg(\mathbf{X}) = p$
+-   (H2)
+    $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I}_n)$
+
+#### c. Distribution des estimateurs
+
+Distribution de $\hat{\boldsymbol{\beta}}$ quand $\sigma^2$ est connu :
+$$
+\hat{\boldsymbol{\beta}}
+\sim
+\mathcal{N}\left(
+\boldsymbol{\beta};
+\sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
+\right)
+$$ Quand $\sigma^2$ est inconnu :$$
+\frac{1}{p\hat{\sigma}^2}\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)^T (\mathbf{X}^T\mathbf{X})\left(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}\right)
+\sim
+\mathcal{F}^p_{n-p}
+$$
+
+avec $\mathcal{F}^p_{n-p}$ la loi de Fisher à $p$ et $n-p$ degrés de
+liberté.
+
+Distribution de $\hat{\sigma}^2$: $$
+\frac{(n-p) \hat{\sigma}^2}{\sigma^2}
+\sim
+\chi^2_{n-p}.
+$$
+
+#### d. Tests de Student (t tests)
+
+$$
+\text{Hypothèses:}
+\qquad\qquad
+\mathcal{H}_0: \beta_k = 0
+\quad
+\text{vs}
+\quad
+\mathcal{H}_1: \beta_k \neq 0
+$$
+
+$$
+\text{Statistique de test:}
+\qquad\qquad\qquad\qquad
+T_k 
+= \frac{\hat{\beta}_k}{\sqrt{\hat{\sigma}^2_k}}
+\underset{\mathcal{H}_0}{\sim}
+\mathcal{T}_{n-p}
+$$ où $\hat\sigma^2_k$ est un estimateur de
+$\text{var}(\hat \beta_k)$, $\hat\sigma^2_k = \hat\sigma^2 [(\mathbf{X}^T\mathbf{X})^{-1}]_{k,k}$
+
+## 2. Test de Fisher Global (F-test)
+
+Hypothèse : $$
+\mathcal{H}_0: \beta_1 = \cdots = \beta_p = 0
+\quad
+\text{vs}
+\quad
+\mathcal{H}_1: \exists~k ~|~ \beta_k \neq 0
+$$
+
+Remarque : sous $\mathcal H_0$ le modèle est inutile.
+
+Statistique de test : $$
+F
+= \frac{1}{p\hat{\sigma}^2}\hat{\boldsymbol{\beta}}^T (\mathbf{X}^T\mathbf{X})\hat{\boldsymbol{\beta}}
+\underset{\mathcal{H}_0}{\sim}
+\mathcal{F}^p_{n-p}
+$$
+
+#### a. Test de Fisher - Géométrie
+
+On peut également écrire :
+
+$$
+\begin{aligned}
+F = \frac{(\mathbf{X}\hat{\boldsymbol{\beta}})^T (\mathbf{X}\hat{\boldsymbol{\beta}}) / p}{\|\hat{\boldsymbol{\epsilon}}\|^2 / (n - p)}
+= \frac{\|\hat{\mathbf{y}}\|^2 / p}{\|\mathbf{y} -  \hat{\mathbf{y}}\|^2 / (n - p)}
+\end{aligned}
+$$
+
+#### b. Interprétation géométrique
+
+::: columns-2
+**Bon modèle :**
+
+```{r proj2, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.55, 0.45)
+yv <- c(0.8, 0.7)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.8, 0.3)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "firebrick", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "firebrick", pos = 2)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))),
+     col = "dodgerblue2", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue2", lwd = 1, lty = 2)
+# hat epsilon
+text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+     labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
+```
+
+Si $\|\hat{\boldsymbol{\epsilon}}\|^2$ est petit alors l'erreur l'est
+aussi et $F$ devient grande, autrement dit, on rejettera $\mathcal{H}_0$
+: le modèle est alors utile.$~$
+
+**Mauvais modèle :**
+
+```{r proj1, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.65, 0.45)
+yv <- c(0.4, 1.0)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.4, 0.2)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "firebrick", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "firebrick", pos = 2)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))),
+     col = "dodgerblue2", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue2", lwd = 1, lty = 2)
+# hat epsilon
+text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+     labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
+```
+
+Si $\|\hat{\boldsymbol{\epsilon}}\|^2$ est grand alors l'erreur l'est
+aussi et $F$ devient petite, autrement dit, on ne rejettera pas
+$\mathcal{H}_0$ : le modèle est alors inutile.
+:::
+
+## 3. Modèles de Fisher emboîtés (F-test)
+
+#### a. Modèles
+
+On veut tester : $$
+\begin{aligned}
+\mathcal{H}_0&: \beta_{p_0 + 1} = \cdots = \beta_p = 0 &\text{vs}\\
+\mathcal{H}_1&: \exists~k\in \{p_0+1, \dotsc, p\} ~|~ \beta_k \neq 0
+\end{aligned}
+$$
+
+c'est-à-dire, décider entre le modèle complet :$$
+\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}
+$$
+
+et le modèle emboîté : $$
+\mathbf{y} = \mathbf{X}_0\boldsymbol{\beta}_0 + \boldsymbol{\epsilon}
+$$
+
+avec $\mathbf{X} = (\mathbf{X}_0 ~ \mathbf{X}_1)$, $rg(\mathbf{X}) = p$
+et $rg(\mathbf{X}_0) = p_0$.
+
+Pour cela, on utilise la statistique de Fisher suivante :
+
+$~$
+
+$$
+F = \frac{
+\|\hat{\mathbf{y}} -  \hat{\mathbf{y}}_0\|^2 / (p - p_0)
+}{
+\|\mathbf{y} - \hat{\mathbf{y}}\|^2 / (n - p)
+}
+\underset{\mathcal{H}_0}{\sim}
+\mathcal{F}^{p - p_0}_{n - p}
+$$
+
+$~$
+
+Remarque 1 : $F = \frac{n - p}{p - p_0}\frac{SCR_0 - SCR}{SCR}$ où
+$SCR_0=\|\mathbf{y} - \hat{\mathbf{y}}_0\|^2$
+
+Remarque 2 : si $p_0 = p-1$, on teste : $$
+\begin{aligned}
+\mathcal{H}_0&: \beta_p = 0 &\text{vs} \qquad
+\mathcal{H}_1&: \beta_p \neq 0
+\end{aligned}
+$$ dans ce cas là le test de Fisher est équivalent au t-test de $\beta_p = 0 $.
+
+#### b. Interprétation géométrique
+
+On compare $\|\hat{\mathbf{y}} - \hat{\mathbf{y}}_0\|^2$ (la distance
+entre $\hat{\mathbf{y}}$ et $\hat{\mathbf{y}}_0$) et
+$\|\mathbf{y} - \hat{\mathbf{y}}\|^2$, l'erreur résiduelle.
+
+ **Bon modèle :**
+
+```{r proj4, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.55, 0.45)
+yv <- c(0.8, 1.0)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.8, 0.3)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "firebrick", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "firebrick", pos = 2)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))),
+     col = "dodgerblue2", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue2", lwd = 1, lty = 2)
+# hat epsilon
+# text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+#      labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
+# M_0
+down <- c(0.25, 0.15)
+up <- c(0.6, 0.5)
+segments(x0 = down[1], y0 = down[2], x1 = up[1], y1 = up[2],
+         col = "darkblue", lwd = 3)
+# yhat 0
+text(ybaronev[1], ybaronev[2],
+     labels = expression(hat(bold(y))[0]),
+     col = "darkblue", pos = 2)
+# epsilon hat 0
+segments(x0 = yv[1], y0 = yv[2], x1 = ybaronev[1], y1 = ybaronev[2],
+         col = "darkblue", lwd = 3, lty = 3)
+# text((yv[1] + ybaronev[1])/2, (yv[2] + ybaronev[2])/2,
+#      labels = expression(hat(bold(epsilon))[0]), col = "darkblue", pos = 4)
+# yhat yhat 0
+segments(x0 = ybaronev[1], y0 = ybaronev[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "limegreen", lwd = 3, lty = 3)
+```
+
+Si $\|\hat{\mathbf{y}} - \hat{\mathbf{y}}_0\|^2$ est grand par rapport à
+$\|\mathbf{y} - \hat{\mathbf{y}}\|^2$ alors F aussi et le modèle complet
+est utile.
+
+$~$
+
+**Mauvais modèle :**
+
+```{r proj5, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.45, 0.35)
+yv <- c(0.5, 1.0)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.5, 0.3)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "firebrick", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "firebrick", pos = 2)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))),
+     col = "dodgerblue2", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue2", lwd = 1, lty = 2)
+# hat epsilon
+# text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+#      labels = expression(hat(bold(epsilon))), col = "dodgerblue2", pos = 4)
+# M_0
+down <- c(0.25, 0.15)
+up <- c(0.6, 0.5)
+segments(x0 = down[1], y0 = down[2], x1 = up[1], y1 = up[2],
+         col = "darkblue", lwd = 3)
+# yhat 0
+text(ybaronev[1], ybaronev[2],
+     labels = expression(hat(bold(y))[0]),
+     col = "darkblue", pos = 2)
+# epsilon hat 0
+segments(x0 = yv[1], y0 = yv[2], x1 = ybaronev[1], y1 = ybaronev[2],
+         col = "darkblue", lwd = 3, lty = 3)
+# text((yv[1] + ybaronev[1])/2, (yv[2] + ybaronev[2])/2,
+#      labels = expression(hat(bold(epsilon))[0]), col = "darkblue", pos = 4)
+# yhat yhat 0
+segments(x0 = ybaronev[1], y0 = ybaronev[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "limegreen", lwd = 3, lty = 3)
+```
+
+Si $\|\hat{\mathbf{y}} - \hat{\mathbf{y}}_0\|^2$ est petit comparé à
+$\|\mathbf{y} - \hat{\mathbf{y}}\|^2$ alors
+"$\hat{\mathbf{y}} \approx \hat{\mathbf{y}}_0$" alors F aussi et le
+modèle nul est suffisant.
+
+#### c. Test complet $F$
+
+Suivant l'hypothèse de l'existence de l'intercept (la première colonne
+de X est supposée être le vecteur 1) on teste : $$
+\begin{aligned}
+\mathcal{H}_0&: \beta_{2} = \cdots = \beta_p = 0 &\text{vs}\\
+\mathcal{H}_1&: \exists~k\in \{2, \dotsc, p\} ~|~ \beta_k \neq 0
+\end{aligned}
+$$
+
+La statistique $F$ associée est (pour $p_0 = 1$) : $$
+F = \frac{
+\|\hat{\mathbf{y}} -  \bar{y}\mathbb{1}\|^2 / (p - 1)
+}{
+\|\mathbf{y} - \hat{\mathbf{y}}\|^2 / (n - p)
+}
+\underset{\mathcal{H}_0}{\sim}
+\mathcal{F}^{p - 1}_{n - p}
+$$
+
+C'est le test par défaut effectué par `R`.
+
+
+## 4. Sélection de variables
+
+On cherche les variables les plus informatives pour $y$. On veut choisir
+le "meilleur" modèle en trouvant un "score" pour évaluer la qualité des
+modèles candidats.
+
+### A. Premier score - $R^2$
+
+$$
+R^2 = 1 - \frac{SCR}{SCT}
+$$
+
+Le $R^2$ est croissant avec le nombre le prédicteurs, ce n'est donc pas
+un bon indicateur. On privilégie alors le $R^2$ ajusté noté $R^2_a$ qui
+pénalise le nombre de prédicteurs. Le but est de le maximiser.
+
+$$
+R_a^2 = 1 - \frac{SCR / (n-p)}{SCT / (n-1)} 
+$$
+
+### B. Risque prédictif théorique
+
+Le but est de minimiser le risque prédictif.
+
+Le vrai modèle est $\mathbf{y} = \boldsymbol{\mu} +\boldsymbol{\epsilon}$ avec $\mu \in \mathbb{R}^n$ et $\boldsymbol\epsilon$ suivant une $\mathcal{N}(0,\sigma^2I_n)$. 
+
+Pour les sous modèles on conserve uniquement les prédicteurs
+$\eta \subset \{1, \dotsc, p\}$ $$
+\mathbf{y} = \mathbf{X}_{\eta} \boldsymbol{\beta}_{\eta} + \boldsymbol{\epsilon}_{\eta}
+\quad
+rg(\mathbf{X}_{\eta}) = |\eta|,
+\quad
+\boldsymbol{\epsilon}_{\eta} \sim \mathcal{N}(\mathbf{0}, \sigma^2\mathbf{I}_n)
+$$
+
+où $\mathbf{X}_{\eta}$ est une sous-matrice de $\mathbf{X}$ : $$
+\mathbf{X}_{\eta} = (\mathbf{x}_{\eta_1} ~ \mathbf{x}_{\eta_2} \cdots \mathbf{x}_{\eta_{|\eta|}})
+$$
+
+Remarque : on suppose que $\boldsymbol{\mu}$ peut être approché par
+$\mathbf{X}_{\eta} \boldsymbol{\beta}_{\eta}$.
+
+Les estimateurs des sous modèles sont :$$ 
+\begin{aligned}
+\hat{\boldsymbol{\beta}}_\eta 
+& = \underset{\boldsymbol{\beta} \in \mathbb{R}^{|\eta|}}{\operatorname{argmin}} 
+\|\mathbf{y} - \mathbf{X}_\eta\boldsymbol{\beta}_\eta \|^2 
+= (\mathbf{X}_\eta^{T}\mathbf{X}_\eta)^{-1}\mathbf{X}_\eta^{T}\mathbf{y}\\
+\hat{\mathbf{y}}_\eta
+& = \mathbf{X}_\eta\hat{\boldsymbol{\beta}}_\eta 
+= \mathbf{P}^{\mathbf{X}_\eta}\mathbf{y} 
+\end{aligned}
+$$
+
+#### a. Interprétation géométrique
+
+```{r fullproj2, echo=FALSE, fig.height=5.5, fig.width=5.5, fig.align='center'}
+par(mar = c(0, 0, 0, 0) + 0.1)
+plot.new()
+plot.window(c(0, 1.1), c(0, 1.1))
+polygon(x = c(0, 0.6, 1, 0.4), y = c(0.2, 0, 0.4, 0.6), col = "gray90")
+or <- c(0.3, 0.2)
+ybaronev <- c(0.55, 0.45)
+yv <- c(0.8, 0.7)
+muv <- c(0.6, 0.8)
+xv <- c(0.5, 0.1 + 0.1/3)
+betaxv <- c(0.6, 0.1)
+onev <- c(0.6, 0.5)
+betaonev <- c(0.5, 0.4)
+# ybaronev <- c(0.7, 0.2)
+yhatv <- c(0.8, 0.3)
+muetav <- c(0.6, 0.4)
+# Y
+arrows(x0 = or[1], y0 = or[2], x1 = yv[1], y1 = yv[2],
+       length = 0.1, col = "dodgerblue2", lwd = 2)
+text(yv[1], yv[2], labels = expression(bold(y)), col = "dodgerblue2", pos = 4)
+# yhat
+arrows(x0 = or[1], y0 = or[2], x1 = yhatv[1], y1 = yhatv[2],
+       length = 0.1, col = "dodgerblue4", lwd = 2)
+text(yhatv[1], yhatv[2],
+     labels = expression(hat(bold(y))[eta]),
+     col = "dodgerblue4", pos = 4)
+# y - yhat
+segments(x0 = yv[1], y0 = yv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "dodgerblue4", lwd = 1, lty = 2)
+# text((yv[1] + yhatv[1])/2, (yv[2] + yhatv[2])/2,
+#      labels = expression(hat(bold(epsilon))[eta]), col = "dodgerblue4", pos = 4)
+# mu
+arrows(x0 = or[1], y0 = or[2], x1 = muv[1], y1 = muv[2],
+       length = 0.1, col = "firebrick2", lwd = 2)
+text(muv[1], muv[2], labels = expression(bold(mu)), col = "firebrick2", pos = 2)
+# yeta
+arrows(x0 = or[1], y0 = or[2], x1 = muetav[1], y1 = muetav[2],
+       length = 0.1, col = "firebrick4", lwd = 2)
+text(muetav[1], muetav[2],
+     labels = expression(bold(y)[eta]),
+     col = "firebrick4", pos = 4)
+# mu - mueta
+segments(x0 = muv[1], y0 = muv[2], x1 = muetav[1], y1 = muetav[2],
+         col = "firebrick4", lwd = 1, lty = 2)
+# text((muv[1] + muetav[1])/2, (muv[2] + muetav[2])/2,
+#      labels = expression(hat(bold(epsilon))[eta]), col = "firebrick4", pos = 4)
+# mu - y
+# segments(x0 = muv[1], y0 = muv[2], x1 = yv[1], y1 = yv[2],
+#          col = "goldenrod2", lwd = 1, lty = 5)
+# text((muv[1] + yv[1])/2, (muv[2] + yv[2])/2,
+#      labels =  expression(bold(mu) - bold(y)), col = "goldenrod2", pos = 3)
+# mu - yhat
+segments(x0 = muv[1], y0 = muv[2], x1 = yhatv[1], y1 = yhatv[2],
+         col = "goldenrod4", lwd = 1, lty = 5)
+text((muv[1] + 2*yhatv[1])/3, (muv[2] + 2*yhatv[2])/3,
+     labels =  expression(bold(mu) - hat(bold(y))[eta]), col = "goldenrod4", pos = 2)
+```
+
+Le risque théorique d'un estimateur est : $$
+R(\hat{\mathbf{y}}_\eta)
+= 
+\mathbb{E}\left[
+\|\boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \|^2
+\right]
+$$
+
+Remarque : $\boldsymbol\mu$ est inconnu, le risque ne peut être calculé en pratique. Il faut alors trouver un estimateur de ce risque.
+
+#### b. Décomposition Biais-Variance
+
+Cette décomposition permet de juger la qualité d'un estimateur. Ici, un estimateur qui minimise le resique théorie fait un "compromis biais-vairiance".
+
+Un "bon estimateur" :
+
+  - n'est pas trop biaisé, il est basé sur un modèle suffisamment complexe pour rendre compte des données
+  
+  - n'a pas trop de variance, il n'est pas trop complexe et car chaque paramètre supplémentaire à estimer induit de la varaiance supplémentaire
+
+$$
+R(\hat{\mathbf{y}}_\eta)
+= 
+\mathbb{E}\left[
+\|\boldsymbol{\mu} - \hat{\mathbf{y}}_\eta \|^2
+\right]
+= 
+\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2 + |\eta| \sigma^2
+$$
+
+**Biais** $\|\boldsymbol{\mu} - \mathbf{y}_\eta \|^2$ : il **décroit** quand $\eta$ devient grand.
+
+**Variance**: $|\eta| \sigma^2$ : elle **augmente** quand $\eta$ devient grand.
+
+Remarque :
+$\eta \subset \eta' \Rightarrow R(\hat{\mathbf{y}}_{\eta'}) \geq R(\hat{\mathbf{y}}_\eta)$
+
+#### c. Moindres carrés pénalisés
+
+On veut trouver :
+$$\eta_0 = \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} R(\hat{\mathbf{y}}_\eta)$$
+
+On veut minimiser un estimateur $\hat{R}(\hat{\mathbf{y}}_\eta)$ de
+$R(\hat{\mathbf{y}}_\eta)$ :$$\hat{\eta} = \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta)$$
+
+Pour tout modèle $\eta$, l'espérance des SCR est : $$
+\mathbb{E}[\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2]
+=
+R(\hat{\mathbf{y}}_\eta) + n\sigma^2 - 2|\eta|\sigma^2
+$$
+
+On peut donc écrire
+$R(\hat{y}_{\eta}) =\mathbb{E}[\|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2] - n\sigma^2 + 2|\eta|\sigma^2$.
+
+#### d. $C_p$ de Mallow
+
+$$
+C_p(\hat{\mathbf{y}}_\eta) = \frac{1}{n} \left( \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2 + 2 |\eta| \hat{\sigma}^2 \right)
+$$
+
+Remarque : $C_p$ pénalise le nombre de paramètres $|\eta|$.
+
+Si $\hat{\sigma}^2$ est sans biais alors : $$
+\mathbb{E}[C_p(\hat{\mathbf{y}}_\eta)] 
+= \frac{1}{n}R(\hat{\mathbf{y}}_\eta) + \sigma^2
+$$
+
+D'où :
+
+$$
+\hat{\eta} 
+= \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} C_p(\hat{\mathbf{y}}_\eta)
+= \underset{\eta \subset \{1, \cdots, p\}}{\operatorname{argmin}} \hat{R}(\hat{\mathbf{y}}_\eta).
+$$
+
+Minimiser le $C_p$ de Mallow revient donc à minimiser un estimateur sans biais du risque.
+
+### C. Log vraisemblance pénalisée
+
+La log vraisemblance maximisée est :
+
+$$
+\log L(\hat{\boldsymbol{\beta}}_\eta, \hat{\sigma}^2_{ML} | y) =- \frac{n}{2} \log\left(\frac{ \|\mathbf{y} - \hat{\mathbf{y}}_\eta \|^2}{n}\right) - \frac{n}{2} \log\left(2\pi\right) - \frac{n}{2}
+$$
+
+Si $\eta \subset \eta'$ alors la
+$\log \hat{L}_{\eta} \leq \log \hat{L}_{\eta'}$.
+
+De la même manière qu'on a pénalisé le $R^2$ on ajoute une pénalité qui dépend de la taille du modèle.
+
+On veut alors minimiser$$
+- \log \hat{L}_\eta + f(|\eta|) \qquad \text{avec f croissante}
+$$
+
+#### AIC et BIC
+
+Akaike Information Criterion - AIC :
+
+$$
+AIC = - 2\log \hat{L}_\eta + 2 |\eta|
+$$
+
+Bayesian Information Criterion - BIC :
+
+$$
+BIC = - 2\log \hat{L}_\eta + |\eta| \log(n)
+$$
+
+-   $AIC$ et $BIC$ à minimiser, $BIC$ pénalise plus que le $AIC$.
+
+-   Ils possèdent des justifications théoriques asymptotiques.
+
+### D. Forward and Backward Search
+
+La recherche du meilleur modèle est un problème combinatoire :
+
+$$
+p \text{ prédicteurs } \to 2^p \text{ modèles possibles}
+$$
+
+Il y a trop de modèles, on ne peut pas tous les tester. On peut utiliser les deux méthodes suivantes (plus très utilisées en pratique) :
+
+#### a. Forward search (recherche en avant)
+
+-   Commencer avec le modèle nul (sans prédicteurs).
+
+-   Ajouter un prédicteur au modèle ($p$ modèles possibles).
+
+-   Choisir le meilleur modèle parmi les $p$ modèles en utilisant les
+    critères AIC, BIC et $C_p$.
+
+-   Recommencer jusqu'à ce qu'il n'y ait plus de prédicteurs à ajouter.
+
+#### b. Backward search (recherche en arrière)
+
+-   Commencer avec le modèle complet.
+
+-   Enlever un prédicteur au modèle ($p$ modèles possibles).
+
+-   Choisir le meilleur modèle parmi les $p$ modèles en utilisant les
+    critères AIC, BIC et $C_p$.
+
+-   Recommencer jusqu'à ce qu'il n'y ait plus de prédicteurs à enlever.
+
+#### c. Forward and backward searches
+
+-   Ce sont des heuristiques sans garanties théoriques sur le modèle
+    sélectionné.
+
+-   Pas de garantie de convergence vers le même modèle des deux
+    méthodes.

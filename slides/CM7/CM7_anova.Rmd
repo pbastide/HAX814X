@@ -1845,13 +1845,13 @@ ggplot(sleepstudy, aes(x = Days, y = Reaction)) +
 
 For observation $i$ of group $k$:
 $$
-y_{i,k} = \mu + \alpha_k + (\beta + \gamma_k) \times x_{i}  + \epsilon_i
+y_{i,k} = \mu + \alpha_k + (\beta + \gamma_k) \times x_{i}  + \epsilon_{i, k}
 $$
 
 * $\mu$ the intercept
 * $\alpha_k$ the specific effect of group $k$ on the intercept
 * $\gamma_k$ the specific effect of group $k$ on the slope
-* $\epsilon_{ik} \sim \mathcal{N}(0, \sigma^2)$ iid noise.
+* $\epsilon_{i, k} \sim \mathcal{N}(0, \sigma^2)$ iid noise.
 
 **Problem**:
 What if there are many groups, with few observations?  
