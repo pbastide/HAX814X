@@ -1,7 +1,7 @@
 ---
 title: 'Régression simple - I'
-author: "Paul Bastide - Nicolas Meyer"
-date: "17/01/2023"
+author: "Paul Bastide - Ibrahim Bouzalmat"
+date: "23/01/2023"
 output:
   ioslides_presentation:
     fig_width: 7
@@ -18,9 +18,9 @@ output:
 - Paul Bastide
     - paul.bastide@umontpellier.fr
     - Statistiques appliquées, Evolution
-- Nicolas Meyer
-    - nicolas.meyer@umontpellier.fr
-    - Statistiques en grande dimension, Extrêmes
+- Ibrahim Bouzalmat
+    - ibrahim.bouzalmat@umontpellier.fr
+    - Processus de Markov, Epidémiologie
     
 ## Module
 

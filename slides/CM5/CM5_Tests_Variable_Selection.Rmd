@@ -1,7 +1,7 @@
 ---
 title: 'Régression Multiple - Sélection de Variable'
-author: "Paul Bastide - Nicolas Meyer"
-date: "08/03/2023"
+author: "Paul Bastide - Ibrahim Bouzalmat"
+date: "20/03/2023"
 output:
   ioslides_presentation:
     fig_width: 7
