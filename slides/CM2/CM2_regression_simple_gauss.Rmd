@@ -1,7 +1,7 @@
 ---
 title: 'Régression simple - II'
 author: "Paul Bastide - Ibrahim Bouzalmat"
-date: "24/01/2023"
+date: "24/01/2024"
 output:
   ioslides_presentation:
     fig_width: 7

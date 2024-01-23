@@ -1,7 +1,7 @@
 ---
 title: 'Régression Multiple - Moindres Carrés'
 author: "Paul Bastide - Ibrahim Bouzalmat"
-date: "31/01/2023"
+date: "31/01/2024"
 output:
   ioslides_presentation:
     fig_width: 7
