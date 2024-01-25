@@ -96,7 +96,7 @@ Nous avons donc
 
 -   $\frac{\hat\beta_1 - \beta_1}{\sqrt{\hat\sigma_1^2}}\sim\mathcal{T}_{n-2}$
 
-On obtient alors les intervalles de confiance suivants avec probabilité $1-\alpha$ et avec les quantiles t_{n-2} de la loi de $student$ et c_{n-2} de la loi du $\chi^2$ :
+On obtient alors les intervalles de confiance suivants avec probabilité $1-\alpha$ et avec les quantiles $t_{n-2}$ de la loi de $student$ et $c_{n-2}$ de la loi du $\chi^2$ :
 
 -   $\beta_0 \in \begin{bmatrix}\hat\beta_0\pm t_{n-2}(1-\frac{\alpha}{2})\sqrt{\hat\sigma_0^2}\end{bmatrix}$
 
