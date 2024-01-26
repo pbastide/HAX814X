@@ -234,7 +234,7 @@ Remarque 2 : si $p_0 = p-1$, on teste : $$
 \mathcal{H}_0&: \beta_p = 0 &\text{vs} \qquad
 \mathcal{H}_1&: \beta_p \neq 0
 \end{aligned}
-$$ dans ce cas là le test de Fisher est équivalent au t-test de $\beta_p = 0 $.
+$$ dans ce cas là le test de Fisher est équivalent au t-test de $\beta_p = 0$.
 
 #### b. Interprétation géométrique
 
