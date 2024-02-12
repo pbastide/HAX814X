@@ -1,0 +1,234 @@
+---
+title: "Fiche révision"
+author: "Roméo BEX Tristan RIVALDI"
+date: "2024-02-07"
+output: html_document
+---
+
+
+```{r, echo=FALSE}
+library(rmarkdown)
+
+render("fiche_revision.Rmd", output_format = "pdf_document", output_file = "output.pdf")
+```
+
+# Rappel : 
+
+Le but de la régression simple est de chercher une fonction \( f \) telle que \( y_i \approx f(x_i) \). Pour définir \( \approx \), il faut se donner un critère quantifiant la qualité de l'ajustement de la fonction \( f \) aux données. Ainsi, une étude de régression simple débute généralement par un tracé des observations \((x_i, y_i)\), \(i = 1, ..., n\). Cette première représentation permet de savoir si le modèle linéaire est pertinent. Le graphique suivant représente trois nuages de points différents.
+
+```{r, echo=FALSE}
+
+# Générer des données aléatoires
+set.seed(123)
+n <- 100
+x <- seq(1, 10, length.out = n)
+
+# Définir la disposition des graphiques
+par(mfrow = c(1, 3))
+
+# Premier graphique : nuage de points avec une forme sinusoïdale
+y_sinusoide <- sin(x) + rnorm(n, mean = 0, sd = 0.5)
+plot(x, y_sinusoide, main = "Graphique 1", xlab = "X", ylab = "Y")
+
+# Deuxième graphique : nuage de points avec une forme sigmoïdale
+y_sigmoide <- 1 / (1 + exp(-(x - 5))) + rnorm(n, mean = 0, sd = 0.3)
+plot(x, y_sigmoide, main = "Graphique 2", xlab = "X", ylab = "Y")
+
+# Troisième graphique : nuage de points propice à la régression linéaire
+y_lineaire <- 2 * x + 3 + rnorm(n, mean = 0, sd = 1)
+plot(x, y_lineaire, main = "Graphique 3", xlab = "X", ylab = "Y")
+
+
+```
+
+Au vu des graphiques, il semble inadéquat de proposer une régression linéaire pour les 2 premiers graphiques, le tracé présentant une forme sinusoïdale ou sigmoïdale. Par contre, la modélisation par une droite de la relation entre \( X \) et \( Y \) pour le dernier graphique semble correspondre à une bonne approximation de la liaison.
+
+Dans la suite , nous étudierons le cas <span style="background-color: lightgreen;">\( f(x) = \beta_0 + \beta_1  x \).</span>
+
+
+
+# Régression linéaire simple avec R : 
+
+Pour illustrer, on utilise le jeu de données « housingprices » (issu du package DAAG), composé de quinze observations et trois variables qui sont : 
+
+1. <span style="background-color: lightcoral;">sale.price</span> := prix de vente de la maison (en milliers de dollards australiens)
+2.  <span style="background-color: lightcoral;">area</span> = surface au sol de la maison 
+3. <span style="background-color: lightcoral;">bedrooms</span> = nombre de chambres dans la maison
+
+
+```{r}
+
+# Charge le package DAAG
+
+library(DAAG)
+
+# Charge les données 
+data(houseprices)
+
+# Aperçu des premières lignes
+head(houseprices)
+
+```
+
+
+# Objectif : 
+
+On peut vouloir expliquer le prix de vente des maisons, en fonction de leur surface en présumant que plus la surface est élevée, et plus le prix de vente sera élevé. Il s'agit là d'une regression dite "simple" car elle ne comporte qu'une seule variables explicative. De plus, on peut aussi supposer que le nombre de chambres influence le prix de la maison à la hausse ; il s'agira là d'une regression "multiple" avec deux variables explicatives.
+
+L’objectif est d’évaluer si chacune des deux variables influence le prix, et, si tel est le cas, de tenter de quantifier cet effet.
+
+
+# Représentation graphique : 
+
+```{r}
+# Nuage de points entre 'area' et 'sale.price'
+plot(houseprices$area, houseprices$sale.price, 
+     xlab = 'Area', ylab = 'Sale Price', 
+     main = 'Nuage de points Area vs Sale Price')
+
+```
+
+
+La régression linéaire assume que la relation entre les variables explicatives et la variable à expliquer (variable numérique continue) va être linéaire, du type :
+
+<span style="background-color: lightgreen;">\(y_{i} = \beta_0 + \beta_1 x_{i_1} + \beta_2 x_{i_2} + \epsilon_{i}\)</span>
+
+
+
+
+
+où :
+\(y\) est la variable à expliquer (ici : sale.price),
+\(x_1\) et \(x_2\) sont les variables explicatives (ici : la surface et le nombre de chambres),
+\(\epsilon_i\) est le terme d’erreur, assumé être distribué selon une loi Normale :
+\[\epsilon_i \sim \mathcal{N}(0,\sigma^2)\]
+
+Sous un certain nombre d'hypothèses, la méthode des moindres carrés ordinaires (OLS pour Ordinary Least Square) permet d'obtenir des estimateurs <span style="background-color: lightblue;">BLUE</span> (Best Linear Unbiased Estimators), c'est-à-dire qui sont $\underline{sans \; biais}$ et de $\underline{variance \; minimale}$. Les coefficients estimés sont issus de la minimisation de la somme des carrés des résidus entre les valeurs prédites et les valeurs observées, formellement :
+\[(\hat{\beta}_0, \hat{\beta}_1) = \underset{\hat{\beta}_0, \hat{\beta}_1}{\arg\min} \sum_{i=1}^{n} \hat{\epsilon}_i^2 = \underset{\hat{\beta}_0, \hat{\beta}_1}{\arg\min} \sum_{i=1}^{n} (y_i - \hat{\beta}_0 - \hat{\beta}_1 x1_i - \hat{\beta}_2 x2_i)^2\]
+
+```{r}
+# y = b0 + b1*x1
+# Variable à expliquer : y = prix de vente de la maison
+# Une variable explicative : x1 = Surface au sol de la maison
+
+pricereg<-lm(sale.price ~ area, data=houseprices)
+summary(pricereg)
+```
+
+On a donc l'équation de la droite de régression : 
+\[ \text{{sale.price}} = 70.75 + 0.188 \times \text{{area}} + \hat{\epsilon} \]
+
+que l'on peut tracer avec le nuage de points :
+
+```{r}
+# plot : "vraies" valeurs et droite de regression
+plot(sale.price ~ area, data=houseprices)
+abline(pricereg, col = "red") 
+
+
+```
+
+
+# Régression linéaire multiple : 
+
+On considère deux (ou plus) variables explicatives. On souhaite donc estimer les coefficients du modèle :
+\[ \text{{sale.price}} = \beta_0 + \beta_1 \times  \text{{area}} + \beta_2 \times \text{{bedroom}} + \epsilon \]
+
+```{r}
+#variables explicatives : x1 = Surface au sol de la maison, x2 = nombre de chambres
+pricereg2<-lm(sale.price ~ area + bedrooms , data=houseprices)
+summary(pricereg2)
+```
+
+# Interprétation : 
+
+La droite de régression est donnée par l'équation : 
+\[ \text{{sale.price}} = -141.76 + 0.14 \times \text{{area}} + 58.32 \times \text{{bedrooms}} \]
+
+Les coefficients associés aux variables "area" et "bedrooms" sont significatifs (respectivement à 95\% et à 99\%, cf. sortie précédente), on peut donc les interpréter. Toutes choses égales par ailleurs, une chambre supplémentaire augmente par exemple le prix de la maison d'environ 58 mille dollars, et 100 unités de surface (inconnue) supplémentaires vont l’augmenter de 14 mille dollars, toutes choses égales par ailleurs.
+
+# Commandes utiles : 
+
+La commande `summary()` affichera des informations telles que les coefficients estimés, les erreurs standards, les valeurs t et p associées, le coefficient de détermination (R-squared), et d'autres statistiques pertinentes pour évaluer la qualité du modèle.
+
+Par exemple le $R^2$ défini par \[ R^2 = 1 - \frac{SSR}{SST} \] représente une manière d'évaluer l'adéquation entre le  modèle et les données observées. On a \[ R^2 \in [0, 1] \] et plus sa valeur est proche de 1 plus l'adéquation sera forte. Cependant la valeur est influencée par le nombre de variables explicatives incluses dans la régression. Ainsi le $R^{2}_{adjusted}$ va tenir compte de ce nombre est sera plus correct.
+
+
+
+```{r}
+summary(pricereg2)
+```
+
+La commande `coef()` permet de n’extraire que les coefficients estimés.
+```{r}
+coef(pricereg2)
+
+```
+
+La commande `confint()`permet d’afficher l’intervalle de confiance à 95% pour les coefficients estimés.
+
+```{r}
+confint(pricereg2)
+```
+
+La commande `fitted()` permet d'afficher les valeurs prédites :
+
+```{r}
+fitted(pricereg2)
+
+```
+
+
+La commande `predict()` permet de prédire la valeur de y (i.e du prix) pour de nouvelles données (des variables explicatives). Seul les deux premiers arguments sont requis : se.fit permet d’afficher l’écart-type de la valeur prédite, et interval et level permettent afficher ici les valeurs de l’intervalle de confiance fixé à 99%.
+
+```{r}
+predict(pricereg2, newdata=data.frame(area=800,bedrooms=2), se.fit=TRUE, interval = "prediction", level = 0.99)
+
+```
+
+Ainsi, le prix estimé d’une maison dont la surface au sol est de 800 unités et qui a 2 chambres serait de 88.92 mille dollars.
+
+
+La commande `resid()` permet d'extraire les résidus (Valeur prédite - valeur réelle)
+
+```{r}
+resid(pricereg2)
+
+```
+Plusieurs hypothèses sous-jacentes au modèle de regression linéaire portent sur les résidus de la regression : indépendance, homoscédasticité (même variance) et normalité. On peut représenter graphiquement les résidus, afin d'observer si ces conditions sont (plus ou moins) respectées
+
+## Exemple d'interprétation des résidus : 
+
+```{r}
+res<-resid(pricereg2)
+plot(res,main="Résidus")
+abline(h=0,col="red")
+
+```
+
+On observe que les résidus semblent suivre une certaine tendance. Sur des données en séries temporelles, cela pourrait indiquer une auto-corrélation des erreurs (contraire à l'hypothèse d'indépendance) et donc de phénomène non pris en compte ex : effet saisonnier, effet de mode ...
+
+
+Autre exemple : 
+
+```{r}
+## residus vs. valeurs prédites
+
+fit <- fitted(pricereg2)
+plot(fit,res,main="Residuals vs. fitted")
+abline(h=0,col="red")
+```
+
+Ici aussi, on peut être tenté de remarquer une diminution des résidus avec l'augmentation de la valeur prédite, mais ce n'est toutefois toujours pas extrêmement marqué (d'autant plus qu'il n'y a que 15 observations).
+
+
+## Test de significativité globale du modèle : 
+
+En posant (H0) : absence de significativité globale des variables, c'est à dire au moins une n'est pas significativement différente de zéro. 
+
+Ce test (F-test) est basé sur la statistique de Fisher présentée en bas de la sortie R. Ici, comme la p-value associée est inférieure à 1%, on peut dire que l'on rejète fortement H0, à savoir le modèle est bien globalement significatif. Si cela n'avait pas été le cas, il convient d'exclure une à une chaque variable, afin de déceler le problème.
+```{r}
+lm(formula = sale.price ~ area + bedrooms, data = houseprices)
+summary(lm(formula = sale.price ~ area + bedrooms, data = houseprices))
+  
+```
