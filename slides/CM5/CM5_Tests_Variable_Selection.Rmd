@@ -1119,10 +1119,28 @@ pred_good <- predict(fit_good)
 mu_y <- beta_0 + beta_1 * x_1 + beta_2 * x_2
 plot(mu_y, y_sim, pch = 3,
      ylab = "y", xlab = expression(beta[0] + beta[1]*x[1] + beta[2]*x[2]))
-## Bad prediction (big model)
-points(mu_y, pred_bad, col = "firebrick", pch = 4)
+```
+
+## Simulation - Fit {.smaller}
+
+```{r predrisk232, fig.height=4, fig.width=7, fig.align='center'}
+mu_y <- beta_0 + beta_1 * x_1 + beta_2 * x_2
+plot(mu_y, y_sim, pch = 3,
+     ylab = "y", xlab = expression(beta[0] + beta[1]*x[1] + beta[2]*x[2]))
 ## Good prediction (small model)
 points(mu_y, pred_good, col = "lightblue", pch = 4)
+```
+
+## Simulation - Fit {.smaller}
+
+```{r predrisk233, fig.height=4, fig.width=7, fig.align='center'}
+mu_y <- beta_0 + beta_1 * x_1 + beta_2 * x_2
+plot(mu_y, y_sim, pch = 3,
+     ylab = "y", xlab = expression(beta[0] + beta[1]*x[1] + beta[2]*x[2]))
+## Good prediction (small model)
+points(mu_y, pred_good, col = "lightblue", pch = 4)
+## Bad prediction (big model)
+points(mu_y, pred_bad, col = "firebrick", pch = 4)
 ```
 
 ## RSS: "fitted risk"
