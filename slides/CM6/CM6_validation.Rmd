@@ -608,7 +608,7 @@ qqnorm(rstudent(fit)); qqline(rstudent(fit), col = "lightblue", lwd = 2)
 ## Simulation - Not Gaussian
 
 ```{r nogauss1, fig.height=3.5, fig.width=3.5, fig.align='center'}
-## Gaussian sim
+## Student sim
 eps <- rt(n, 3)
 
 ## QQ norm
