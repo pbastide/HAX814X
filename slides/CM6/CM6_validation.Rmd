@@ -921,7 +921,7 @@ I.e. take *non-linear* effects into account.
 
 E.g. $f(\cdot)$ is $\sqrt{\cdot}$, $\log(\cdot)$, ...
 
-No rigourous way to fing $f$ (in this class).
+No rigourous way to find $f$ (in this class).
 
 Look at the data.
 
