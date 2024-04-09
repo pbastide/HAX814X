@@ -1817,7 +1817,8 @@ T. Hastie, R. Tibshirani, J. Friedman
 
 ## Conclusion {.smaller}
 
-<center><img src="IJALM.png" height="450px" /></center>
+<center><img src="regression_meme.jpg" height="450px" /></center>
+Credit: [Lorenzo De Stefani](https://cs1951a-s21-brown.github.io/assignments/stats_1/stats_handout.html)
 
 <!-- ************************************************************************ -->
 # From ANOVA to Mixed Models
