@@ -1,22 +1,18 @@
 ---
-title: "Fiche révision"
+title: "Régression linéaire sur R à travers un exemple "
 author: "Roméo BEX Tristan RIVALDI"
 date: "2024-02-07"
 output: html_document
 ---
 
 
-```{r, echo=FALSE}
-library(rmarkdown)
-
-render("fiche_revision.Rmd", output_format = "pdf_document", output_file = "output.pdf")
-```
-
 # Rappel : 
 
-Le but de la régression simple est de chercher une fonction \( f \) telle que \( y_i \approx f(x_i) \). Pour définir \( \approx \), il faut se donner un critère quantifiant la qualité de l'ajustement de la fonction \( f \) aux données. Ainsi, une étude de régression simple débute généralement par un tracé des observations \((x_i, y_i)\), \(i = 1, ..., n\). Cette première représentation permet de savoir si le modèle linéaire est pertinent. Le graphique suivant représente trois nuages de points différents.
+Le but de la régression linéaire simple est de chercher une fonction \( f \) linéaire telle que \( y_i \approx f(x_i) \). Pour définir \( \approx \), il faut se donner un critère quantifiant la qualité de l'ajustement de la fonction \( f \) aux données. Ainsi, une étude de régression simple débute généralement par un tracé des observations \((x_i, y_i)\), \(i = 1, ..., n\).
+Où les $y_i$ représentent les données de la variable à expliquer et les $x_i$ représentent les données de la variable explicative.
+Cette première représentation permet de savoir si le modèle linéaire est pertinent. Le graphique suivant représente trois nuages de points différents :
 
-```{r, echo=FALSE}
+```{r}
 
 # Générer des données aléatoires
 set.seed(123)
@@ -43,13 +39,12 @@ plot(x, y_lineaire, main = "Graphique 3", xlab = "X", ylab = "Y")
 
 Au vu des graphiques, il semble inadéquat de proposer une régression linéaire pour les 2 premiers graphiques, le tracé présentant une forme sinusoïdale ou sigmoïdale. Par contre, la modélisation par une droite de la relation entre \( X \) et \( Y \) pour le dernier graphique semble correspondre à une bonne approximation de la liaison.
 
-Dans la suite , nous étudierons le cas <span style="background-color: lightgreen;">\( f(x) = \beta_0 + \beta_1  x \).</span>
+A noter que dans le cas du graphique 1 et 2, d'autres techniques de modélisations existent comme des méthodes de régression linéaires de type polynomiale, exponentielle, logarithmique...
 
 
+# Régression linéaire multipe avec R : 
 
-# Régression linéaire simple avec R : 
-
-Pour illustrer, on utilise le jeu de données « housingprices » (issu du package DAAG), composé de quinze observations et trois variables qui sont : 
+Pour illustrer, on utilise le jeu de données « housingprices » (issu du package `DAAG`), composé de quinze observations et trois variables qui sont : 
 
 1. <span style="background-color: lightcoral;">sale.price</span> := prix de vente de la maison (en milliers de dollards australiens)
 2.  <span style="background-color: lightcoral;">area</span> = surface au sol de la maison 
@@ -65,23 +60,23 @@ library(DAAG)
 # Charge les données 
 data(houseprices)
 
-# Aperçu des premières lignes
-head(houseprices)
-
+houseprices
 ```
+Ce dataframe contient 15 données des informations sur les prix des maisons ainsi que diverses caractéristiques associées à ces maisons. 
 
 
-# Objectif : 
+
+### Objectif : 
 
 On peut vouloir expliquer le prix de vente des maisons, en fonction de leur surface en présumant que plus la surface est élevée, et plus le prix de vente sera élevé. Il s'agit là d'une regression dite "simple" car elle ne comporte qu'une seule variables explicative. De plus, on peut aussi supposer que le nombre de chambres influence le prix de la maison à la hausse ; il s'agira là d'une regression "multiple" avec deux variables explicatives.
 
 L’objectif est d’évaluer si chacune des deux variables influence le prix, et, si tel est le cas, de tenter de quantifier cet effet.
 
 
-# Représentation graphique : 
+### Représentation graphique : 
 
 ```{r}
-# Nuage de points entre 'area' et 'sale.price'
+# Nuage des 15 points entre 'area' et 'sale.price'
 plot(houseprices$area, houseprices$sale.price, 
      xlab = 'Area', ylab = 'Sale Price', 
      main = 'Nuage de points Area vs Sale Price')
@@ -89,22 +84,44 @@ plot(houseprices$area, houseprices$sale.price,
 ```
 
 
-La régression linéaire assume que la relation entre les variables explicatives et la variable à expliquer (variable numérique continue) va être linéaire, du type :
+La régression linéaire assure que la relation entre les variables explicatives et la variable à expliquer (variable numérique continue) va être linéaire, du type :
 
 <span style="background-color: lightgreen;">\(y_{i} = \beta_0 + \beta_1 x_{i_1} + \beta_2 x_{i_2} + \epsilon_{i}\)</span>
 
 
 
-
-
 où :
-\(y\) est la variable à expliquer (ici : sale.price),
-\(x_1\) et \(x_2\) sont les variables explicatives (ici : la surface et le nombre de chambres),
-\(\epsilon_i\) est le terme d’erreur, assumé être distribué selon une loi Normale :
-\[\epsilon_i \sim \mathcal{N}(0,\sigma^2)\]
 
-Sous un certain nombre d'hypothèses, la méthode des moindres carrés ordinaires (OLS pour Ordinary Least Square) permet d'obtenir des estimateurs <span style="background-color: lightblue;">BLUE</span> (Best Linear Unbiased Estimators), c'est-à-dire qui sont $\underline{sans \; biais}$ et de $\underline{variance \; minimale}$. Les coefficients estimés sont issus de la minimisation de la somme des carrés des résidus entre les valeurs prédites et les valeurs observées, formellement :
-\[(\hat{\beta}_0, \hat{\beta}_1) = \underset{\hat{\beta}_0, \hat{\beta}_1}{\arg\min} \sum_{i=1}^{n} \hat{\epsilon}_i^2 = \underset{\hat{\beta}_0, \hat{\beta}_1}{\arg\min} \sum_{i=1}^{n} (y_i - \hat{\beta}_0 - \hat{\beta}_1 x1_i - \hat{\beta}_2 x2_i)^2\]
+-  $y$ est la variable à expliquer (ici : sale.price)
+- $x_1$ et $x_2$ sont les variables explicatives (ici : la surface et le nombre de chambres),
+- $\epsilon_i$ est le terme d’erreur, assumé être distribué selon une loi Normale $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$
+
+Mieux que les expressions des estimateurs et celles de leurs variances, on aimerait connaître leurs
+lois : ceci permettrait par exemple d’obtenir des régions de confiance et d’effectuer des tests d’hypothèses. Dans cette optique, il faut bien entendu faire une hypothèse plus forte sur notre modèle,
+à savoir préciser la loi des erreurs. Nous supposerons ici que les erreurs sont gaussiennes. Les
+hypothèses sont alors : 
+
+
+\[
+\left\{
+\begin{array}{c}
+\varepsilon \sim N(0_n, \sigma^2I_{n})\ ici\ n=15 \\
+rg(X)=p=3\\
+\end{array}
+\right.
+\]
+
+
+
+Ainsi la méthode des moindres carrés ordinaires (OLS pour Ordinary Least Square) permet d'obtenir des estimateurs <span style="background-color: lightblue;">BLUE</span> (Best Linear Unbiased Estimators), c'est-à-dire qui sont $\underline{sans \; biais}$ et de $\underline{variance \; minimale}$, c'est ce que nous assure le théorème de Gauss-Markov.\ 
+
+**Sans biais :** Soit $\hat\gamma$ un estimateur de $\theta$, $\hat\gamma$ est un estimateur sans biais de $\theta$ si $\mathbb{E}[\hat\gamma] = \theta$
+
+**Variance minimale :** Soit $\hat\gamma$ un estimateur sans biais de $\theta$, on dit que $\hat\gamma$ est de variance minimale si pour autre estimateur $\hat\alpha$ sans biais de $\theta$ on a : 
+$\mathbb{V}[\hat\gamma] \leq \mathbb{V}[\hat\alpha]$
+
+Les coefficients estimés sont issus de la minimisation de la somme des carrés des résidus entre les valeurs prédites et les valeurs observées, formellement :
+\[(\hat{\beta}_0, \hat{\beta}_1) = \underset{\beta_0, \beta_1}{\arg\min} \sum_{i=1}^{n} \hat{\epsilon}_i^2 = \underset{\beta_0, \beta_1}{\arg\min} \sum_{i=1}^{n} (y_i - \beta_0 - \beta_1 x1_i - {\beta}_2 x2_i)^2\]
 
 ```{r}
 # y = b0 + b1*x1
@@ -140,14 +157,14 @@ pricereg2<-lm(sale.price ~ area + bedrooms , data=houseprices)
 summary(pricereg2)
 ```
 
-# Interprétation : 
+### Interprétation : 
 
 La droite de régression est donnée par l'équation : 
 \[ \text{{sale.price}} = -141.76 + 0.14 \times \text{{area}} + 58.32 \times \text{{bedrooms}} \]
 
-Les coefficients associés aux variables "area" et "bedrooms" sont significatifs (respectivement à 95\% et à 99\%, cf. sortie précédente), on peut donc les interpréter. Toutes choses égales par ailleurs, une chambre supplémentaire augmente par exemple le prix de la maison d'environ 58 mille dollars, et 100 unités de surface (inconnue) supplémentaires vont l’augmenter de 14 mille dollars, toutes choses égales par ailleurs.
+Les coefficients associés aux variables "area" et "bedrooms" sont significatifs (respectivement à 95\% et à 99\%, cf. sortie précédente) d'après le test de Student qui a pour hypothèses $(H_0)$ : $\beta_k\ne 0\ pour\ k\in [\![1;3]\!]$ vs $(H_1)$ : $\beta_k= 0\ pour\ k\in [\![1;3]\!]$ , en effet on voit que dans Pr(>|t|) ces valeurs sont inférieures à 0.05, ces coefficients sont donc significatifs, on peut donc les interpréter. Toutes choses égales par ailleurs, une chambre supplémentaire augmente par exemple le prix de la maison d'environ 58 mille dollars, et 100 unités de surface (inconnue) supplémentaires vont l’augmenter de 14 mille dollars, toutes choses égales par ailleurs. De plus on voit que le $R^2=0,731$ notre modèle de régression explique donc 73,1% de de la variance des données. 
 
-# Commandes utiles : 
+### Commandes utiles : 
 
 La commande `summary()` affichera des informations telles que les coefficients estimés, les erreurs standards, les valeurs t et p associées, le coefficient de détermination (R-squared), et d'autres statistiques pertinentes pour évaluer la qualité du modèle.
 
@@ -179,35 +196,35 @@ fitted(pricereg2)
 ```
 
 
-La commande `predict()` permet de prédire la valeur de y (i.e du prix) pour de nouvelles données (des variables explicatives). Seul les deux premiers arguments sont requis : se.fit permet d’afficher l’écart-type de la valeur prédite, et interval et level permettent afficher ici les valeurs de l’intervalle de confiance fixé à 99%.
+La commande `predict()` permet de prédire la valeur de y (i.e du prix) pour de nouvelles données (des variables explicatives). Seul les deux premiers arguments sont requis : `se.fit` permet d’afficher l’écart-type de la valeur prédite, et `interval` et `level` permettent afficher ici les valeurs de l’intervalle de confiance fixé à 95%.
+interval = "confidence" pour spécifier que nous voulons des intervalles de confiance pour l'estimation de nos paramètres, et level = 0.95 pour spécifier un niveau de confiance de 95% pour ces intervalles de confiance.
+Tandis que `interval="prediction"` c'est pour obtenir des intervalles de prédiction pour les valeurs y pour de nouvelles données.
 
 ```{r}
-predict(pricereg2, newdata=data.frame(area=800,bedrooms=2), se.fit=TRUE, interval = "prediction", level = 0.99)
-
+predict(pricereg2, newdata=data.frame(area=800,bedrooms=2), se.fit=TRUE, interval = "prediction", level = 0.95)
 ```
 
 Ainsi, le prix estimé d’une maison dont la surface au sol est de 800 unités et qui a 2 chambres serait de 88.92 mille dollars.
 
 
-La commande `resid()` permet d'extraire les résidus (Valeur prédite - valeur réelle)
+La commande `resid()` permet d'extraire les résidus (Valeur réelle - valeur prédite)
+
 
 ```{r}
 resid(pricereg2)
-
 ```
 Plusieurs hypothèses sous-jacentes au modèle de regression linéaire portent sur les résidus de la regression : indépendance, homoscédasticité (même variance) et normalité. On peut représenter graphiquement les résidus, afin d'observer si ces conditions sont (plus ou moins) respectées
 
-## Exemple d'interprétation des résidus : 
+### Exemple d'interprétation des résidus : 
 
 ```{r}
 res<-resid(pricereg2)
 plot(res,main="Résidus")
 abline(h=0,col="red")
-
+qqnorm(rstudent(pricereg2)); qqline(rstudent(pricereg2), col = "lightblue", lwd = 2)
 ```
 
-On observe que les résidus semblent suivre une certaine tendance. Sur des données en séries temporelles, cela pourrait indiquer une auto-corrélation des erreurs (contraire à l'hypothèse d'indépendance) et donc de phénomène non pris en compte ex : effet saisonnier, effet de mode ...
-
+Le graphique QQ-plot permet de vérifier si les résidus suivent approximativement une distribution normale. Si la distribution des résidus est proche de la droite bleu, cela indique que l'assomption de normalité des résidus est raisonnable. On voit que c'est la cas ici, on peut alors faire l'hypothèse de normalité des résidus.
 
 Autre exemple : 
 
@@ -219,14 +236,57 @@ plot(fit,res,main="Residuals vs. fitted")
 abline(h=0,col="red")
 ```
 
-Ici aussi, on peut être tenté de remarquer une diminution des résidus avec l'augmentation de la valeur prédite, mais ce n'est toutefois toujours pas extrêmement marqué (d'autant plus qu'il n'y a que 15 observations).
+Ici, on remarque que les points sont répartis aléatoirement autour de l'axe horizontal $y=0$ et qu'il n'y a pas de tendance. Les résidus de ce modèle de régression linéaire sont distribués de manière aléatoire et homogène autour de zéro cela suggère que le modèle de régression linéaire capture correctement la structure des données et que les erreurs du modèle sont essentiellement aléatoires. 
 
 
-## Test de significativité globale du modèle : 
+# Test de significativité globale du modèle : 
 
-En posant (H0) : absence de significativité globale des variables, c'est à dire au moins une n'est pas significativement différente de zéro. 
+Sous les hypothèses suivantes : 
+
+$y = X\beta + \epsilon$
+
+-  $y$ vecteur aléatoire de dimension n 
+-  $X$ matrice de prédicteurs de taille $n$ x $p$   
+-  $\epsilon$ vecteur aléatoire de dimension n 
+-  $\beta$ vecteur non aléatoire de p coefficients
+
+Avec toujours : 
+
+\[
+\left\{
+\begin{array}{c}
+\varepsilon \sim N(0_{n}, I_{n}\sigma^2) \\
+rg(X) = p 
+\end{array}
+\right.
+\]
+
+
+En posant $(H_0)$ : $\beta_1 = \beta_2 = ... =\beta_p = 0$ vs $(H_1)$ : $\exists i \in [\![1;n]\!]$ tel que $\beta_i \neq 0$ 
+
+
+avec comme statistique de test : 
+
+$F = \frac{1}{p\hat\sigma^2} \hat\beta^T (X^T X) \hat\beta \underset{H_0}\sim F_{p}^{n-p}$
+
+Avec $\mathbb{P}[\text{Rejeter}|H_0 \text{ est vraie}] \leq \alpha$ 
+$\Leftrightarrow$
+$R_{\alpha} = \{f \in \mathbb{R}_{+} | f \leq f^{p}_{n-p}(1-\alpha)\}$
+Avec pour p-value : $p= \mathbb{P}_{H_0}[F>F^{\text{obs}}]$
+
+Ainsi sous  $(H_0)$  F vaut : 
+
+$F = \frac{1}{p\hat\sigma^2} \hat\beta^T (X^T X) \hat\beta = \frac{(X\hat\beta)^{T}(X\hat\beta)/p}{\| \hat\epsilon \|^2/(n-p) }$
+
+- Si $\| \hat\epsilon \|^2$ est petit, alors l'erreur est petite et F devient va devenir grand, c'est-à-dire nous aurons tendance à rejeter $(H_0)$. 
+
+
+- Si $\| \hat\epsilon \|^2$ est grand, alors l'erreur est grande et F devient alors petit et on aura tendance à ne pas rejeter $(H_0)$
+
 
 Ce test (F-test) est basé sur la statistique de Fisher présentée en bas de la sortie R. Ici, comme la p-value associée est inférieure à 1%, on peut dire que l'on rejète fortement H0, à savoir le modèle est bien globalement significatif. Si cela n'avait pas été le cas, il convient d'exclure une à une chaque variable, afin de déceler le problème.
+
+
 ```{r}
 lm(formula = sale.price ~ area + bedrooms, data = houseprices)
 summary(lm(formula = sale.price ~ area + bedrooms, data = houseprices))
