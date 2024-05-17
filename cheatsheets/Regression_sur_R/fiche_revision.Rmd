@@ -128,7 +128,7 @@ Ainsi montrer que $\mathbb{V}[\hat\gamma] \leq \mathbb{V}[\hat\alpha]$ revient �
 Les coefficients estimés sont issus de la minimisation de la somme des carrés des résidus entre les valeurs prédites et les valeurs observées, formellement :
 \[(\hat{\beta}_0, \hat{\beta}_1) = \underset{\beta_0, \beta_1}{\arg\min} \sum_{i=1}^{n} \hat{\epsilon}_i^2 = \underset{\beta_0, \beta_1}{\arg\min} \sum_{i=1}^{n} (y_i - \beta_0 - \beta_1 x1_i - {\beta}_2 x2_i)^2\]
 
-# Régression linéaire simple
+## Régression linéaire simple
 
 ```{r}
 # y = b0 + b1*x1
@@ -204,7 +204,7 @@ fitted(pricereg2)
 
 
 La commande `predict()` permet de prédire la valeur de y (i.e du prix) pour de nouvelles données (des variables explicatives). Seul les deux premiers arguments sont requis : `se.fit` permet d’afficher l’écart-type de la valeur prédite, et `interval` et `level` permettent afficher ici les valeurs de l’intervalle de confiance fixé à 95%.
-interval = "confidence" pour spécifier que nous voulons des intervalles de confiance pour l'estimation de nos paramètres, et level = 0.95 pour spécifier un niveau de confiance de 95% pour ces intervalles de confiance.
+`interval = "confidence"` pour spécifier que nous voulons des intervalles de confiance pour l'estimation de nos paramètres, et level = 0.95 pour spécifier un niveau de confiance de 95% pour ces intervalles de confiance.
 Tandis que `interval="prediction"` c'est pour obtenir des intervalles de prédiction pour les valeurs y pour de nouvelles données.
 
 ```{r}
@@ -212,7 +212,7 @@ predict(pricereg, newdata=data.frame(area=800,bedrooms=2), se.fit=TRUE, interval
 
 ```
 
-Ainsi, le prix estimé d’une maison dont la surface au sol est de 800 unités serait de 88.92 mille dollars avec un intervalle de confiance à 95% qui serait $[112.7066 ; 329.2373]$
+Ainsi, le prix estimé d’une maison dont la surface au sol est de 800 unités serait de 88.92 mille dollars avec un intervalle de prédiction à 95% qui serait $[112.7066 ; 329.2373]$
  
 
 La commande `resid()` permet d'extraire les résidus (Valeur réelle - valeur prédite)
@@ -240,14 +240,16 @@ abline(h=0,col="red")
 qqnorm(rstudent(pricereg2)); qqline(rstudent(pricereg2), col = "lightblue", lwd = 2)
 ```
 
-Le graphique QQ-plot permet de vérifier si les résidus suivent approximativement une distribution normale. Si la distribution des résidus est proche de la droite bleu, cela indique que l'assomption de normalité des résidus est raisonnable. On voit que c'est la cas ici, on peut alors faire l'hypothèse de normalité des résidus.
+Le graphique QQ-plot permet de vérifier si les résidus suivent approximativement une distribution normale. Si la distribution des résidus est proche de la droite bleu, cela indique que l'assomption de normalité des résidus est raisonnable. Ici, les queues de distribution semblent plus lourdes qu'une simple gaussienne. Mais ce n'est pas forcément grave : les résidus studentisés sont de type Student, et non gaussiens, et la loi de Student a des queues plus lourdes que la gaussienne, surtout quand le nombre d'observations est petit (ce qui est le cas ici).
+
 De plus la commande `rstudent` représente les résidus studentisés ils sont utilisés pour évaluer l'influence des observations individuelles sur le modèle de régression. Ils sont également utilisés pour détecter les valeurs aberrantes dans l'ensemble de données. On sait de plus que : 
 
 Si la matrice $X$ est de plein rang et si la suppression de la ligne $i$ ne modifie pas le rang de la matrice, alors les résidus studentisés par validation croisée vérifie : 
 
-$t^*_i = \frac{\hat{\epsilon}_i}{\hat{\sigma}_{(i)} \sqrt{1 - h_{ii}}} = \frac{y_i - \hat{y}_i}{\hat{\sigma}_{(i)} \sqrt{1 - h_{ii}}} = \frac{y_i - \hat{y}_{p,i}}{\hat{\sigma}_{(i)} \sqrt{1 + \mathbf{x}'_i (\mathbf{X}'_{(i)} \mathbf{X}_{(i)})^{-1} \mathbf{x}_i}} \sim \mathscr{T}_{n - p - 1}.$
+$t^*_i = \frac{\hat{\epsilon}_i}{\hat{\sigma}_{(i)} \sqrt{1 - h_{ii}}} = \frac{y_i - \hat{y}_i}{\hat{\sigma}_{(i)} \sqrt{1 - h_{ii}}}\sim \mathscr{T}_{n - p - 1}.$
 
-où $\hat{\sigma}_{(i)}$ est l'estimateur de $\sigma$ dans le modèle linéaire privé de l'observation *i*.
+Où $h_{ii}$ est l'élément de la diagonale de la matrice de projection H qui est la matrice de projection sur l'espace engendré pas les colonnes de X, il quantifie l’effet de l’observation i sur sa propre prédiction et $\hat{\sigma}_{(i)}$ est l'estimateur de $\sigma$ dans le modèle linéaire privé de l'observation *i*.
+
 
 
 
@@ -260,6 +262,8 @@ Autre exemple :
 fit <- fitted(pricereg2)
 plot(fit,res,main="Residuals vs. fitted")
 abline(h=0,col="red")
+
+
 ```
 
 Ici, on remarque que les points sont répartis aléatoirement autour de l'axe horizontal $y=0$ et qu'il n'y a pas de tendance. Les résidus de ce modèle de régression linéaire sont distribués de manière aléatoire et homogène autour de zéro cela suggère que le modèle de régression linéaire capture correctement la structure des données et que les erreurs du modèle sont essentiellement aléatoires. 
@@ -291,18 +295,18 @@ rg(X) = p
 En posant $(H_0)$ : $\beta_2 = ... = \beta_p = 0$ vs $(H_1)$ : $\exists i \in [\![2;n]\!]$ tel que $\beta_i \neq 0$ 
 
 
-avec comme statistique de test : 
+La statistique de test associé est : 
 
-$F = \frac{1}{p\hat\sigma^2} \hat\beta^T (X^T X) \hat\beta \underset{H_0}\sim F_{p}^{n-p}$
+$F = \frac{\| \hat{Y} - \bar{y}\mathbf{1}  \|^2 / (p - 1)}{\| Y - \hat{Y} \|^2 / (n - p)} \sim F_{n-p}^{p-1}$
+
+Cela fonctionne si la première colonne de X est l'intercept. C'est le test par défaut renvoyé par R.
 
 Avec $\mathbb{P}[\text{Rejeter}|H_0 \text{ est vraie}] \leq \alpha$ 
 $\Leftrightarrow$
-$R_{\alpha} = \{f \in \mathbb{R}_{+} | f \leq f^{p}_{n-p}(1-\alpha)\}$
+$R_{\alpha} = \{f \in \mathbb{R}_{+} | f \leq f^{p-1}_{n-p}(1-\alpha)\}$
 Avec pour p-value : $p= \mathbb{P}_{H_0}[F>F^{\text{obs}}]$
 
-Ainsi sous  $(H_0)$  F vaut : 
-
-$F = \frac{1}{p\hat\sigma^2} \hat\beta^T (X^T X) \hat\beta = \frac{(X\hat\beta)^{T}(X\hat\beta)/p}{\| \hat\epsilon \|^2/(n-p) }$
+Ainsi : 
 
 - Si $\| \hat\epsilon \|^2$ est petit, alors l'erreur est petite et F devient va devenir grand, c'est-à-dire nous aurons tendance à rejeter $(H_0)$. 
 
@@ -310,7 +314,7 @@ $F = \frac{1}{p\hat\sigma^2} \hat\beta^T (X^T X) \hat\beta = \frac{(X\hat\beta)^
 - Si $\| \hat\epsilon \|^2$ est grand, alors l'erreur est grande et F devient alors petit et on aura tendance à ne pas rejeter $(H_0)$
 
 
-Ce test (F-test) est basé sur la statistique de Fisher présentée en bas de la sortie R. Ici, comme la p-value associée est inférieure à 1%, on peut dire que l'on rejète fortement H0, à savoir le modèle est bien globalement significatif. Si cela n'avait pas été le cas, il convient d'exclure une à une chaque variable, afin de déceler le problème.
+Ce test (F-test) est basé sur la statistique de Fisher présentée en bas de la sortie R. Ici, comme la p-value associée est inférieure à 1%, on peut dire que l'on rejète fortement H0, à savoir le modèle est bien globalement significatif. Si on n'avait pas rejeter H0 on n'aurait pas rejeter un modèle où tous les coefficients sont nuls (hors inetercept).
 
 
 ```{r}
