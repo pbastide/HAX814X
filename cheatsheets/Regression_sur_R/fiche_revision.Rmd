@@ -241,7 +241,7 @@ qqnorm(rstudent(pricereg2)); qqline(rstudent(pricereg2), col = "lightblue", lwd 
 ```
 
 Le graphique QQ-plot permet de vérifier si les résidus suivent approximativement une distribution normale. Si la distribution des résidus est proche de la droite bleu, cela indique que l'assomption de normalité des résidus est raisonnable. On voit que c'est la cas ici, on peut alors faire l'hypothèse de normalité des résidus.
-De plus la commande `rstudent` représente les résidus standardisés ils sont utilisés pour évaluer l'influence des observations individuelles sur le modèle de régression. Ils sont également utilisés pour détecter les valeurs aberrantes dans l'ensemble de données. On sait de plus que : 
+De plus la commande `rstudent` représente les résidus studentisés ils sont utilisés pour évaluer l'influence des observations individuelles sur le modèle de régression. Ils sont également utilisés pour détecter les valeurs aberrantes dans l'ensemble de données. On sait de plus que : 
 
 Si la matrice $X$ est de plein rang et si la suppression de la ligne $i$ ne modifie pas le rang de la matrice, alors les résidus studentisés par validation croisée vérifie : 
 
