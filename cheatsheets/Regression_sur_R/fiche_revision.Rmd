@@ -37,6 +37,7 @@ plot(x, y_lineaire, main = "Graphique 3", xlab = "X", ylab = "Y")
 
 ```
 
+Nous avons ici simuler des données fictives avec une forme sinusoïdale et sigmoïdale.
 Au vu des graphiques, il semble inadéquat de proposer une régression linéaire pour les 2 premiers graphiques, le tracé présentant une forme sinusoïdale ou sigmoïdale. Par contre, la modélisation par une droite de la relation entre \( X \) et \( Y \) pour le dernier graphique semble correspondre à une bonne approximation de la liaison.
 
 A noter que dans le cas du graphique 1 et 2, d'autres techniques de modélisations existent comme des méthodes de régression linéaires de type polynomiale, exponentielle, logarithmique...
@@ -94,12 +95,11 @@ où :
 
 -  $y$ est la variable à expliquer (ici : sale.price)
 - $x_1$ et $x_2$ sont les variables explicatives (ici : la surface et le nombre de chambres),
-- $\epsilon_i$ est le terme d’erreur, assumé être distribué selon une loi Normale $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$
+- $\epsilon_i$ est le terme d’erreur, supposé être indépendants et identiquement distribués selon une loi Normale $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$
 
 Mieux que les expressions des estimateurs et celles de leurs variances, on aimerait connaître leurs
 lois : ceci permettrait par exemple d’obtenir des régions de confiance et d’effectuer des tests d’hypothèses. Dans cette optique, il faut bien entendu faire une hypothèse plus forte sur notre modèle,
-à savoir préciser la loi des erreurs. Nous supposerons ici que les erreurs sont gaussiennes. Les
-hypothèses sont alors : 
+à savoir préciser la loi des erreurs. Les hypothèses sont alors : 
 
 
 \[
@@ -120,8 +120,15 @@ Ainsi la méthode des moindres carrés ordinaires (OLS pour Ordinary Least Squar
 **Variance minimale :** Soit $\hat\gamma$ un estimateur sans biais de $\theta$, on dit que $\hat\gamma$ est de variance minimale si pour autre estimateur $\hat\alpha$ sans biais de $\theta$ on a : 
 $\mathbb{V}[\hat\gamma] \leq \mathbb{V}[\hat\alpha]$
 
+Dans le cas de la régression linéaire multiple on peut en fait définir une relation d'ordre partielle entre matrices symétriques réelles : dire que $S_1 \leq S_2$ signifie que $S= (S_2 - S_1)$
+est une matrice symétrique réelle positive, c'est-à-dire que pour tout vecteur $x$ on a $x^{t}S_{1}x \leq x^{t}S_{2}x$. Cela revient aussi à dire que les valeurs propres de S sont toutes supérieures ou égales à 0.  
+Ainsi montrer que $\mathbb{V}[\hat\gamma] \leq \mathbb{V}[\hat\alpha]$ revient à montrer que $\mathbb{V}[\hat\gamma]-\mathbb{V}[\hat\alpha]$ est symétrique définie positive c'est-à-dire que pour tout vecteur $x$ on a : $x^{t}\mathbb{V}[\hat\gamma]x \leq x^{t}\mathbb{V}[\hat\alpha]x$ . 
+
+
 Les coefficients estimés sont issus de la minimisation de la somme des carrés des résidus entre les valeurs prédites et les valeurs observées, formellement :
 \[(\hat{\beta}_0, \hat{\beta}_1) = \underset{\beta_0, \beta_1}{\arg\min} \sum_{i=1}^{n} \hat{\epsilon}_i^2 = \underset{\beta_0, \beta_1}{\arg\min} \sum_{i=1}^{n} (y_i - \beta_0 - \beta_1 x1_i - {\beta}_2 x2_i)^2\]
+
+# Régression linéaire simple
 
 ```{r}
 # y = b0 + b1*x1
@@ -162,15 +169,15 @@ summary(pricereg2)
 La droite de régression est donnée par l'équation : 
 \[ \text{{sale.price}} = -141.76 + 0.14 \times \text{{area}} + 58.32 \times \text{{bedrooms}} \]
 
-Les coefficients associés aux variables "area" et "bedrooms" sont significatifs (respectivement à 95\% et à 99\%, cf. sortie précédente) d'après le test de Student qui a pour hypothèses $(H_0)$ : $\beta_k\ne 0\ pour\ k\in [\![1;3]\!]$ vs $(H_1)$ : $\beta_k= 0\ pour\ k\in [\![1;3]\!]$ , en effet on voit que dans Pr(>|t|) ces valeurs sont inférieures à 0.05, ces coefficients sont donc significatifs, on peut donc les interpréter. Toutes choses égales par ailleurs, une chambre supplémentaire augmente par exemple le prix de la maison d'environ 58 mille dollars, et 100 unités de surface (inconnue) supplémentaires vont l’augmenter de 14 mille dollars, toutes choses égales par ailleurs. De plus on voit que le $R^2=0,731$ notre modèle de régression explique donc 73,1% de de la variance des données. 
+Les coefficients associés aux variables "area" et "bedrooms" sont significatifs (respectivement à 95\% et à 99\%, cf. sortie précédente) d'après le test de Student qui a pour hypothèses $(H_0)$ : $\beta_k = 0\ pour\ k\in [\![1;3]\!]$ vs $(H_1)$ : $\beta_k\ne 0\ pour\ k\in [\![1;3]\!]$ , en effet on voit que dans Pr(>|t|) ces valeurs sont inférieures à 0.05, ces coefficients sont donc significatifs, on peut donc les interpréter. Toutes choses égales par ailleurs, une chambre supplémentaire augmente par exemple le prix de la maison d'environ 58 mille dollars, et 100 unités de surface (inconnue) supplémentaires vont l’augmenter de 14 mille dollars, toutes choses égales par ailleurs. De plus on voit que le $R^2=0,731$ notre modèle de régression explique donc 73,1% de de la variance des données. 
 
 ### Commandes utiles : 
 
 La commande `summary()` affichera des informations telles que les coefficients estimés, les erreurs standards, les valeurs t et p associées, le coefficient de détermination (R-squared), et d'autres statistiques pertinentes pour évaluer la qualité du modèle.
 
 Par exemple le $R^2$ défini par \[ R^2 = 1 - \frac{SSR}{SST} \] représente une manière d'évaluer l'adéquation entre le  modèle et les données observées. On a \[ R^2 \in [0, 1] \] et plus sa valeur est proche de 1 plus l'adéquation sera forte. Cependant la valeur est influencée par le nombre de variables explicatives incluses dans la régression. Ainsi le $R^{2}_{adjusted}$ va tenir compte de ce nombre est sera plus correct.
-
-
+La statistique de Fisher est une mesure de l'adéquation globale du modèle. Elle évalue si le modèle de regression dans son ensemble est significativement différent d'un modèle sans aucune variable explicative, c'est-à-dire un modèle qui prédit simplement la moyenne de la variable dépendante pour chaque observation. 
+Il est important de choisir un modèle avec statistique F grande et une p-value qui sera faible. 
 
 ```{r}
 summary(pricereg2)
@@ -201,11 +208,12 @@ interval = "confidence" pour spécifier que nous voulons des intervalles de conf
 Tandis que `interval="prediction"` c'est pour obtenir des intervalles de prédiction pour les valeurs y pour de nouvelles données.
 
 ```{r}
-predict(pricereg2, newdata=data.frame(area=800,bedrooms=2), se.fit=TRUE, interval = "prediction", level = 0.95)
+predict(pricereg, newdata=data.frame(area=800,bedrooms=2), se.fit=TRUE, interval = "prediction", level = 0.95)
+
 ```
 
-Ainsi, le prix estimé d’une maison dont la surface au sol est de 800 unités et qui a 2 chambres serait de 88.92 mille dollars.
-
+Ainsi, le prix estimé d’une maison dont la surface au sol est de 800 unités serait de 88.92 mille dollars avec un intervalle de confiance à 95% qui serait $[112.7066 ; 329.2373]$
+ 
 
 La commande `resid()` permet d'extraire les résidus (Valeur réelle - valeur prédite)
 
@@ -218,13 +226,31 @@ Plusieurs hypothèses sous-jacentes au modèle de regression linéaire portent s
 ### Exemple d'interprétation des résidus : 
 
 ```{r}
-res<-resid(pricereg2)
-plot(res,main="Résidus")
+# Calcul des résidus
+res <- resid(pricereg2)
+
+# Calcul des résidus standardisés
+std_res <- res / sd(res)
+
+# Tracé des résidus standardisés
+plot(std_res, main = "Résidus Standardisés")
+
+
 abline(h=0,col="red")
 qqnorm(rstudent(pricereg2)); qqline(rstudent(pricereg2), col = "lightblue", lwd = 2)
 ```
 
 Le graphique QQ-plot permet de vérifier si les résidus suivent approximativement une distribution normale. Si la distribution des résidus est proche de la droite bleu, cela indique que l'assomption de normalité des résidus est raisonnable. On voit que c'est la cas ici, on peut alors faire l'hypothèse de normalité des résidus.
+De plus la commande `rstudent` représente les résidus standardisés ils sont utilisés pour évaluer l'influence des observations individuelles sur le modèle de régression. Ils sont également utilisés pour détecter les valeurs aberrantes dans l'ensemble de données. On sait de plus que : 
+
+Si la matrice $X$ est de plein rang et si la suppression de la ligne $i$ ne modifie pas le rang de la matrice, alors les résidus studentisés par validation croisée vérifie : 
+
+$t^*_i = \frac{\hat{\epsilon}_i}{\hat{\sigma}_{(i)} \sqrt{1 - h_{ii}}} = \frac{y_i - \hat{y}_i}{\hat{\sigma}_{(i)} \sqrt{1 - h_{ii}}} = \frac{y_i - \hat{y}_{p,i}}{\hat{\sigma}_{(i)} \sqrt{1 + \mathbf{x}'_i (\mathbf{X}'_{(i)} \mathbf{X}_{(i)})^{-1} \mathbf{x}_i}} \sim \mathscr{T}_{n - p - 1}.$
+
+où $\hat{\sigma}_{(i)}$ est l'estimateur de $\sigma$ dans le modèle linéaire privé de l'observation *i*.
+
+
+
 
 Autre exemple : 
 
@@ -262,7 +288,7 @@ rg(X) = p
 \]
 
 
-En posant $(H_0)$ : $\beta_1 = \beta_2 = ... =\beta_p = 0$ vs $(H_1)$ : $\exists i \in [\![1;n]\!]$ tel que $\beta_i \neq 0$ 
+En posant $(H_0)$ : $\beta_2 = ... = \beta_p = 0$ vs $(H_1)$ : $\exists i \in [\![2;n]\!]$ tel que $\beta_i \neq 0$ 
 
 
 avec comme statistique de test : 
