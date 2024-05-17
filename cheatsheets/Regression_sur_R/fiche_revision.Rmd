@@ -314,7 +314,7 @@ Ainsi :
 - Si $\| \hat\epsilon \|^2$ est grand, alors l'erreur est grande et F devient alors petit et on aura tendance à ne pas rejeter $(H_0)$
 
 
-Ce test (F-test) est basé sur la statistique de Fisher présentée en bas de la sortie R. Ici, comme la p-value associée est inférieure à 1%, on peut dire que l'on rejète fortement H0, à savoir le modèle est bien globalement significatif. Si l'on n'avait pas rejeter H0, on n'aurait pas rejeté un modèle où tous les coefficients sont nuls (hors inetercept).
+Ce test (F-test) est basé sur la statistique de Fisher présentée en bas de la sortie R. Ici, comme la p-value associée est inférieure à 1%, on peut dire que l'on rejète fortement H0, à savoir le modèle est bien globalement significatif. Si l'on n'avait pas rejeté H0, on n'aurait pas rejeté un modèle où tous les coefficients sont nuls (hors inetercept).
 
 
 ```{r}
