@@ -68,7 +68,7 @@ Ce dataframe contient 15 données des informations sur les prix des maisons ains
 
 ### Objectif : 
 
-On peut vouloir expliquer le prix de vente des maisons, en fonction de leur surface en présumant que plus la surface est élevée, et plus le prix de vente sera élevé. Il s'agit là d'une regression dite "simple" car elle ne comporte qu'une seule variables explicative. De plus, on peut aussi supposer que le nombre de chambres influence le prix de la maison à la hausse ; il s'agira là d'une regression "multiple" avec deux variables explicatives.
+On peut vouloir expliquer le prix de vente des maisons, en fonction de leur surface en présumant que plus la surface est élevée, et plus le prix de vente sera élevé. Il s'agit là d'une regression dite "simple" car elle ne comporte qu'une seule variable explicative. De plus, on peut aussi supposer que le nombre de chambres influence le prix de la maison à la hausse ; il s'agira là d'une regression "multiple" avec deux variables explicatives.
 
 L’objectif est d’évaluer si chacune des deux variables influence le prix, et, si tel est le cas, de tenter de quantifier cet effet.
 
